@@ -1,2 +1,2 @@
 # Matricula-Bot
- Versioned bot project
+On this repository, I'm going to be uploading every modification I make on the chatbot.

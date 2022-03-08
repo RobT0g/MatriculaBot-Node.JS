@@ -1,0 +1,30 @@
+{
+  "name": "matricula-bot",
+  "version": "0.2.0",
+  "type": "module",
+  "description": "Second working version of the Chatbot powered by venom-bot API.",
+  "main": "Main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RobT0g/Matricula-Bot.git"
+  },
+  "keywords": [
+    "Node.JS",
+    "MySQL",
+    "Chatbot",
+    "Venom-Bot",
+    "Automation"
+  ],
+  "author": "Robson Luan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RobT0g/Matricula-Bot/issues"
+  },
+  "homepage": "https://github.com/RobT0g/Matricula-Bot#readme",
+  "dependencies": {
+    "readline-sync": "^1.4.10"
+  }
+}
