@@ -1,4 +1,4 @@
-import mysql from 'mysql2/promise'
+import { mysql } from '../Dependencies/Index.js'
 
 class DatabaseCore{
     constructor(dbName){
