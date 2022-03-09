@@ -5,7 +5,7 @@ import { database } from './IA/DataKeeper.js'
 
 
 /** TODO
- * ~nome~ não pegou o caso em que só tinha uma palavra
+ * 
  */
 
 const data = new DataBase()
