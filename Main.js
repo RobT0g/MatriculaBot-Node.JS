@@ -22,6 +22,8 @@ async function start(client) {
         await database.load()
     client.onMessage(async function (message){
         let num = message.from
+        if(TextSender.unvalidNumber(num))
+            return
         try{
             let userOn = await data.userRegister(num)
             if(userOn == 2){

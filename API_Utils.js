@@ -30,6 +30,9 @@ class TextSender{
         }
     }
 
+    static unvalidNumber(num){
+        return !(/\d+[@]/g.test(num))
+    }
 }
 
 export {TextSender}
