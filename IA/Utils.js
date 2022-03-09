@@ -63,18 +63,5 @@ class User{     //Guarda atributos sobre o usuário
     }
 }
 
-class StepStuff{
-    constructor(tags=[[]], actions=[''], msg=[[]]){
-        let t = typeof(tags)=='object'?(typeof(tags[0])=='object'?tags:[tags]):[[tags]]
-        let a = typeof(actions)=='object'?actions:[actions]
-        let m = typeof(msg)=='object'?(typeof(msg[0])=='object'?msg:[msg]):[[msg]]
-        for (let i in t)
-            this[t[i]] = { alts:t[i].splice(1), actions:(a[i]?a[i]:''), msg:(m[i]?m[i]:[]) }
-    }
 
-    getTags(){
-        return Object.keys(this).map((i) => {let j = [i]; j.push(...this[i].alts); return j})
-    }
-}
-
-export { Message, DataBase, User, StepStuff }
+export { Message, DataBase, User }
