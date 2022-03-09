@@ -79,4 +79,4 @@ messages.map((i) => {
     chat.newStep = new ChatStep(i['txt'], i['full'], i['unf'], i['def'], i['from'], i['to'])
 })
 
-export {chat}
+export { chat }
