@@ -154,32 +154,25 @@ messages.push(...[{
 'to':[13]},
 
 {
-'txt':['Tudo certo. Agora nós começaremos o processo de adicionar/retirar matérias. '
-    ,'Tudo certo. Agora nós começaremos a ver quais as matérias você quer adicionar ou retirar.',
-    'Repito que para ver as matérias que você optou por cursar, deve rever o formulário de rematrícula ou' + 
-    ' a matriz curricular do seu curso.', 'Basta me enviar "Formulário" ou "Matriz Curricular" se quiser' +
-    ' rever algum destes.', 'O processo será feito da seguinte maneira: Você irá me enviar "adicionar" ou' + 
-    ' "retirar" para escolher as matérias. Após ter escolhido, nós voltaremos para este passo, então não se' + 
-    ' preocupe quanto a escolher alguma matéria errada, você poderá retirá-la novamente.', 'Para a opção de' + 
-    ' adicionar matérias, eu irei lhe fazer algumas recomendações com base nas informações que já possuo sobre' + 
-    ' sua turma e ano, e você poderá enviar o IDs das matérias que quiser adicionar.', 
-    'Após isso, você irá voltar pra este ponto, e então poderá escolher novamente se quiser adicionar ou' + 
-    ' retirar mais matérias. Além disso, se você me enviar "revisar" a qualquer momento, eu irei lhe' +
-    ' mostrar as matérias que você já selecionou.'],
+'txt':['Tudo certo. Agora nós começaremos o processo de adicionar/retirar matérias. Após cada requerimento' + 
+    ', isto é, sempre que você terminar de selecionar as matérias, você irá voltar para este ponto. Então não' +
+    ' precisa se preocupar caso adicionar ou retirar uma matéria errada, basta pedir para adicionar ou retirar' +
+    ' novamente.', 'Neste ponto, você também pode rever algumas informações suas, assim como a matriz curricular' + 
+    ' ou formulário de rematrícula. Basta me enviar "revisar" para ver um resumo de todas as informações que' + 
+    ' você me mandou, assim como todas as matérias que você escolheu retirar ou adicionar. Além disso, você' + 
+    ' pode me enviar "ver matriz curricular" ou "ver formulário" para revê-los.', 'Para continuarmos agora,'+
+    ' você pode me enviar "adicionar" ou "retirar" para selecionar as matérias.'],
 'full': new StepStuff([['~sim~']], [], []),
-'unf': new StepStuff([['matriz&curricular'], ['formulario']], [], [['~getmatriz~',
+'unf': new StepStuff([['matriz&curricular'], ['formulario'], ['revisar']], [], [['~getmatriz~',
     'Quando estiver pronto para prosseguir, basta me mandar um "sim".'], ['O formulário de rematrícula'+
-    ' pode ser encontrado aqui: ~getformremat~']]),
-'def':['Só dizer sim ou não para adicionar matérias, ou dizer "Matriz Curricular" ou "Formulário" para mais ' + 
-    'informações.'],
+    ' pode ser encontrado aqui: ~getformremat~'], ['Seus dados: ~userinfo~', '~discesc~', 'Basta me enviar '+
+    '"adicionar" ou "retirar" para continuarmos.']]),
+'def':['Só dizer alguma das opções para continuarmos.'],
 'from':[12],
-'to':[14]},
+'to':[14, 15]},
 
 {
-'txt':['Ok, neste ponto você poderá escolher se quer adicionar ou remover as disciplinas, ver quais você ' + 
-    'já escolheu além de poder rever suas informações.', 'Basta me enviar "Adicionar" ou "Retirar" para ' + 
-    'selecionar as matérias que você deseja adicionar ou retirar, ou me envie um "Revisar" para rever ' +
-    'o que você já escolheu, assim como rever suas informações.'],
+'txt':['Agora você poderá adicionar '],
 'full': new StepStuff([['adicionar'], ['retirar']], [], []),
 'unf': new StepStuff([['revisar']], [], [['Seus dados: ~userinfo~', '~discesc~', 'Basta me enviar '+
     '"Adicionar" ou "Retirar" para continuarmos.']]),
