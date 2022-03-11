@@ -16,4 +16,4 @@ Check depencies (go to dependencies folder):
   - Creator at [Author-profile](https://github.com/sidorares); 
   - Documentation at [Documentation-page](https://github.com/anseki/readline-sync);  
 
-You can also use *npm i -g npm-check-updates* to check if all dependencies are up to date.
+You can also use *npm i npm-check-updates* on the dependencies folder to check if all of them are up to date.
