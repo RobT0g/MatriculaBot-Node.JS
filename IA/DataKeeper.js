@@ -39,7 +39,8 @@ class FormatedData{
             '~recdisc~'     : `select id, nome, carga from disc_-curso- where id not in (select discId from req_-curso- where reqId >= '-maxreq-') and ativa = '1';`,
             '~userinfo~'    : `select * from cadastro where numero = '-num-';`,
             '~discesc~'     : `select u.discId, d.nome, d.carga, u.adicionar from user_-curso- as u 
-                join disc_-curso- as d on u.discId = d.id where u.matricula = '-matricula-' order by u.discId;`
+                join disc_-curso- as d on u.discId = d.id where u.matricula = '-matricula-' order by u.discId;`,
+            '~getmatriz~'   : `select text from extrainfo where tag = '~getmatriz~'`
         }
         this.formate = {
             '~mat~'         : (data) => {return data[0].matricula},
@@ -77,7 +78,8 @@ class FormatedData{
                     console.log('Erro em ~discesc~.\n', err)
                     return 'Você ainda não selecionou nenhuma matéria.'
                 }
-            }
+            },
+            '~getmatriz~'   : (data) => {return data.text}
         }
     }
 
