@@ -29,6 +29,7 @@ class FormatedData{
         this.cursosName = ['Administração', 'Engenharia da Computação', 'Física', 'Construção de Edifícios']
         this.cursos = ['adm', 'ec', 'fis', 'tce']
         this.simpleSQL = "select what from cadastro where numero = '-num-';"
+        this.simpleExtraInfo = "select text from extrainfo where tag = 'request';"
         this.sql = {
             '~mat~'         : this.simpleSQL.replaceAll('what', 'matricula'),
             '~nome~'        : this.simpleSQL.replaceAll('what', 'nome'),
@@ -40,7 +41,8 @@ class FormatedData{
             '~userinfo~'    : `select * from cadastro where numero = '-num-';`,
             '~discesc~'     : `select u.discId, d.nome, d.carga, u.adicionar from user_-curso- as u 
                 join disc_-curso- as d on u.discId = d.id where u.matricula = '-matricula-' order by u.discId;`,
-            '~getmatriz~'   : `select text from extrainfo where tag = '~getmatriz~'`
+            '~getmatriz~'   : this.simpleExtraInfo.replaceAll('request', '~getmatriz~'),
+            '~getformremat~': this.simpleExtraInfo.replaceAll('request', '~getformremat~')
         }
         this.formate = {
             '~mat~'         : (data) => {return data[0].matricula},
@@ -79,7 +81,8 @@ class FormatedData{
                     return 'Você ainda não selecionou nenhuma matéria.'
                 }
             },
-            '~getmatriz~'   : (data) => {return data.text}
+            '~getmatriz~'   : (data) => {return data.text},
+            '~getformremat~': (data) => {return data.text}
         }
     }
 

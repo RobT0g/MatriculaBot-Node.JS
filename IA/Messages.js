@@ -49,8 +49,7 @@ messages.push(...[{
     'caso você queria rever quais matérias você já está programado para cursar, basta verificar ' + 
     'quais matérias você marcou no formulário de rematrícula, ou caso esteja no 1° preíodo, ' + 
     'basta verificá-las na matriz curricular do seu curso.',
-    'O formulário de rematrícula pode ser encontrado aqui: ' +
-    'https://docs.google.com/forms/d/e/1FAIpQLSfW29Ml1eWBmltoX428vsH1cErALrac0NA8Ma3Mvu9BPSlONg/viewform?edit2=2_ABaOnud33HrxwsaUv_UQmUhruKOGVMUXjwiiRIKf8tbfKBvyD6PoGS5_4PVxwA03qw',
+    'O formulário de rematrícula pode ser encontrado aqui: ~getformremat~' +
     'Se quiser ver a matriz curricular do seu curso, basta me enviar "Ver matriz curricular"' + 
     ' e eu lhe mandarei as instruções.',
     'Se ocorrer algum problema com o bot, basta ler a descrição do perfil.',
@@ -169,9 +168,8 @@ messages.push(...[{
     ' mostrar as matérias que você já selecionou.'],
 'full': new StepStuff([['~sim~']], [], []),
 'unf': new StepStuff([['matriz&curricular'], ['formulario']], [], [['~getmatriz~',
-    'Quando estiver pronto para prosseguir, basta me mandar um "sim".'], ['O formulário de rematrícula pode ser encontrado aqui: ' +
-    'https://docs.google.com/forms/d/e/1FAIpQLSfW29Ml1eWBmltoX428vsH1cErALrac0NA8Ma3Mvu9BPSlONg/viewform?edit2=2_ABaOnud33HrxwsaUv_UQmUhruKOGVMUXjwiiRIKf8tbfKBvyD6PoGS5_4PVxwA03qw',
-    'Quando estiver pronto para prosseguir, basta me mandar um "sim".']]),
+    'Quando estiver pronto para prosseguir, basta me mandar um "sim".'], ['O formulário de rematrícula'+
+    ' pode ser encontrado aqui: ~getformremat~']]),
 'def':['Só dizer sim ou não para adicionar matérias, ou dizer "Matriz Curricular" ou "Formulário" para mais ' + 
     'informações.'],
 'from':[12],
