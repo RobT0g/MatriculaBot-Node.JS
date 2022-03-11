@@ -81,8 +81,8 @@ class FormatedData{
                     return 'Você ainda não selecionou nenhuma matéria.'
                 }
             },
-            '~getmatriz~'   : (data) => {return data.text},
-            '~getformremat~': (data) => {return data.text}
+            '~getmatriz~'   : (data) => {return data[0].text},
+            '~getformremat~': (data) => {return data[0].text}
         }
     }
 

@@ -49,7 +49,7 @@ messages.push(...[{
     'caso você queria rever quais matérias você já está programado para cursar, basta verificar ' + 
     'quais matérias você marcou no formulário de rematrícula, ou caso esteja no 1° preíodo, ' + 
     'basta verificá-las na matriz curricular do seu curso.',
-    'O formulário de rematrícula pode ser encontrado aqui: ~getformremat~' +
+    'O formulário de rematrícula pode ser encontrado aqui: ~getformremat~',
     'Se quiser ver a matriz curricular do seu curso, basta me enviar "Ver matriz curricular"' + 
     ' e eu lhe mandarei as instruções.',
     'Se ocorrer algum problema com o bot, basta ler a descrição do perfil.',
@@ -57,7 +57,7 @@ messages.push(...[{
 ],
 'full': new StepStuff([['pronto']], [], []),
 'unf': new StepStuff([['matriz&curricular']], [], [['~getmatriz~',
-'   Quando estiver pronto para prosseguir, basta me enviar "Tudo pronto".']]),
+'Quando estiver pronto para prosseguir, basta me enviar "Tudo pronto".']]),
 'def':['Você só precisa me confirmar a qualquer momento para continuarmos.'],
 'from':[0],
 'to':[2]},
