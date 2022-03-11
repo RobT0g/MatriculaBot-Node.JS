@@ -49,20 +49,15 @@ messages.push(...[{
     'caso você queria rever quais matérias você já está programado para cursar, basta verificar ' + 
     'quais matérias você marcou no formulário de rematrícula, ou caso esteja no 1° preíodo, ' + 
     'basta verificá-las na matriz curricular do seu curso.',
-    'O formulário de rematrícula pode ser encontrado aqui: ' +
-    'https://docs.google.com/forms/d/e/1FAIpQLSfW29Ml1eWBmltoX428vsH1cErALrac0NA8Ma3Mvu9BPSlONg/viewform?edit2=2_ABaOnud33HrxwsaUv_UQmUhruKOGVMUXjwiiRIKf8tbfKBvyD6PoGS5_4PVxwA03qw',
+    'O formulário de rematrícula pode ser encontrado aqui: ~getformremat~',
     'Se quiser ver a matriz curricular do seu curso, basta me enviar "Ver matriz curricular"' + 
     ' e eu lhe mandarei as instruções.',
     'Se ocorrer algum problema com o bot, basta ler a descrição do perfil.',
     'Quando estiver pronto para prosseguir basta me mandar um "Tudo pronto".'
 ],
 'full': new StepStuff([['pronto']], [], []),
-'unf': new StepStuff([['matriz&curricular']], [], [['Matriz curricular de cada curso:\n' + 
-    '> Administração (página 14): https://santaines.ifma.edu.br/wp-content/uploads/sites/14/2018/06/PROJETO-ADMINISTRA%C3%87%C3%83O.pdf\n' + 
-    '> Engenharia da Computação: https://santaines.ifma.edu.br/wp-content/uploads/sites/14/2019/03/matriz_curricular_enge_comp.pdf\n' + 
-    '> Física: https://santaines.ifma.edu.br/wp-content/uploads/sites/14/2019/02/matriz_curricular_fisica.pdf\n' + 
-    '> TCE: https://santaines.ifma.edu.br/wp-content/uploads/sites/14/2018/10/MatrizCurEdific.pdf',
-'   Quando estiver pronto para prosseguir, basta me enviar "Tudo pronto".']]),
+'unf': new StepStuff([['matriz&curricular']], [], [['~getmatriz~',
+'Quando estiver pronto para prosseguir, basta me enviar "Tudo pronto".']]),
 'def':['Você só precisa me confirmar a qualquer momento para continuarmos.'],
 'from':[0],
 'to':[2]},
@@ -159,46 +154,34 @@ messages.push(...[{
 'to':[13]},
 
 {
-'txt':['Tudo certo. Agora nós começaremos a ver quais as matérias você quer adicionar ou retirar.',
-    'Repito que para ver as matérias que você optou por cursar, deve rever o formulário de rematrícula ou' + 
-    ' a matriz curricular do seu curso.', 'Basta me enviar "Formulário" ou "Matriz Curricular" se quiser' +
-    ' rever algum destes.', 'Esse processo será feito da seguinte maneira: Primeiramente você irá dizer ' + 
-    'se quer adicionar alguma matéria. Vou te mostrar as opções com base no ano da sua turma, e apresentarei os ' + 
-    'requisitos de cada matéria que você quiser adicionar. Caso você coloque a matéria mesmo sem ter os ' + 
-    'requisitos, o departamento não irá adicioná-la, então não tem problema errar nesse ponto.',
-     'Depois será feito o mesmo para as matérias ' + 
-    'que você for retirar. Além disso, não precisa se preocupar em adicionar/retirar todas de uma vez, ' + 
-    'mesmo já tendo terminado o processo, se o bot estiver ativo você pode vir novamente e pedir para ' + 
-    'ver as matérias que você escolheu, assim como para adicionar/retirar mais.',
-    'Vamos iniciar agora. Você está pronto para continuar?'],
+'txt':['Tudo certo. Agora nós começaremos o processo de adicionar/retirar matérias. Após cada requerimento' + 
+    ', isto é, sempre que você terminar de selecionar as matérias, você irá voltar para este ponto. Então não' +
+    ' precisa se preocupar caso adicionar ou retirar uma matéria errada, basta pedir para adicionar ou retirar' +
+    ' novamente.', 'Neste ponto, você também pode rever algumas informações suas, assim como a matriz curricular' + 
+    ' ou formulário de rematrícula. Basta me enviar "revisar" para ver um resumo de todas as informações que' + 
+    ' você me mandou, assim como todas as matérias que você escolheu retirar ou adicionar. Além disso, você' + 
+    ' pode me enviar "ver matriz curricular" ou "ver formulário" para revê-los.', 'Para continuarmos agora,'+
+    ' você pode me enviar "adicionar" ou "retirar" para selecionar as matérias.'],
 'full': new StepStuff([['~sim~']], [], []),
-'unf': new StepStuff([['matriz&curricular'], ['formulario']], [], [['Matriz curricular de cada curso:\n' + 
-    '> Administração (página 14): https://santaines.ifma.edu.br/wp-content/uploads/sites/14/2018/06/PROJETO-ADMINISTRA%C3%87%C3%83O.pdf\n' + 
-    '> Engenharia da Computação: https://santaines.ifma.edu.br/wp-content/uploads/sites/14/2019/03/matriz_curricular_enge_comp.pdf\n' + 
-    '> Física: https://santaines.ifma.edu.br/wp-content/uploads/sites/14/2019/02/matriz_curricular_fisica.pdf\n' + 
-    '> TCE: https://santaines.ifma.edu.br/wp-content/uploads/sites/14/2018/10/MatrizCurEdific.pdf',
-    'Quando estiver pronto para prosseguir, basta me mandar um "sim".'], ['O formulário de rematrícula pode ser encontrado aqui: ' +
-    'https://docs.google.com/forms/d/e/1FAIpQLSfW29Ml1eWBmltoX428vsH1cErALrac0NA8Ma3Mvu9BPSlONg/viewform?edit2=2_ABaOnud33HrxwsaUv_UQmUhruKOGVMUXjwiiRIKf8tbfKBvyD6PoGS5_4PVxwA03qw',
-    'Quando estiver pronto para prosseguir, basta me mandar um "sim".']]),
-'def':['Só dizer sim ou não para adicionar matérias, ou dizer "Matriz Curricular" ou "Formulário" para mais ' + 
-    'informações.'],
+'unf': new StepStuff([['matriz&curricular'], ['formulario'], ['revisar']], [], [['~getmatriz~',
+    'Quando estiver pronto para prosseguir, basta me mandar um "sim".'], ['O formulário de rematrícula'+
+    ' pode ser encontrado aqui: ~getformremat~'], ['Seus dados: ~userinfo~', '~discesc~', 'Basta me enviar '+
+    '"adicionar" ou "retirar" para continuarmos.']]),
+'def':['Só dizer alguma das opções para continuarmos.'],
 'from':[12],
-'to':[14]},
+'to':[14, 15]},
 
 {
-'txt':['Ok, neste ponto você poderá escolher se quer adicionar ou remover as disciplinas, ver quais você ' + 
-    'já escolheu além de poder rever suas informações.', 'Basta me enviar "Adicionar" ou "Retirar" para ' + 
-    'selecionar as matérias que você deseja adicionar ou retirar, ou me envie um "Revisar" para rever ' +
-    'o que você já escolheu, assim como rever suas informações.'],
+'txt':['Agora você poderá adicionar '],
 'full': new StepStuff([['adicionar'], ['retirar']], [], []),
 'unf': new StepStuff([['revisar']], [], [['Seus dados: ~userinfo~', '~discesc~', 'Basta me enviar '+
     '"Adicionar" ou "Retirar" para continuarmos.']]),
 'def':['Basta me enviar "Adicionar" ou "Retirar" para continuarmos.'],
 'from':[13],
-'to':[16]},
+'to':[15, 16]},
 
 {
-'txt':['Certo, por enquanto você colocou esta(s) disiciplina(s):\n~'],
+'txt':[''],
 'full': new StepStuff([['~nop~']], [], []),
 'unf': {},
 'def':['Por enquanto é só até aqui.'],
