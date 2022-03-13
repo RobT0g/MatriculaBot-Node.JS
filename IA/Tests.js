@@ -1,10 +1,13 @@
 import { database } from "./DataKeeper.js"
+import { ChatManager } from "./ChatManager.js"
+import { DataBase } from "./Utils.js"
+
+const data = new DataBase()
 
 const fc = async function(){
     await database.load()
-    let conn = await database.database.connect()
-    let data = await conn.query(`select * from extrainfo where tag = '~getmatriz~';`)
-    console.log(data[0])
+    await data.userRegister('123654')
+    console.log(await (data.newMessage('Ola', 'chat', '123654')))
 }
 fc(2)
 

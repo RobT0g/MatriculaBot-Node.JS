@@ -118,6 +118,7 @@ class TagAnalyzer{
             }),
             '~discnome~': ((msg) => {return [false, '']}),
             '1-wrd'     : ((msg) => {return [msg.wrdslen == 1, '']}),
+            '~matnums~' : ((msg) => {return msg.msgbody.match(/\d+/g)}),
             '~def~'     : ((msg) => {return [true, '']}),
             '~nop~'     : ((msg) => {return [false, '']})
         }
