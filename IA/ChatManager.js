@@ -128,11 +128,8 @@ class TagAnalyzer{
         this.keyword = ((msg, tag) => //SO ANALISA UM CONJUNTO DE KEYWORDS POR VEZ
             {return [!tag.split(/[&]/g).some((j) => !(new RegExp(j, 'g').test(msg.filterMsg.toLowerCase()))), '']})
         this.actions = {
-            'goBack': (obj) => {try {
-                    obj.goBack()
-                }catch(err) {
-                    console.log(err)
-                }
+            'goBack': (obj) => {
+                obj.goBack()
             },
             'register': (obj, ...args) => {
             }
@@ -236,14 +233,14 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
     newMessage = async function(msg){     //Chamado quando uma mensagem é recebida
         try{
             let stepTags = this.step.fullfill.getTags()             //[[full1Tag1, full1Tag2], [full2Tag1]]
-            let tagInfo =  this.getTagInfo(stepTags, msg)      //[[f1Res+Data], [f2Res+Data]]
+            let tagInfo =  this.getTagInfo(stepTags, msg)           //[[f1Res, Data], [f2Res, Data]]
             let outcomes = tagInfo.map((i) => i[0])                 //[fullfill1_Res, fullfill2_Res]
             if(![0, 1].includes(outcomes.filter((i) => i==true).length)){   //Para testes
                 console.log('PROBLEMA AQUI, MULTIPLA CONDIÇÃO DE FULLFILL ENCONTRADA!')
             }
             let act = chat.getActions(this.talkat)
             if(outcomes.includes(true))
-                return await this.fullfillStep(stepTags, tagInfo, outcomes, act.full)
+                return await this.fullfillStep(stepTags, tagInfo, act.full)
             return await this.unfullfillStep(act.unf, msg)
         } catch(err){
             console.log(err)
@@ -251,9 +248,9 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
         }
     }
 
-    fullfillStep = async function(tag, info, out, act){
+    fullfillStep = async function(tag, info, act){
         //Chamada quando um step é fullfill
-        let opt = out.indexOf(true)
+        let opt = info.map((i) => i[0]).indexOf(true)
         try{
             if(act[opt])
                 tags.handleAction(this, act[opt], tag)
