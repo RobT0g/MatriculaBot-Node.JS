@@ -31,6 +31,11 @@ class StepStuff{
  * {txt, full, unf(estes dois são instancias de StepStuff), def, from, to}
  */
 
+let basicMatSulUnf = new StepStuff([['matriz&curricular'], ['formulario'], ['revisar']], [], [['~getmatriz~',
+'Quando estiver pronto para prosseguir, basta me mandar um "sim".'], ['O formulário de rematrícula'+
+' pode ser encontrado aqui: ~getformremat~'], ['Seus dados: ~userinfo~', '~discesc~', 'Basta me enviar '+
+'"adicionar" ou "retirar" para continuarmos.']])
+
 messages.push(...[{
 'txt':['Olá! Sou um bot programado para auxiliar o processo de matrícula do IFMA.',
     'Você gostaria de fazer alterações em sua matrícula?'],
@@ -163,10 +168,7 @@ messages.push(...[{
     ' pode me enviar "ver matriz curricular" ou "ver formulário" para revê-los.', 'Para continuarmos agora,'+
     ' você pode me enviar "adicionar" ou "retirar" para selecionar as matérias.'],
 'full': new StepStuff([['adicionar'], ['retirar']], [], []),
-'unf': new StepStuff([['matriz&curricular'], ['formulario'], ['revisar']], [], [['~getmatriz~',
-    'Quando estiver pronto para prosseguir, basta me mandar um "sim".'], ['O formulário de rematrícula'+
-    ' pode ser encontrado aqui: ~getformremat~'], ['Seus dados: ~userinfo~', '~discesc~', 'Basta me enviar '+
-    '"adicionar" ou "retirar" para continuarmos.']]),
+'unf': basicMatSulUnf,
 'def':['Só dizer alguma das opções para continuarmos.'],
 'from':[12],
 'to':[14, 15]},
@@ -178,11 +180,10 @@ messages.push(...[{
     ' requisitos para adicionar quaisquer dessas matérias.', '~recdisc~', 'Para selecionar as matérias' + 
     ' basta você me enviar os IDs das matérias (número que acompanha a matéria). Pode enviar vários de' + 
     ' uma vez.', 'Após você me enviar eu informarei os requisitos das matérias selecionadas e você terá' + 
-    ' a opção de confirmar a seleção ou selecionar novamente.', 'Se quiser, você pode enviar "voltar"' + 
+    ' a opção de confirmar a seleção ou voltar e selecionar novamente.', 'Se quiser, você pode enviar "voltar"' + 
     ' para voltar sem escolher nenhuma matéria.', 'Você pode escolher as matérias agora.'],
 'full': new StepStuff([['~matnums~'], ['voltar']], [], []),
-'unf': new StepStuff([['revisar']], [], [['Seus dados: ~userinfo~', '~discesc~', 'Basta me enviar '+
-    '"Adicionar" ou "Retirar" para continuarmos.']]),
+'unf': basicMatSulUnf,
 'def':['Basta me enviar "Adicionar" ou "Retirar" para continuarmos.'],
 'from':[13],
 'to':[17, 13]},
@@ -197,8 +198,7 @@ messages.push(...[{
     ' a opção de confirmar a seleção ou selecionar novamente.', 'Se quiser, você pode enviar "voltar"' + 
     ' para voltar sem escolher nenhuma matéria.', 'Você pode escolher as matérias agora.'],
 'full': new StepStuff([['~matnums~'], ['voltar']], [], []),
-'unf': new StepStuff([['revisar']], [], [['Seus dados: ~userinfo~', '~discesc~', 'Basta me enviar '+
-    '"Adicionar" ou "Retirar" para continuarmos.']]),
+'unf': basicMatSulUnf,
 'def':['Basta me enviar "Adicionar" ou "Retirar" para continuarmos.'],
 'from':[13],
 'to':[18, 13]},

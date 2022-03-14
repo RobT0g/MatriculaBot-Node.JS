@@ -7,8 +7,6 @@ const data = new DataBase()
 const fc = async function(){
     await database.load()
     await data.userRegister('123654')
-    console.log(await (data.newMessage('Ola', 'chat', '123654')))
+    console.log(await (data.newMessage('adicionar', 'chat', '123654')))
 }
 fc(2)
-
-

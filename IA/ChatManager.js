@@ -118,12 +118,25 @@ class TagAnalyzer{
             }),
             '~discnome~': ((msg) => {return [false, '']}),
             '1-wrd'     : ((msg) => {return [msg.wrdslen == 1, '']}),
-            '~matnums~' : ((msg) => {return msg.msgbody.match(/\d+/g)}),
+            '~matnums~' : ((msg) => {
+                let nums = msg.msgbody.match(/\d+/g)
+                return nums?[true, nums]:[false, '']
+            }),
             '~def~'     : ((msg) => {return [true, '']}),
             '~nop~'     : ((msg) => {return [false, '']})
         }
         this.keyword = ((msg, tag) => //SO ANALISA UM CONJUNTO DE KEYWORDS POR VEZ
             {return [!tag.split(/[&]/g).some((j) => !(new RegExp(j, 'g').test(msg.filterMsg.toLowerCase()))), '']})
+        this.actions = {
+            'goBack': (obj) => {try {
+                    obj.goBack()
+                }catch(err) {
+                    console.log(err)
+                }
+            },
+            'register': (obj, ...args) => {
+            }
+        }
     }
 
     getTag(tag, msg){
@@ -165,6 +178,14 @@ class TagAnalyzer{
         //Pega a data no formato ['dia', 'mes', 'ano'] (números) e a transforma em string dia/mes/ano
         return `${data[0].length == 1?'0'+data[0]:data[0]}/` + 
         `${data[1].length == 1?'0'+data[1]:data[1]}/${data[2].length == 2?'19'+data[2]:data[2]}`
+    }
+
+    handleAction(obj, tag, ...args){
+        try{
+            this.actions[tag](obj, args)
+        } catch(err){
+            console.log(err)
+        }
     }
 }
 
@@ -234,6 +255,8 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
         //Chamada quando um step é fullfill
         let opt = out.indexOf(true)
         try{
+            if(act[opt])
+                tags.handleAction(this, act[opt], tag)
             if(act[opt] === 'register'){
                 let data = new Object()
                 data[tags.columns[tag[opt][0]]] = info[opt][1]
