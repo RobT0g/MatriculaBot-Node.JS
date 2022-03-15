@@ -252,8 +252,8 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
         //Chamada quando um step é fullfill
         let opt = info.map((i) => i[0]).indexOf(true)
         try{
-            if(act[opt])
-                tags.handleAction(this, act[opt], tag)
+            //if(act[opt])
+            //    tags.handleAction(this, act[opt], tag)
             if(act[opt] === 'register'){
                 let data = new Object()
                 data[tags.columns[tag[opt][0]]] = info[opt][1]
