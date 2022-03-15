@@ -118,11 +118,22 @@ class TagAnalyzer{
             }),
             '~discnome~': ((msg) => {return [false, '']}),
             '1-wrd'     : ((msg) => {return [msg.wrdslen == 1, '']}),
+            '~matnums~' : ((msg) => {
+                let nums = msg.msgbody.match(/\d+/g)
+                return nums?[true, nums]:[false, '']
+            }),
             '~def~'     : ((msg) => {return [true, '']}),
             '~nop~'     : ((msg) => {return [false, '']})
         }
         this.keyword = ((msg, tag) => //SO ANALISA UM CONJUNTO DE KEYWORDS POR VEZ
             {return [!tag.split(/[&]/g).some((j) => !(new RegExp(j, 'g').test(msg.filterMsg.toLowerCase()))), '']})
+        this.actions = {
+            'goBack': (obj) => {
+                obj.goBack()
+            },
+            'register': (obj, ...args) => {
+            }
+        }
     }
 
     getTag(tag, msg){
@@ -164,6 +175,14 @@ class TagAnalyzer{
         //Pega a data no formato ['dia', 'mes', 'ano'] (números) e a transforma em string dia/mes/ano
         return `${data[0].length == 1?'0'+data[0]:data[0]}/` + 
         `${data[1].length == 1?'0'+data[1]:data[1]}/${data[2].length == 2?'19'+data[2]:data[2]}`
+    }
+
+    handleAction(obj, tag, ...args){
+        try{
+            this.actions[tag](obj, args)
+        } catch(err){
+            console.log(err)
+        }
     }
 }
 
@@ -214,14 +233,14 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
     newMessage = async function(msg){     //Chamado quando uma mensagem é recebida
         try{
             let stepTags = this.step.fullfill.getTags()             //[[full1Tag1, full1Tag2], [full2Tag1]]
-            let tagInfo =  this.getTagInfo(stepTags, msg)      //[[f1Res+Data], [f2Res+Data]]
+            let tagInfo =  this.getTagInfo(stepTags, msg)           //[[f1Res, Data], [f2Res, Data]]
             let outcomes = tagInfo.map((i) => i[0])                 //[fullfill1_Res, fullfill2_Res]
             if(![0, 1].includes(outcomes.filter((i) => i==true).length)){   //Para testes
                 console.log('PROBLEMA AQUI, MULTIPLA CONDIÇÃO DE FULLFILL ENCONTRADA!')
             }
             let act = chat.getActions(this.talkat)
             if(outcomes.includes(true))
-                return await this.fullfillStep(stepTags, tagInfo, outcomes, act.full)
+                return await this.fullfillStep(stepTags, tagInfo, act.full)
             return await this.unfullfillStep(act.unf, msg)
         } catch(err){
             console.log(err)
@@ -229,10 +248,12 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
         }
     }
 
-    fullfillStep = async function(tag, info, out, act){
+    fullfillStep = async function(tag, info, act){
         //Chamada quando um step é fullfill
-        let opt = out.indexOf(true)
+        let opt = info.map((i) => i[0]).indexOf(true)
         try{
+            //if(act[opt])
+            //    tags.handleAction(this, act[opt], tag)
             if(act[opt] === 'register'){
                 let data = new Object()
                 data[tags.columns[tag[opt][0]]] = info[opt][1]

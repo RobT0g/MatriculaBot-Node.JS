@@ -28,8 +28,13 @@ class StepStuff{
  * bloco. A composição dos itens do array é:
  *  {from, to, step(array com os steps)}
  * Já os steps, são configurados no formato:
- *  {txt, full, unf(estes dois são instancias de StepStuff), def, from, to}
+ * {txt, full, unf(estes dois são instancias de StepStuff), def, from, to}
  */
+
+let basicMatSulUnf = new StepStuff([['matriz&curricular'], ['formulario'], ['revisar']], [], [['~getmatriz~',
+'Quando estiver pronto para prosseguir, basta me mandar um "sim".'], ['O formulário de rematrícula'+
+' pode ser encontrado aqui: ~getformremat~'], ['Seus dados: ~userinfo~', '~discesc~', 'Basta me enviar '+
+'"adicionar" ou "retirar" para continuarmos.']])
 
 messages.push(...[{
 'txt':['Olá! Sou um bot programado para auxiliar o processo de matrícula do IFMA.',
@@ -162,31 +167,41 @@ messages.push(...[{
     ' você me mandou, assim como todas as matérias que você escolheu retirar ou adicionar. Além disso, você' + 
     ' pode me enviar "ver matriz curricular" ou "ver formulário" para revê-los.', 'Para continuarmos agora,'+
     ' você pode me enviar "adicionar" ou "retirar" para selecionar as matérias.'],
-'full': new StepStuff([['~sim~']], [], []),
-'unf': new StepStuff([['matriz&curricular'], ['formulario'], ['revisar']], [], [['~getmatriz~',
-    'Quando estiver pronto para prosseguir, basta me mandar um "sim".'], ['O formulário de rematrícula'+
-    ' pode ser encontrado aqui: ~getformremat~'], ['Seus dados: ~userinfo~', '~discesc~', 'Basta me enviar '+
-    '"adicionar" ou "retirar" para continuarmos.']]),
+'full': new StepStuff([['adicionar'], ['retirar']], [], []),
+'unf': basicMatSulUnf,
 'def':['Só dizer alguma das opções para continuarmos.'],
 'from':[12],
 'to':[14, 15]},
 
 {
-'txt':['Agora você poderá adicionar '],
-'full': new StepStuff([['adicionar'], ['retirar']], [], []),
-'unf': new StepStuff([['revisar']], [], [['Seus dados: ~userinfo~', '~discesc~', 'Basta me enviar '+
-    '"Adicionar" ou "Retirar" para continuarmos.']]),
+'txt':['Aqui nós começaremos a selecionar as matérias para adicionar. Irei listar algumas matérias' + 
+    ' recomendadas para você adicionar com base no seu curso e ano de turma.', 
+    'Caso você tenha cursado regularmente e não tenha reprovado em nenhuma matéria, você terá todos os' + 
+    ' requisitos para adicionar quaisquer dessas matérias.', '~recdisc~', 'Para selecionar as matérias' + 
+    ' basta você me enviar os IDs das matérias (número que acompanha a matéria). Pode enviar vários de' + 
+    ' uma vez.', 'Após você me enviar eu informarei os requisitos das matérias selecionadas e você terá' + 
+    ' a opção de confirmar a seleção ou voltar e selecionar novamente.', 'Se quiser, você pode enviar "voltar"' + 
+    ' para voltar sem escolher nenhuma matéria.', 'Você pode escolher as matérias agora.'],
+'full': new StepStuff([['~matnums~'], ['voltar']], [], []),
+'unf': basicMatSulUnf,
 'def':['Basta me enviar "Adicionar" ou "Retirar" para continuarmos.'],
 'from':[13],
-'to':[15, 16]},
+'to':[17, 13]},
 
 {
-'txt':[''],
-'full': new StepStuff([['~nop~']], [], []),
-'unf': {},
-'def':['Por enquanto é só até aqui.'],
-'from':[14],
-'to':[14]},
+'txt':['Aqui nós começaremos a selecionar as matérias para adicionar. Irei listar algumas matérias' + 
+    ' recomendadas para você adicionar com base no seu curso e ano de turma.', 
+    'Caso você tenha cursado regularmente e não tenha reprovado em nenhuma matéria, você terá todos os' + 
+    ' requisitos para adicionar quaisquer dessas matérias.', '~recdisc~', 'Para selecionar as matérias' + 
+    ' basta você me enviar os IDs das matérias (número que acompanha a matéria). Pode enviar vários de' + 
+    ' uma vez.', 'Após você me enviar eu informarei os requisitos das matérias selecionadas e você terá' + 
+    ' a opção de confirmar a seleção ou selecionar novamente.', 'Se quiser, você pode enviar "voltar"' + 
+    ' para voltar sem escolher nenhuma matéria.', 'Você pode escolher as matérias agora.'],
+'full': new StepStuff([['~matnums~'], ['voltar']], [], []),
+'unf': basicMatSulUnf,
+'def':['Basta me enviar "Adicionar" ou "Retirar" para continuarmos.'],
+'from':[13],
+'to':[18, 13]},
 
 {
 'txt':['Aqui a gente para.'],
