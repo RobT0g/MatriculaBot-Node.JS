@@ -26,6 +26,7 @@ class DatabaseCore{
 
 class FormatedData{
     constructor(){
+        this.registerFields = {'~datanas~':'nascimento', '~mat~':'matricula', '~ano~': 'turma'}
         this.cursosName = ['Administração', 'Engenharia da Computação', 'Física', 'Construção de Edifícios']
         this.cursos = ['adm', 'ec', 'fis', 'tce']
         this.simpleSQL = "select what from cadastro where numero = '-num-';"
@@ -159,8 +160,17 @@ class DataBaseAccess{
         }
     }
 
-    updateUser = async function(num, obj){
-        console.log(obj)
+    updateUser = async function(num, objInit){
+        //console.log(obj)
+        let keys = Object.keys(objInit)
+        let obj = {}
+        //Acho que isso vai ser meio desnecessário
+        keys.forEach((i) => {
+            if(i in fd.registerFields)
+                obj[fd.registerFields[i]] = objInit[i]
+            else
+                obj[i.slice(1, -1)] = objInit[i]
+        })
         let conn = await this.database.connect()
         console.log(obj)
         let line = Object.keys(obj).reduce((acc, i) => {acc += `${i} = '${obj[i]}', `; 
