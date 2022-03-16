@@ -2,10 +2,15 @@ import { mysql } from '../Dependencies/Index.js'
 
 class FormatedData{
     constructor(){
-        this.registerFields = {'~datanas~':'nascimento', '~mat~':'matricula', '~ano~': 'turma'}
-        this.tables = {'cadastro': ['']}
         this.cursosName = ['Administração', 'Engenharia da Computação', 'Física', 'Construção de Edifícios']
         this.cursos = ['adm', 'ec', 'fis', 'tce']
+        //============== Get Info ==============//
+        this.registerFields = {'~datanas~':'nascimento', '~mat~':'matricula', '~ano~': 'turma', 
+            '~addmatnums~': 'discId'}
+        this.tables = {'cadastro': ['matricula', 'nome', 'email', 'curso', 'turma', 'cpf'], 'user-curso-'
+            :[]}
+        this.registerSQL = 'update -database- set -info- where -identifier-;'
+        //============== Set Info ==============//
         this.simpleSQL = "select what from cadastro where numero = '-num-';"
         this.simpleExtraInfo = "select text from extrainfo where tag = 'request';"
         this.sql = {
@@ -102,8 +107,6 @@ const fd = new FormatedData()
 class DataBaseAccess{
     constructor(){
         this.loaded = false
-        this.cursosName = ['Administração', 'Engenharia da Computação', 'Física', 'Construção de Edifícios']
-        this.cursos = ['adm', 'ec', 'fis', 'tce']
     }
 
     connect = async function(){
@@ -154,20 +157,11 @@ class DataBaseAccess{
         }
     }
 
-    updateUser = async function(num, objInit){
-        //console.log(obj)
-        let keys = Object.keys(objInit)
-        let obj = {}
-        //Acho que isso vai ser meio desnecessário
-        keys.forEach((i) => {
-            if(i in fd.registerFields)
-                obj[fd.registerFields[i]] = objInit[i]
-            else
-                obj[i.slice(1, -1)] = objInit[i]
-        })
+    updateUser = async function(num, obj){
         let conn = await this.connect()
         console.log(obj)
-        let line = Object.keys(obj).reduce((acc, i) => {acc += `${i} = '${obj[i]}', `; 
+        let line = Object.keys(obj).reduce((acc, i) => {acc += 
+            `${i in fd.registerFields?(fd.registerFields[i]):i.slice(1, -1)} = '${obj[i]}', `; 
             return acc}, '').slice(0, -2)
         try{
             await conn.query(`update cadastro set ${line} where numero = '${num}';`)
@@ -213,6 +207,27 @@ class DataBaseAccess{
             console.log('Erro no setDataOntoText (database).\n', err)
         }
         return msgs
+    }
+
+    registerDiscs = async function(num, items, add){
+        let info = await this.getUserInfo(num)
+        let conn = await this.connect()
+        try{
+            let discs = await conn.query(`select discId, adicionar from user_${fd.cursos[(info.curso)]} 
+                where matricula = '${info.matricula}';`)[0]
+            let addOrDel = [[], []]/*
+            if(add){
+                let line = `insert into user_${fd.cursos[(info.curso)]} values ${items.reduce((acc, i) => {
+                    acc += `(default, '${info.matricula}', '${i}', '${'1'}'),`
+                    return acc
+                }, '').slice(0, -1)};`
+                await conn.query(line)
+                return
+            }*/
+        } catch(err){
+            console.log('Erro em registerDiscs.\n', err)
+        }
+        await conn.query(line)
     }
 }
 

@@ -4,10 +4,7 @@ import { DataBase } from "./Utils.js"
 
 const data = new DataBase()
 let obj = {'nome': 'Robson', 'idade': '19'}
-console.log(Object.keys(obj).reduce((acc, i) => {
-    acc += `${i} = '${obj[i]}', `
-    return acc
-}, '').slice(0, -2))
+console.log(obj)
 /*
 const fc = async function(){
     await database.load()

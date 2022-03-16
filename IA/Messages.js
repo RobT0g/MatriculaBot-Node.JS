@@ -182,7 +182,7 @@ messages.push(...[{
     ' uma vez.', 'Após você me enviar eu informarei os requisitos das matérias selecionadas e você terá' + 
     ' a opção de confirmar a seleção ou voltar e selecionar novamente.', 'Se quiser, você pode enviar "voltar"' + 
     ' para voltar sem escolher nenhuma matéria.', 'Você pode escolher as matérias agora.'],
-'full': new StepStuff([['~matnums~'], ['voltar']], [], []),
+'full': new StepStuff([['~matnums~'], ['add_discs']], [], []),
 'unf': basicMatSulUnf,
 'def':['Basta me enviar "Adicionar" ou "Retirar" para continuarmos.'],
 'from':[13],
@@ -197,7 +197,7 @@ messages.push(...[{
     ' uma vez.', 'Após você me enviar eu informarei os requisitos das matérias selecionadas e você terá' + 
     ' a opção de confirmar a seleção ou selecionar novamente.', 'Se quiser, você pode enviar "voltar"' + 
     ' para voltar sem escolher nenhuma matéria.', 'Você pode escolher as matérias agora.'],
-'full': new StepStuff([['~matnums~'], ['voltar']], [], []),
+'full': new StepStuff([['~matnums~'], ['del_discs']], [], []),
 'unf': basicMatSulUnf,
 'def':['Basta me enviar "Adicionar" ou "Retirar" para continuarmos.'],
 'from':[13],

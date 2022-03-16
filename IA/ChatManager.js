@@ -127,13 +127,21 @@ class TagAnalyzer{
             {return [!tag.split(/[&]/g).some((j) => !(new RegExp(j, 'g').test(msg.filterMsg.toLowerCase()))), '']})
         this.actions = {
             'goBack': async (obj) => {
-                obj.goBack()
+                await obj.goBack()
             },
-            'register': async (obj, tag) => {
+            'register': async (obj, tag, args) => {
                 let data = new Object()
-                data[tag] = info[1]
-                await database.updateUser(this.num, data)
-            }
+                data[tag] = args.info[1]
+                await database.updateUser(obj.num, data)
+            },
+            'add_discs' : async (obj, tag, args) => {
+                let data = args.info[1]
+                await database.registerDiscs(obj.num, data, true)
+            }, 
+            'del_discs' : async (obj, tag, args) => {
+                let data = args.info[1]
+                await database.registerDiscs(obj.num, data, false)
+            }, 
         }
     }
 
@@ -250,11 +258,11 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
         try{
             if(act)
                 await tags.handleAction(this, tag, {info, act})
-            if(act === 'register'){
+            /*if(act === 'register'){
                 let data = new Object()
                 data[tags.columns[tag[0]]] = info[1]
                 await database.updateUser(this.num, data)
-            }
+            }*/
         } catch(err){
             console.log('Erro ao chamar o registro do banco de dados.\n', err)
         }
