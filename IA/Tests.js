@@ -3,7 +3,11 @@ import { ChatManager } from "./ChatManager.js"
 import { DataBase } from "./Utils.js"
 
 const data = new DataBase()
-console.log('abcde'.slice(1, -1))
+let obj = {'nome': 'Robson', 'idade': '19'}
+console.log(Object.keys(obj).reduce((acc, i) => {
+    acc += `${i} = '${obj[i]}', `
+    return acc
+}, '').slice(0, -2))
 /*
 const fc = async function(){
     await database.load()
