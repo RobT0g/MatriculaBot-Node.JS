@@ -3,13 +3,12 @@ import { ChatManager } from "./ChatManager.js"
 import { DataBase } from "./Utils.js"
 
 const data = new DataBase()
-let obj = {'nome': 'Robson', 'idade': '19'}
-console.log(obj)
+console.log('abc; abc; abd;'.split(';'))
 /*
 const fc = async function(){
     await database.load()
-    await data.userRegister('123654')
-    console.log(await (data.newMessage('adicionar', 'chat', '123654')))
+    let conn = await database.connect()
+    console.log((await conn.query('select * from disc_ec;'))[0])
 }
 fc(2)
 */

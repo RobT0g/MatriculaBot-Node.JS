@@ -215,15 +215,29 @@ class DataBaseAccess{
         try{
             let discs = await conn.query(`select discId, adicionar from user_${fd.cursos[(info.curso)]} 
                 where matricula = '${info.matricula}';`)[0]
-            let addOrDel = [[], []]/*
-            if(add){
-                let line = `insert into user_${fd.cursos[(info.curso)]} values ${items.reduce((acc, i) => {
-                    acc += `(default, '${info.matricula}', '${i}', '${'1'}'),`
-                    return acc
-                }, '').slice(0, -1)};`
-                await conn.query(line)
-                return
-            }*/
+            let modifier = {add: [], del: []}
+            let ondb = []
+            discs.forEach((i) => {
+                if(items.includes(i.discId)){
+                    if((i.adicionar === '1') !== add)
+                        modifier['del'] = i.discId
+                    else
+                        ondb.push(i.discId)
+                }
+            })
+            items.forEach((i) => {
+                if(!(ondb.includes(i))){
+                    modifier.add.push(i)
+                }
+            })
+            let sql = `insert into user_${fd.cursos[(info.curso)]} values ${modifier.add.reduce((acc, i) => {
+                acc += (`(default, '${info.matricula}', '${i}', '${add?'1':'0'}'), `);
+                return acc;
+            }, '').slice(0, -2)}; delete from user_${fd.cursos[(info.curso)]} where ${modifier.del.
+                reduce((acc, i) => {
+                    acc += `discId = '${i}' or `
+                }, '').slice(0, -4)};`
+            await conn.query(`insert into inst_save value (default, '${info.matricula}', '${sql}')`)
         } catch(err){
             console.log('Erro em registerDiscs.\n', err)
         }
