@@ -214,15 +214,16 @@ class DataBaseAccess{
         let conn = await this.connect()
         try{
             let discs = await conn.query(`select discId, adicionar from user_${fd.cursos[(info.curso)]} 
-                where matricula = '${info.matricula}';`)[0]
+                where matricula = '${info.matricula}';`)
             let modifier = {add: [], del: []}
             let ondb = []
-            discs.forEach((i) => {
-                if(items.includes(i.discId)){
-                    if((i.adicionar === '1') !== add)
-                        modifier['del'] = i.discId
+            //console.log(discs[0])
+            discs[0].forEach((i) => {
+                if(items.includes(String(i.discId))){
+                    if((i.adicionar == '1') !== add)
+                        modifier.del.push(String(i.discId))
                     else
-                        ondb.push(i.discId)
+                        ondb.push(String(i.discId))
                 }
             })
             items.forEach((i) => {
@@ -230,18 +231,50 @@ class DataBaseAccess{
                     modifier.add.push(i)
                 }
             })
-            let sql = `insert into user_${fd.cursos[(info.curso)]} values ${modifier.add.reduce((acc, i) => {
-                acc += (`(default, '${info.matricula}', '${i}', '${add?'1':'0'}'), `);
-                return acc;
-            }, '').slice(0, -2)}; delete from user_${fd.cursos[(info.curso)]} where ${modifier.del.
-                reduce((acc, i) => {
-                    acc += `discId = '${i}' or `
+            /*
+            console.log(discs[0])
+            console.log(ondb)
+            console.log(modifier)
+            return*/
+            let sql = ''
+            if(modifier.del.length > 0){
+                sql += ` delete from user_${fd.cursos[(info.curso)]} where ${modifier.del.reduce((acc, i) => {
+                    acc += `discId = "${i}" or `;
+                    return acc
                 }, '').slice(0, -4)};`
+            }
+            sql += `insert into user_${fd.cursos[(info.curso)]} values ${modifier.add.reduce((acc, i) => {
+                acc += (`(default, "${info.matricula}", "${i}", "${add?'1':'0'}"), `);
+                return acc;
+            }, '').slice(0, -2)};`
+            console.log(sql)
             await conn.query(`insert into inst_save value (default, '${info.matricula}', '${sql}')`)
         } catch(err){
             console.log('Erro em registerDiscs.\n', err)
         }
-        await conn.query(line)
+    }
+
+    effetivate = async function(num){
+        try{
+            let info = await this.getUserInfo(num)
+            let conn = await this.connect()
+            let sql = (await conn.query(`select query from inst_save where matricula = '${info.matricula}';`)
+                )[0][0].query.split(';')
+            sql.pop()
+            for(let i in sql){
+                await conn.query(sql[i].replaceAll(`"`, `'`) + ';')
+            }
+            await conn.query(`delete from inst_save where matricula = '${info.matricula}';`)  
+        } catch(err){
+            console.log('Erro no effetivate.\n', err)
+        }
+        
+    }
+
+    uploadIntoInstSave  = async function(num, sql){
+        let info = await this.getUserInfo(num)
+        let conn = await this.connect()
+        await conn.query(`insert into inst_save values (default, '${info.matricula}', '${sql}');`)
     }
 }
 

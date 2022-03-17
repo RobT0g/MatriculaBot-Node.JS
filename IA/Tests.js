@@ -3,12 +3,13 @@ import { ChatManager } from "./ChatManager.js"
 import { DataBase } from "./Utils.js"
 
 const data = new DataBase()
-console.log('abc; abc; abd;'.split(';'))
-/*
+//console.log('abcdjnaisbafbianda'.replaceAll('a', '0'))
+
 const fc = async function(){
     await database.load()
-    let conn = await database.connect()
-    console.log((await conn.query('select * from disc_ec;'))[0])
+    await database.registerDiscs('123654', ['23', '14'], false)
+    await database.effetivate('123654')
+    await database.registerDiscs('123654', ['10', '35', '37', '41'], true)
+    await database.effetivate('123654')
 }
 fc(2)
-*/
