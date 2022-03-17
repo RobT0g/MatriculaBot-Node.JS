@@ -15,8 +15,6 @@ import { database } from './DataKeeper.js'
 */
 class TagAnalyzer{
     constructor(){
-        this.columns = {'~nome~': 'nome', '~cpf~': 'cpf', '~datanas~':'nascimento', '~mat~':'matricula', '~email~':'email', 
-            '~curso~': 'curso', '~ano~': 'turma'}
         this.tagfunc = {
             '~sim~'     : ((msg) => {return [msg.positive, '']}),
             '~nao~'     : ((msg) => {return [msg.negative, '']}),
@@ -128,11 +126,22 @@ class TagAnalyzer{
         this.keyword = ((msg, tag) => //SO ANALISA UM CONJUNTO DE KEYWORDS POR VEZ
             {return [!tag.split(/[&]/g).some((j) => !(new RegExp(j, 'g').test(msg.filterMsg.toLowerCase()))), '']})
         this.actions = {
-            'goBack': (obj) => {
-                obj.goBack()
+            'goBack': async (obj) => {
+                await obj.goBack()
             },
-            'register': (obj, ...args) => {
-            }
+            'register': async (obj, tag, args) => {
+                let data = new Object()
+                data[tag] = args.info[1]
+                await database.updateUser(obj.num, data)
+            },
+            'add_discs' : async (obj, tag, args) => {
+                let data = args.info[1]
+                await database.registerDiscs(obj.num, data, true)
+            }, 
+            'del_discs' : async (obj, tag, args) => {
+                let data = args.info[1]
+                await database.registerDiscs(obj.num, data, false)
+            }, 
         }
     }
 
@@ -177,9 +186,9 @@ class TagAnalyzer{
         `${data[1].length == 1?'0'+data[1]:data[1]}/${data[2].length == 2?'19'+data[2]:data[2]}`
     }
 
-    handleAction(obj, tag, ...args){
+    handleAction = async function (obj, tag, args){
         try{
-            this.actions[tag](obj, args)
+            await this.actions[tag](obj, tag, args)
         } catch(err){
             console.log(err)
         }
@@ -225,11 +234,6 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
         }, [false, '']))
     }
 
-    //Esse sistema aqui vai dar dor de cabeça mais a frente. Um step só pode pegar um tipo de dado? Isso
-    //pode deixar o bot um pouco mais reduntante, tendo que perguntar o que ele vai receber sempre
-    //Talvez no futuro dê pra fazer um sistema em que um step pode ser representado por mais de um step
-    //pra pegar mais de um tipo de informação
-
     newMessage = async function(msg){     //Chamado quando uma mensagem é recebida
         try{
             let stepTags = this.step.fullfill.getTags()             //[[full1Tag1, full1Tag2], [full2Tag1]]
@@ -239,8 +243,9 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
                 console.log('PROBLEMA AQUI, MULTIPLA CONDIÇÃO DE FULLFILL ENCONTRADA!')
             }
             let act = chat.getActions(this.talkat)
-            if(outcomes.includes(true))
-                return await this.fullfillStep(stepTags, tagInfo, act.full)
+            let opt = outcomes.indexOf(true)
+            if(opt != -1)
+                return await this.fullfillStep(stepTags[opt], tagInfo[opt], act.full[opt], opt)
             return await this.unfullfillStep(act.unf, msg)
         } catch(err){
             console.log(err)
@@ -248,17 +253,16 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
         }
     }
 
-    fullfillStep = async function(tag, info, act){
+    fullfillStep = async function(tag, info, act, opt){
         //Chamada quando um step é fullfill
-        let opt = info.map((i) => i[0]).indexOf(true)
         try{
-            //if(act[opt])
-            //    tags.handleAction(this, act[opt], tag)
-            if(act[opt] === 'register'){
+            if(act)
+                await tags.handleAction(this, tag, {info, act})
+            /*if(act === 'register'){
                 let data = new Object()
-                data[tags.columns[tag[opt][0]]] = info[opt][1]
+                data[tags.columns[tag[0]]] = info[1]
                 await database.updateUser(this.num, data)
-            }
+            }*/
         } catch(err){
             console.log('Erro ao chamar o registro do banco de dados.\n', err)
         }

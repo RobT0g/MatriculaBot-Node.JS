@@ -1,33 +1,16 @@
 import { mysql } from '../Dependencies/Index.js'
 
-class DatabaseCore{
-    constructor(dbName){
-        this.dbName = dbName
-    }
-
-    connect = async function(){
-        try{
-            if(this.con && this.con.state != 'disconnected')	//Isso garante que a conexão está ativa na execução
-                return this.con
-        } catch(err){
-            console.log(err)
-        }
-        const con = await mysql.createConnection({
-            host        : 'localhost',
-            user        : 'root',
-            password    : '',
-            database    : this.dbName
-        });	
-        this.con = con	
-        console.log('Conectado.')
-        return this.con
-    }
-}
-
 class FormatedData{
     constructor(){
         this.cursosName = ['Administração', 'Engenharia da Computação', 'Física', 'Construção de Edifícios']
         this.cursos = ['adm', 'ec', 'fis', 'tce']
+        //============== Get Info ==============//
+        this.registerFields = {'~datanas~':'nascimento', '~mat~':'matricula', '~ano~': 'turma', 
+            '~addmatnums~': 'discId'}
+        this.tables = {'cadastro': ['matricula', 'nome', 'email', 'curso', 'turma', 'cpf'], 'user-curso-'
+            :[]}
+        this.registerSQL = 'update -database- set -info- where -identifier-;'
+        //============== Set Info ==============//
         this.simpleSQL = "select what from cadastro where numero = '-num-';"
         this.simpleExtraInfo = "select text from extrainfo where tag = 'request';"
         this.sql = {
@@ -124,14 +107,29 @@ const fd = new FormatedData()
 class DataBaseAccess{
     constructor(){
         this.loaded = false
-        this.cursosName = ['Administração', 'Engenharia da Computação', 'Física', 'Construção de Edifícios']
-        this.cursos = ['adm', 'ec', 'fis', 'tce']
+    }
+
+    connect = async function(){
+        try{
+            if(this.con && this.con.state != 'disconnected')	//Isso garante que a conexão está ativa na execução
+                return this.con
+        } catch(err){
+            console.log(err)
+        }
+        const con = await mysql.createConnection({
+            host        : 'localhost',
+            user        : 'root',
+            password    : '',
+            database    : 'botdata'
+        });	
+        this.con = con	
+        console.log('Conectado.')
+        return this.con
     }
 
     load = async function() {
-        this.database = new DatabaseCore('botdata')
         this.disciplinasId = {}
-        let conn = await this.database.connect()
+        let conn = await this.connect()
         for(let i in this.cursos){
             this.disciplinasId[this.cursos[i]] = (((await conn.query(`select id from disc_${this.cursos[i]} 
             group by periodo;`))[0]).map((j) => j.id))
@@ -140,7 +138,7 @@ class DataBaseAccess{
     }
 
     getUserRegister = async function(num){
-        let conn = await this.database.connect()
+        let conn = await this.connect()
         try{
             return (await conn.query(`select talkat from cadastro where numero = '${num}';`))[0][0]
         } catch(err){
@@ -150,7 +148,7 @@ class DataBaseAccess{
     }
 
     addUser = async function(numero){
-        let conn = await this.database.connect()
+        let conn = await this.connect()
         try{
             await conn.query(`insert into cadastro (numero) value ('${numero}');`)
             console.log(`Usuário cadastrado!`)
@@ -160,10 +158,10 @@ class DataBaseAccess{
     }
 
     updateUser = async function(num, obj){
+        let conn = await this.connect()
         console.log(obj)
-        let conn = await this.database.connect()
-        console.log(obj)
-        let line = Object.keys(obj).reduce((acc, i) => {acc += `${i} = '${obj[i]}', `; 
+        let line = Object.keys(obj).reduce((acc, i) => {acc += 
+            `${i in fd.registerFields?(fd.registerFields[i]):i.slice(1, -1)} = '${obj[i]}', `; 
             return acc}, '').slice(0, -2)
         try{
             await conn.query(`update cadastro set ${line} where numero = '${num}';`)
@@ -174,7 +172,7 @@ class DataBaseAccess{
     }
 
     getUserInfo = async function(num){
-        let conn = await this.database.connect()
+        let conn = await this.connect()
         try{
             let data = (await conn.query(`select * from cadastro where numero = '${num}';`))[0][0]
             data.curso = data.curso?Number(data.curso)-1:null
@@ -200,7 +198,7 @@ class DataBaseAccess{
                 let tags = msgs[i].match(/[~]\w+[~]/g)
                 for(let j in tags){
                     let sql = fd.getSQL(tags[j], obj)
-                    let conn = await this.database.connect()
+                    let conn = await this.connect()
                     let data = (await conn.query(sql))[0]
                     msgs[i] = fd.formateData(msgs[i], data, tags[j])
                 }
@@ -209,6 +207,41 @@ class DataBaseAccess{
             console.log('Erro no setDataOntoText (database).\n', err)
         }
         return msgs
+    }
+
+    registerDiscs = async function(num, items, add){
+        let info = await this.getUserInfo(num)
+        let conn = await this.connect()
+        try{
+            let discs = await conn.query(`select discId, adicionar from user_${fd.cursos[(info.curso)]} 
+                where matricula = '${info.matricula}';`)[0]
+            let modifier = {add: [], del: []}
+            let ondb = []
+            discs.forEach((i) => {
+                if(items.includes(i.discId)){
+                    if((i.adicionar === '1') !== add)
+                        modifier['del'] = i.discId
+                    else
+                        ondb.push(i.discId)
+                }
+            })
+            items.forEach((i) => {
+                if(!(ondb.includes(i))){
+                    modifier.add.push(i)
+                }
+            })
+            let sql = `insert into user_${fd.cursos[(info.curso)]} values ${modifier.add.reduce((acc, i) => {
+                acc += (`(default, '${info.matricula}', '${i}', '${add?'1':'0'}'), `);
+                return acc;
+            }, '').slice(0, -2)}; delete from user_${fd.cursos[(info.curso)]} where ${modifier.del.
+                reduce((acc, i) => {
+                    acc += `discId = '${i}' or `
+                }, '').slice(0, -4)};`
+            await conn.query(`insert into inst_save value (default, '${info.matricula}', '${sql}')`)
+        } catch(err){
+            console.log('Erro em registerDiscs.\n', err)
+        }
+        await conn.query(line)
     }
 }
 
