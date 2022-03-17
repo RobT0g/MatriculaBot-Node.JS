@@ -243,6 +243,19 @@ class DataBaseAccess{
         }
         await conn.query(line)
     }
+
+    effetivate = async function(num){
+        try{
+            let info = await this.getUserInfo(num)
+            let conn = await this.connect()
+            let sql = await conn.query(`select query from inst_save where matricula = '${info.matricula}';`)
+            await conn.query(sql)
+            await conn.query(`delete from inst_save where matricula = '${info.matricula}';`)  
+        } catch(err){
+            console.log('Erro no effetivate.\n', err)
+        }
+        
+    }
 }
 
 const database = new DataBaseAccess()

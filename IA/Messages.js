@@ -204,6 +204,15 @@ messages.push(...[{
 'to':[18, 13]},
 
 {
+'txt':['Você selecionou essas matérias: ~inst_mat_sel~.', 'Está tudo certo com a seleção? Basta' + 
+    ' responder com "sim" ou "não".'],
+'full': new StepStuff([['~sim~'], ['effetivate']], [], []),
+'unf': new StepStuff([['~nao~']], [['goBack']], []),
+'def':['Basta me enviar "Adicionar" ou "Retirar" para continuarmos.'],
+'from':[13],
+'to':[17, 13]},
+
+{
 'txt':['Aqui a gente para.'],
 'full': new StepStuff([['~nop~']], [], []),
 'unf': new StepStuff([['~nao~']], ['goBack'], [['Ok, me envie o nome correto agora 🤨']]),

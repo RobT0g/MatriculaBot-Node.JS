@@ -142,6 +142,9 @@ class TagAnalyzer{
                 let data = args.info[1]
                 await database.registerDiscs(obj.num, data, false)
             }, 
+            'effetivate': async (obj, tag, args) => {
+                await database.effetivate(obj.num)
+            }, 
         }
     }
 
