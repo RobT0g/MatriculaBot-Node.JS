@@ -231,11 +231,6 @@ class DataBaseAccess{
                     modifier.add.push(i)
                 }
             })
-            /*
-            console.log(discs[0])
-            console.log(ondb)
-            console.log(modifier)
-            return*/
             let sql = ''
             if(modifier.del.length > 0){
                 sql += ` delete from user_${fd.cursos[(info.curso)]} where ${modifier.del.reduce((acc, i) => {
@@ -247,8 +242,11 @@ class DataBaseAccess{
                 acc += (`(default, "${info.matricula}", "${i}", "${add?'1':'0'}"), `);
                 return acc;
             }, '').slice(0, -2)};`
-            console.log(sql)
-            await conn.query(`insert into inst_save value (default, '${info.matricula}', '${sql}')`)
+            let exists = (await conn.query(`select * from inst_save where matricula = '${info.matricula}';`))[0].length == 0
+            if(exists)
+                await conn.query(`insert into inst_save value (default, '${info.matricula}', '${sql}')`)
+            else
+                await conn.query(`update inst_save set query = '${sql}' where matricula = '${info.matricula}';`)
         } catch(err){
             console.log('Erro em registerDiscs.\n', err)
         }
