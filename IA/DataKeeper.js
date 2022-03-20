@@ -1,5 +1,9 @@
 import { mysql } from '../Dependencies/Index.js'
 
+/** TODO
+ * Implementar testes para o uso de promises, o código não precisa esperar que o dado seja armazenado.
+ */
+
 class FormatedData{
     constructor(){
         this.cursosName = ['Administração', 'Engenharia da Computação', 'Física', 'Construção de Edifícios']
