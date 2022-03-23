@@ -35,7 +35,7 @@ async function start(client) {
             }
             if(await TextSender.notText(message, num, client))
                 return
-            await TextSender.delivText((await usersBank.newMessage(message.body, message.type, num)), num, client)
+            await TextSender.delivText((await usersBank.newMessage(message.body, num)), num, client)
         } catch(err){
             console.log(err)
         }

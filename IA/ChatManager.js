@@ -16,8 +16,11 @@ import { database } from './DataKeeper.js'
 class TagAnalyzer{
     constructor(){
         this.tagfunc = {
-            '~sim~'     : ((msg) => {return [msg.positive, '']}),
-            '~nao~'     : ((msg) => {return [msg.negative, '']}),
+            '~sim~'     : ((msg) => {return [(['sim', 'ok', 'certo', 'beleza', 'concordo'].some((x) => msg.wrds.includes(x)) || 
+            msg.wrds.includes('tudo') && msg.wrds.includes('bem')) &&
+            !msg.wrds.includes('nao'), '']}),
+            '~nao~'     : ((msg) => {return [(['nao', 'discordo', 'errado'].some((x) => msg.wrds.includes(x))) &&
+            !msg.wrds.includes('sim'), '']}),
             '~nome~'    : ((msg) => {
                 try{
                     if(msg.wrds.length > 1){
