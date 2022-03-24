@@ -16,8 +16,11 @@ import { database } from './DataKeeper.js'
 class TagAnalyzer{
     constructor(){
         this.tagfunc = {
-            '~sim~'     : ((msg) => {return [msg.positive, '']}),
-            '~nao~'     : ((msg) => {return [msg.negative, '']}),
+            '~sim~'     : ((msg) => {return [(['sim', 'ok', 'certo', 'beleza', 'concordo'].some((x) => msg.wrds.includes(x)) || 
+            msg.wrds.includes('tudo') && msg.wrds.includes('bem')) &&
+            !msg.wrds.includes('nao'), '']}),
+            '~nao~'     : ((msg) => {return [(['nao', 'discordo', 'errado'].some((x) => msg.wrds.includes(x))) &&
+            !msg.wrds.includes('sim'), '']}),
             '~nome~'    : ((msg) => {
                 try{
                     if(msg.wrds.length > 1){
@@ -156,9 +159,19 @@ class TagAnalyzer{
                 let res = this.tagfunc[tag](msg)
                 return  [!res[0], res[1]]
             }
-            if(/[*]/g.test(tag)){
-                let res = this.keyword(msg, tag.slice(1))
-                return [!res[0], res[1]]
+            if(/[&]|[*]/g.test(tag)){
+                let words = '&wrd*wrd1&wrd2'.split(/[&]|[*]/g).slice(1)
+                let specs = '&wrd*wrd1&wrd2'.match(/[&]|[*]/g)
+                let obj = {pres: [], nonp: []}
+                words.forEach((i, k) => {
+                    if(specs[k] === '&')
+                        obj.pres.push(i)
+                    else
+                        obj.nonp.push(i)
+                })
+                let res = obj.pres.reduce((acc, i) => {acc = (acc&&(this.keyword(i)[0])); return acc}, true) 
+                    && obj.nonp.reduce((acc, i) => {acc = (acc&&(!this.keyword(i)[0])); return acc}, true)
+                return [res[0], '']
             }
             return this.keyword(msg, tag)
         } catch(err) {

@@ -8,22 +8,11 @@ import {database} from './DataKeeper.js'
  */ 
 
 class Message{              //Guarda utilidades da mensagem recebida
-    constructor(str, type){
+    constructor(str){
         this.msgbody = str
         this.filterMsg = str.replace('ç', 'c').normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-        this.wrds = this.cleanText(str)
-        this.type = type
-        this.positive = (['sim', 'ok', 'certo', 'beleza', 'concordo'].some((x) => this.wrds.includes(x)) || 
-             this.wrds.includes('tudo') && this.wrds.includes('bem')) &&
-             !this.wrds.includes('nao')
-        this.negative = (['nao', 'discordo', 'errado'].some((x) => this.wrds.includes(x))) &&
-            !this.wrds.includes('sim')
-    }
-
-    cleanText(str){
-        let txt = str.replace('ç', 'c')
-        return txt.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-            .replace(/[^a-z]/g, ' ').split(' ').reduce((acc, i)=>{(!i=='')?acc.push(i):null; return acc},[])
+        this.wrds = this.filterMsg.toLowerCase().replace(/[^a-z]/g, ' ').split(' ')
+            .reduce((acc, i)=>{(!i=='')?acc.push(i):null; return acc},[])
     }
 }
 
@@ -50,8 +39,8 @@ class DataBase{                 //Guarda todos os usuários
         return 2
     }
 
-    newMessage = async function(msg, type, num){
-        let message = new Message(msg, type)
+    newMessage = async function(msg, num){
+        let message = new Message(msg)
         return await this.users[num].chat.newMessage(message, num)
     }
 }

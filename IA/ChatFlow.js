@@ -75,7 +75,7 @@ class ChatStep{             //Unidade mínima de conversação
 }
 
 let chat = new ChatFlow()
-messages.map((i) => {
+messages.forEach((i) => {
     chat.newStep = new ChatStep(i['txt'], i['full'], i['unf'], i['def'], i['from'], i['to'])
 })
 
