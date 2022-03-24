@@ -11,13 +11,8 @@ class Message{              //Guarda utilidades da mensagem recebida
     constructor(str){
         this.msgbody = str
         this.filterMsg = str.replace('ç', 'c').normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-        this.wrds = this.cleanText(str)
-    }
-
-    cleanText(str){
-        let txt = str.replace('ç', 'c')
-        return txt.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-            .replace(/[^a-z]/g, ' ').split(' ').reduce((acc, i)=>{(!i=='')?acc.push(i):null; return acc},[])
+        this.wrds = this.filterMsg.toLowerCase().replace(/[^a-z]/g, ' ').split(' ')
+            .reduce((acc, i)=>{(!i=='')?acc.push(i):null; return acc},[])
     }
 }
 
