@@ -31,7 +31,7 @@ class TextSender{
     }
 
     static unvalidNumber(num){
-        return !(/\d+[@]/g.test(num))
+        return !(/\d+@\w*.us/g.test(num))
     }
 }
 
