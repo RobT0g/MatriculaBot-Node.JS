@@ -5,7 +5,8 @@ import { database } from './IA/DataKeeper.js'
 
 
 /** TODO
- * 
+ * O novo sistema vai utilizar uma função de client.onMessage assíncrona, com todas as funcionalidades
+ * da IA retornando promises. Os awaits estarão dentro dos .then das promises e na função client
  */
 
 const usersBank = new DataBase()
