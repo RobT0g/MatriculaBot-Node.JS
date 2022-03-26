@@ -9,11 +9,11 @@ Check depencies (go to dependencies folder):
   - Documentation at: [Documentation-page](https://orkestral.github.io/venom/index.html).
 - *npm install mysql2
   - Used to access MySQL database; 
-  - Creator at [Author-profile](https://github.com/anseki);
+  - Creator at [Author-profile](https://github.com/sidorares);
   - Documentation at [Documentation-page](https://github.com/sidorares/node-mysql2).
 - *npm install readline-sync
   - Used for the tests bot, it reads text from the console;
-  - Creator at [Author-profile](https://github.com/sidorares); 
+  - Creator at [Author-profile](https://github.com/anseki); 
   - Documentation at [Documentation-page](https://github.com/anseki/readline-sync);  
 
 You can also use *npm i npm-check-updates* on the dependencies folder to check if all of them are up to date.
