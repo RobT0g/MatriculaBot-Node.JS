@@ -16,7 +16,7 @@ class FormatedData{
         this.registerSQL = 'update -database- set -info- where -identifier-;'
         //============== Set Info ==============//
         this.simpleSQL = "select what from cadastro where numero = '-num-';"
-        this.simpleExtraInfo = "select text from extrainfo where tag = 'request';"
+        this.simpleExtraInfo = "select text from messages where tag = 'request';"
         this.sql = {
             '~mat~'         : this.simpleSQL.replaceAll('what', 'matricula'),
             '~nome~'        : this.simpleSQL.replaceAll('what', 'nome'),
