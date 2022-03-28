@@ -195,7 +195,8 @@ class DataBaseAccess{
                 obj[i] = info[i]
         if(obj.curso){
             obj = fd.setInfoOnObj(obj, this.disciplinasId)
-            obj.curso = this.cursos[obj.curso]
+            obj.curso = fd.cursos[obj.curso-1]
+            console.log(obj.curso)
         }
         try{
             for(let i in msgs){
