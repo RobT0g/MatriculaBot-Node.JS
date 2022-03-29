@@ -8,7 +8,7 @@ class TextSender{
         })
     }
 
-    static delivText = async function(texts, num, client){   //Envia uma array de mensagens de forma async
+    static async delivText(texts, num, client){   //Envia uma array de mensagens de forma async
         try{
             let txt = (typeof(texts) == 'string')?[texts]:texts
             for (let v in txt)
@@ -19,7 +19,7 @@ class TextSender{
         }
     }
 
-    static notText = async function(message, num, client){   //Tratamento no caso de uma mensagem recebida não ser texto
+    static async notText(message, num, client){   //Tratamento no caso de uma mensagem recebida não ser texto
         if ((message.type != 'chat')){      //Depois vai receber docs tambem
             await this.delivText('Não posso respondê-lo caso não envie mensagens de texto.', num, client)
             return true

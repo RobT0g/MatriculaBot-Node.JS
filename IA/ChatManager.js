@@ -202,7 +202,7 @@ class TagAnalyzer{
         `${data[1].length == 1?'0'+data[1]:data[1]}/${data[2].length == 2?'19'+data[2]:data[2]}`
     }
 
-    handleAction = async function (obj, tag, args){
+    async handleAction(obj, tag, args){
         try{
             await this.actions[tag](obj, tag, args)
         } catch(err){
@@ -220,22 +220,22 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
     }
 
     //======================== Movimentação ========================//
-    refStep = async function(){          //Atualiza o step atual de acordo com o id
+    async refStep(){          //Atualiza o step atual de acordo com o id
         this.step = chat.currentStep(this.talkat)
         await database.updateUser(this.num, {talkat: this.talkat})
     }
 
-    goNext = async function(opt=0){        //Avança para o próximo step
+    async goNext(opt=0){        //Avança para o próximo step
         this.talkat = chat.nextStepId(this.talkat, opt)
         await this.refStep()
     }
 
-    goBack = async function(opt=0){        //Retorna para o step anterior
+    async goBack(opt=0){        //Retorna para o step anterior
         this.talkat = chat.lastStepId(this.talkat, opt)
         await this.refStep()
     }
 
-    goTo = async function(newID){           //Vai para um step específico
+    async goTo(newID){           //Vai para um step específico
         this.talkat = newID
         await this.refStep()
     }
@@ -250,7 +250,7 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
         }, [false, '']))
     }
 
-    newMessage = async function(msg){     //Chamado quando uma mensagem é recebida
+    async newMessage(msg){     //Chamado quando uma mensagem é recebida
         try{
             let stepTags = this.step.fullfill.getTags()             //[[full1Tag1, full1Tag2], [full2Tag1]]
             let tagInfo =  this.getTagInfo(stepTags, msg)           //[[f1Res, Data], [f2Res, Data]]
@@ -269,7 +269,7 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
         }
     }
 
-    fullfillStep = async function(tag, info, act, opt){
+    async fullfillStep(tag, info, act, opt){
         //Chamada quando um step é fullfill
         try{
             if(act)
@@ -286,7 +286,7 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
         return await this.setDataOntoText(this.step.msgs)
     }
 
-    unfullfillStep = async function(act, msg){
+    async unfullfillStep(act, msg){
         //Chamada quando um step não é fullfill
         let st = this.step
         if(Object.keys(st.unFullfill).length == 0)
@@ -309,7 +309,7 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
         return st.default
     }
 
-    setDataOntoText = async function(msg){
+    async setDataOntoText(msg){
         try {
             return await database.setDataOntoText(msg, {'num': this.num})
         } catch(err){

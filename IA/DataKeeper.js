@@ -106,7 +106,6 @@ class FormatedData{
     }
 }
 
-
 class DataBaseCon{
     constructor(){
         this.loaded = false
@@ -159,16 +158,16 @@ class DataBaseAccess{
         this.loaded = false
     }
 
-    getUserRegister = async function(num){
+    getUserRegister(num){
         try{
-            return (await db.request(`select talkat from cadastro where numero = '${num}';`))[0][0]
+            return db.request(`select talkat from cadastro where numero = '${num}';`)
         } catch(err){
             console.log('Erro em getUserRegister.\n', err)
             return null
         }
     }
 
-    addUser = async function(numero){
+    async addUser(numero){
         try{
             await db.upload(`insert into cadastro (numero) value ('${numero}');`)
             console.log(`Usuário cadastrado!`)
@@ -177,7 +176,7 @@ class DataBaseAccess{
         }
     }
 
-    updateUser = async function(num, obj){
+    async updateUser(num, obj){
         let conn = await this.connect()
         console.log(obj)
         let line = Object.keys(obj).reduce((acc, i) => {acc += 
@@ -191,7 +190,7 @@ class DataBaseAccess{
         }
     }
 
-    getUserInfo = async function(num){
+    async getUserInfo(num){
         let conn = await this.connect()
         try{
             let data = (await conn.query(`select * from cadastro where numero = '${num}';`))[0][0]
@@ -203,7 +202,7 @@ class DataBaseAccess{
         }
     }
 
-    setDataOntoText = async function(msg, obj) {
+    async setDataOntoText(msg, obj) {
         let msgs = msg.map((i) => i)
         let info = await this.getUserInfo(obj.num)
         for(let i in info)
@@ -230,7 +229,7 @@ class DataBaseAccess{
         return msgs
     }
 
-    registerDiscs = async function(num, items, add){
+    async registerDiscs(num, items, add){
         let info = await this.getUserInfo(num)
         let conn = await this.connect()
         try{
@@ -273,7 +272,7 @@ class DataBaseAccess{
         }
     }
 
-    effetivate = async function(num){
+    async effetivate(num){
         try{
             let info = await this.getUserInfo(num)
             let conn = await this.connect()
@@ -290,7 +289,7 @@ class DataBaseAccess{
         
     }
 
-    uploadIntoInstSave  = async function(num, sql){
+    async uploadIntoInstSave(num, sql){
         let info = await this.getUserInfo(num)
         let conn = await this.connect()
         await conn.query(`insert into inst_save values (default, '${info.matricula}', '${sql}');`)

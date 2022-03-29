@@ -25,10 +25,10 @@ class DataBase{                 //Guarda todos os usuários
         return chat.getWelcome()
     }
 
-    userRegister = async function(num){
+    async userRegister(num){
         if(num in this.users) 
             return 0
-        let user = await database.getUserRegister(num)
+        let user = (await database.getUserRegister(num))[0][0]
         if(user){
             this.users[num] = new User(num)
             await this.users[num].chat.goTo(user.talkat)
@@ -39,7 +39,7 @@ class DataBase{                 //Guarda todos os usuários
         return 2
     }
 
-    newMessage = async function(msg, num){
+    async newMessage(msg, num){
         let message = new Message(msg)
         return await this.users[num].chat.newMessage(message, num)
     }
