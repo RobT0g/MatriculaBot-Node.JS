@@ -106,14 +106,13 @@ class FormatedData{
     }
 }
 
-const fd = new FormatedData()
 
-class DataBaseAccess{
+class DataBaseCon{
     constructor(){
         this.loaded = false
     }
 
-    connect = async function(){
+    async connect(){
         try{
             if(this.con && this.con.state != 'disconnected')	//Isso garante que a conexão está ativa na execução
                 return this.con
@@ -131,7 +130,7 @@ class DataBaseAccess{
         return this.con
     }
 
-    load = async function() {
+    async load() {
         this.disciplinasId = {}
         let conn = await this.connect()
         for(let i in this.cursos){
@@ -141,10 +140,28 @@ class DataBaseAccess{
         this.loaded = true
     }
 
+    async request(sql) {
+        if(!this.loaded)
+            await this.load()
+        try {
+            let conn = await this.connect()
+            return (await conn.query(sql))[0]
+        } catch (err) {
+            console.log('Erro no request.\n', err)
+        }
+    }
+}
+
+const fd = new FormatedData(), db = new DataBaseCon()
+
+class DataBaseAccess{
+    constructor(){
+        this.loaded = false
+    }
+
     getUserRegister = async function(num){
-        let conn = await this.connect()
         try{
-            return (await conn.query(`select talkat from cadastro where numero = '${num}';`))[0][0]
+            return (await db.request(`select talkat from cadastro where numero = '${num}';`))[0][0]
         } catch(err){
             console.log('Erro em getUserRegister.\n', err)
             return null
@@ -152,9 +169,8 @@ class DataBaseAccess{
     }
 
     addUser = async function(numero){
-        let conn = await this.connect()
         try{
-            await conn.query(`insert into cadastro (numero) value ('${numero}');`)
+            await db.upload(`insert into cadastro (numero) value ('${numero}');`)
             console.log(`Usuário cadastrado!`)
         } catch(err){
             console.log(err)
@@ -283,4 +299,4 @@ class DataBaseAccess{
 
 const database = new DataBaseAccess()
 
-export { database }
+export { database, db }

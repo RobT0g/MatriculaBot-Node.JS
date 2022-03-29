@@ -1,13 +1,12 @@
-import { database } from "./DataKeeper.js"
+import { database, db } from "./DataKeeper.js"
 import { ChatManager } from "./ChatManager.js"
 import { DataBase } from "./Utils.js"
 
 const data = new DataBase()
-console.log('1.	BRANDTZAEG, Petter Bae; FØLSTAD, Asbjørn. Why people use chatbots. In: International conference on internet science. Springer, Cham, 2017. p. ')
-/*
-const fc = async function(){
-    await database.load()
-    console.log((await database.setDataOntoText(['~discesc~'], {num: '559892437964@c.us', curso: 1}))[0])
-}
-fc(2)*/
+//console.log('abcdjnaisbafbianda'.replaceAll('a', '0'))
 
+const fc = async function(){
+    let conn = await db.connect()
+    console.log(await conn.query(`insert into cadastro (numero) values ('123');`))
+}
+fc(2)

@@ -18,10 +18,8 @@ create({
     console.log(erro);
 });
 
-async function start(client) {
-    if(!database.loaded)
-        await database.load()
-    client.onMessage(async function (message){
+function start(client) {
+    client.onMessage(async (message) => {
         let num = message.from
         if(TextSender.unvalidNumber(num))
             return
