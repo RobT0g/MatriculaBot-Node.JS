@@ -24,7 +24,7 @@ function start(client) {
         if(TextSender.unvalidNumber(num))
             return
         try{
-            let userOn = await usersBank.userRegister(num)
+            let userOn = usersBank.userRegister(num)
             if(userOn == 2){
                 await TextSender.delivText(usersBank.getWelcome(), num, client)
                 return
