@@ -8,15 +8,25 @@ class FormatedData{
     constructor(){
         this.cursosName = ['Administração', 'Engenharia da Computação', 'Física', 'Construção de Edifícios']
         this.cursos = ['adm', 'ec', 'fis', 'tce']
-        //============== Get Info ==============//
-        this.registerFields = {'~datanas~':'nascimento', '~mat~':'matricula', '~ano~': 'turma', 
-            '~addmatnums~': 'discId'}
-        this.tables = {'cadastro': ['matricula', 'nome', 'email', 'curso', 'turma', 'cpf'], 'user-curso-'
-            :[]}
         this.registerSQL = 'update -database- set -info- where -identifier-;'
-        //============== Set Info ==============//
         this.simpleSQL = "select what from cadastro where numero = '-num-';"
         this.simpleExtraInfo = "select text from messages where tag = 'request';"
+        this.request = {
+            '~mat~'         : (obj) => {
+
+            },
+            '~nome~'        : this.simpleSQL.replaceAll('what', 'nome'),
+            '~email~'       : this.simpleSQL.replaceAll('what', 'email'),
+            '~curso~'       : this.simpleSQL.replaceAll('what', 'curso'),
+            '~ano~'         : this.simpleSQL.replaceAll('what', 'turma'),
+            '~cpf~'         : this.simpleSQL.replaceAll('what', 'cpf'),
+            '~recdisc~'     : `select id, nome, carga from disc_-curso- where id not in (select discId from req_-curso- where reqId >= '-maxreq-') and ativa = '1';`,
+            '~userinfo~'    : `select * from cadastro where numero = '-num-';`,
+            '~discesc~'     : `select u.discId, d.nome, d.carga, u.adicionar from user_-curso- as u 
+                join disc_-curso- as d on u.discId = d.id where u.matricula = '-matricula-' order by u.discId;`,
+            '~getmatriz~'   : this.simpleExtraInfo.replaceAll('request', '~getmatriz~'),
+            '~getformremat~': this.simpleExtraInfo.replaceAll('request', '~getformremat~')
+        }
         this.sql = {
             '~mat~'         : this.simpleSQL.replaceAll('what', 'matricula'),
             '~nome~'        : this.simpleSQL.replaceAll('what', 'nome'),
