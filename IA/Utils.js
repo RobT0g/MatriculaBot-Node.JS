@@ -48,6 +48,7 @@ class DataBase{                 //Guarda todos os usuários
 class User{     //Guarda atributos sobre o usuário
     constructor(num){
         this.num = num
+        this.matAt = 0
         this.chat = new ChatManager(num)
     }
 }

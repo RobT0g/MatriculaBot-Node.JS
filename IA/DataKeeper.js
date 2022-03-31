@@ -4,6 +4,53 @@ import { mysql } from '../Dependencies/Index.js'
  * Implementar testes para o uso de promises, o código não precisa esperar que o dado seja armazenado.
  */
 
+ class DataBaseCon{
+    constructor(){
+        this.loaded = false
+    }
+
+    async connect(){
+        try{
+            if(this.con && this.con.state != 'disconnected')	//Isso garante que a conexão está ativa na execução
+                return this.con
+        } catch(err){
+            console.log(err)
+        }
+        const con = await mysql.createConnection({
+            host        : 'localhost',
+            user        : 'root',
+            password    : '',
+            database    : 'venom'
+        });	
+        this.con = con	
+        console.log('Conectado.')
+        return this.con
+    }
+
+    async load() {
+        this.disciplinasId = {}
+        let conn = await this.connect()
+        for(let i in this.cursos){
+            this.disciplinasId[this.cursos[i]] = (((await conn.query(`select id from disc_${this.cursos[i]} 
+            group by periodo;`))[0]).map((j) => j.id))
+        }
+        this.loaded = true
+    }
+
+    async request(sql) {
+        if(!this.loaded)
+            await this.load()
+        try {
+            let conn = await this.connect()
+            return (await conn.query(sql))[0]
+        } catch (err) {
+            console.log('Erro no request.\n', err)
+        }
+    }
+}
+
+const db = new DataBaseCon()
+
 class FormatedData{
     constructor(){
         this.cursosName = ['Administração', 'Engenharia da Computação', 'Física', 'Construção de Edifícios']
@@ -11,15 +58,25 @@ class FormatedData{
         this.registerSQL = 'update -database- set -info- where -identifier-;'
         this.simpleSQL = "select what from cadastro where numero = '-num-';"
         this.simpleExtraInfo = "select text from messages where tag = 'request';"
-        this.request = {
-            '~mat~'         : (obj) => {
-
+        this.requests = {
+            '~mat~'         : async (obj) => {
+                return (await db.request(`select matricula from registro where numero = '${obj.num}';`))[0][obj.matAt].matricula
             },
-            '~nome~'        : this.simpleSQL.replaceAll('what', 'nome'),
-            '~email~'       : this.simpleSQL.replaceAll('what', 'email'),
-            '~curso~'       : this.simpleSQL.replaceAll('what', 'curso'),
-            '~ano~'         : this.simpleSQL.replaceAll('what', 'turma'),
-            '~cpf~'         : this.simpleSQL.replaceAll('what', 'cpf'),
+            '~nome~'        : async (obj) => {
+                return (await db.request(`select nome from registro where numero = '${obj.num}';`))[0][obj.matAt].nome
+            },
+            '~email~'       : async (obj) => {
+                return (await db.request(`select email from registro where numero = '${obj.num}';`))[0][obj.matAt].email
+            },
+            '~curso~'       : async (obj) => {
+                return (await db.request(`select curso from registro where numero = '${obj.num}';`))[0][obj.matAt].curso
+            },
+            '~ano~'         : async (obj) => {
+                return (await db.request(`select ano from registro where numero = '${obj.num}';`))[0][obj.matAt].ano
+            },
+            '~cpf~'         : async (obj) => {
+                return (await db.request(`select cpf from registro where numero = '${obj.num}';`))[0][obj.matAt].cpf
+            },
             '~recdisc~'     : `select id, nome, carga from disc_-curso- where id not in (select discId from req_-curso- where reqId >= '-maxreq-') and ativa = '1';`,
             '~userinfo~'    : `select * from cadastro where numero = '-num-';`,
             '~discesc~'     : `select u.discId, d.nome, d.carga, u.adicionar from user_-curso- as u 
@@ -83,6 +140,10 @@ class FormatedData{
         }
     }
 
+    getTextInfo(tag, obj){
+        return this.requests[tag](obj)
+    }
+
     getSQL(tag, obj){
         let query = this.sql[tag]
         try{
@@ -116,52 +177,7 @@ class FormatedData{
     }
 }
 
-class DataBaseCon{
-    constructor(){
-        this.loaded = false
-    }
-
-    async connect(){
-        try{
-            if(this.con && this.con.state != 'disconnected')	//Isso garante que a conexão está ativa na execução
-                return this.con
-        } catch(err){
-            console.log(err)
-        }
-        const con = await mysql.createConnection({
-            host        : 'localhost',
-            user        : 'root',
-            password    : '',
-            database    : 'botdata'
-        });	
-        this.con = con	
-        console.log('Conectado.')
-        return this.con
-    }
-
-    async load() {
-        this.disciplinasId = {}
-        let conn = await this.connect()
-        for(let i in this.cursos){
-            this.disciplinasId[this.cursos[i]] = (((await conn.query(`select id from disc_${this.cursos[i]} 
-            group by periodo;`))[0]).map((j) => j.id))
-        }
-        this.loaded = true
-    }
-
-    async request(sql) {
-        if(!this.loaded)
-            await this.load()
-        try {
-            let conn = await this.connect()
-            return (await conn.query(sql))[0]
-        } catch (err) {
-            console.log('Erro no request.\n', err)
-        }
-    }
-}
-
-const fd = new FormatedData(), db = new DataBaseCon()
+const fd = new FormatedData()
 
 class DataBaseAccess{
     constructor(){
