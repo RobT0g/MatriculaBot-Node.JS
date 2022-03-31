@@ -78,14 +78,20 @@ class FormatedData{
                 return (await db.request(`select cpf from registro where numero = '${obj.num}';`))[0][obj.matAt].cpf
             },
             '~recdisc~'     : async (obj) => {
-                let data = (await db.request(`select u.discId, d.nome, d.carga, u.adicionar from user_-curso- as u 
-                join disc_-curso- as d on u.discId = d.id where u.matricula = '-matricula-' order by u.discId;`))[0]
+                let info = (await db.request(`select * from registro where numero = '${obj.num}';`))[0][obj.matAt]
+                let data = (await db.request(`select u.discId, d.nome, d.carga, u.adicionar from 
+                    user_${this.cursos[info.curso]} as u join disc_${this.cursos[info.curso]} as d 
+                    on u.discId = d.id where u.matricula = '${info.matricula}' order by u.discId;`))[0]
                 let retn = ''
-                for(let i in data)
-                    retn += `\n${data[i].id} - ${data[i].nome} (${data[i].carga} horas)${i == data.length-1?'.':';'}`
+                data.forEach((i, k) => {
+                    retn += `\n${i.id} - ${i.nome} (${i.carga} horas)${k == data.length-1?'.':';'}`
+                })
                 return retn 
             },
-            '~userinfo~'    : `select * from cadastro where numero = '-num-';`,
+            '~userinfo~'    : async (obj) => {
+                let info = (await db.request(`select * from registro where numero = '${obj.num}';`))[0][obj.matAt]
+                
+            },
             '~discesc~'     : `select u.discId, d.nome, d.carga, u.adicionar from user_-curso- as u 
                 join disc_-curso- as d on u.discId = d.id where u.matricula = '-matricula-' order by u.discId;`,
             '~getmatriz~'   : this.simpleExtraInfo.replaceAll('request', '~getmatriz~'),
