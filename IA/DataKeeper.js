@@ -189,8 +189,10 @@ class DataBaseAccess{
 
     async getUserRegister(num){
         try{
-            return {...((await db.request(`select talkat from registro where numero = '${num}';`))[0][0]),
-                ...((await db.request(`select talkat from inst_cadastro where numero = '${num}';`))[0][0])}
+            let user = (await db.request(`select talkat from registro where numero = '${num}' and finished = '0';`))[0]
+            if(user > 0)
+                return user
+            return (await db.request(`select talkat from inst_cadastro where numero = '${num}';`))[0]
         } catch(err){
             console.log('Erro em getUserRegister.\n', err)
             return null

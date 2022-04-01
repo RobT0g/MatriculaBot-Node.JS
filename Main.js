@@ -23,8 +23,12 @@ function start(client) {
         let num = message.from
         if(TextSender.unvalidNumber(num))
             return
+        if(num !== '559888470242@c.us')
+            return
         try{
-            let userOn = usersBank.userRegister(num)
+            let userOn = await usersBank.userRegister(num)
+            console.log(num, userOn)
+            /*
             if(userOn == 2){
                 await TextSender.delivText(usersBank.getWelcome(), num, client)
                 return
@@ -36,7 +40,7 @@ function start(client) {
             }
             if(await TextSender.notText(message, num, client))
                 return
-            await TextSender.delivText((await usersBank.newMessage(message.body, num)), num, client)
+            await TextSender.delivText((await usersBank.newMessage(message.body, num)), num, client)*/
         } catch(err){
             console.log(err)
         }

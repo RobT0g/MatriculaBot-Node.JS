@@ -380,7 +380,8 @@ CREATE TABLE `registro` (
   `email` varchar(75) DEFAULT NULL,
   `curso` enum('0','1','2','3') DEFAULT NULL,
   `turma` year(4) DEFAULT NULL,
-  `cpf` char(11) DEFAULT NULL
+  `cpf` char(11) DEFAULT NULL,
+  `finished` boolean(1) DEFAULT '0';
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
