@@ -69,7 +69,7 @@ messages.push(...[{
 
 {
 'txt':['Vou precisar de alguma informações suas. Primeiramente me informe seu código de matrícula.'],
-'full': new StepStuff([['~mat~']], ['register'], []),
+'full': new StepStuff([['~mat~']], ['effetivateUser'], []),
 'unf': new StepStuff([['!num!']], [], [['Por favor, me mande um código de matrícula válido.']]),
 'def':['Preciso que me mande sua matrícula.'],
 'from':[1],
@@ -85,7 +85,7 @@ messages.push(...[{
 
 {
 'txt':['Agora me informe seu nome completo.'],
-'full': new StepStuff([['~nome~']], ['register'], []),
+'full': new StepStuff([['~nome~']], ['updateUser'], []),
 'unf': new StepStuff([['1-wrd']], [], [['Poderia rever o nome que você enviou?', 'Eu pedi que me enviasse ' + 
 'seu nome completo, mas você só me enviou uma palavra.']]),
 'def':['Por favor, me informe seu nome.'],
@@ -102,7 +102,7 @@ messages.push(...[{
 
 {
 'txt':['Agora me informe seu Email.'],
-'full': new StepStuff([['~email~']], ['register'], []),
+'full': new StepStuff([['~email~']], ['updateUser'], []),
 'unf': new StepStuff([['*@']], [], [['Me envie um email válido, por favor.']]),
 'def':['Preciso do seu email.'],
 'from':[5],
@@ -118,7 +118,7 @@ messages.push(...[{
 
 {
 'txt':['Agora preciso saber qual é o seu curso.'],
-'full': new StepStuff([['~curso~']], ['register'], []),
+'full': new StepStuff([['~curso~']], ['updateUser'], []),
 'unf': new StepStuff([['~sim~', '~nao~']], [], [['Só precisa me enviar o nome do seu curso.']]),
 'def':['Por favor, me mande o nome do seu curso.', 'É preciso ser um dos 4 do nosso campus: ' + 
 'Administração, Engenharia da Computação, Física e Construção de Edifícios.'],
@@ -127,7 +127,7 @@ messages.push(...[{
 
 {
 'txt':['Beleza, e qual o ano da sua turma? (ano em que você ingressou na instituição)'],
-'full': new StepStuff([['~ano~']], ['register'], []),
+'full': new StepStuff([['~ano~']], ['updateUser'], []),
 'unf': new StepStuff([['~sim~', '~nao~']], [], [['Só precisa me enviar o ano da sua turma.']]),
 'def':['Eu preciso do ano da sua turma, ou seja, o ano em que você entrou na instituição.'],
 'from':[8],
@@ -143,7 +143,7 @@ messages.push(...[{
 
 {
 'txt':['Me informe seu CPF.'],
-'full': new StepStuff([['~cpf~']], ['register'], []),
+'full': new StepStuff([['~cpf~']], ['updateUser'], []),
 'unf': new StepStuff([['~num~']], [], [['Por favor, me envie um cpf válido.', 'Ele deve conter exatamente 11 ' + 
     'dígitos.']]),
 'def':['Por favor, me informe o seu CPF.'],

@@ -126,26 +126,30 @@ class TagAnalyzer{
             '~def~'     : ((msg) => {return [true, '']}),
             '~nop~'     : ((msg) => {return [false, '']})
         }
-        this.keyword = ((msg, tag) => //SO ANALISA UM CONJUNTO DE KEYWORDS POR VEZ
-            {return [!tag.split(/[&]/g).some((j) => !(new RegExp(j, 'g').test(msg.filterMsg.toLowerCase()))), '']})
+        this.keyword = ((msg, tag) => {
+            console.log(tag)
+            return [!tag.split(/[&]/g).some((j) => !(new RegExp(j, 'g').test(msg.filterMsg.toLowerCase()))), '']})
         this.actions = {
-            'goBack': async (obj) => {
+            'goBack'        : async (obj) => {
                 await obj.goBack()
             },
-            'register': async (obj, tag, args) => {
+            'effetivateUser': async (obj) => {
+
+            },
+            'updateUser'    : async (obj, tag, args) => {
                 let data = new Object()
                 data[tag] = args.info[1]
                 await database.updateUser(obj.num, data)
             },
-            'add_discs' : async (obj, tag, args) => {
+            'add_discs'     : async (obj, tag, args) => {
                 let data = args.info[1]
                 await database.registerDiscs(obj.num, data, true)
             }, 
-            'del_discs' : async (obj, tag, args) => {
+            'del_discs'     : async (obj, tag, args) => {
                 let data = args.info[1]
                 await database.registerDiscs(obj.num, data, false)
             }, 
-            'effetivate': async (obj, tag, args) => {
+            'effetivate'    : async (obj, tag, args) => {
                 await database.effetivate(obj.num)
             }, 
         }
@@ -155,23 +159,14 @@ class TagAnalyzer{
         try{
             if(/[~]/g.test(tag))
                 return  this.tagfunc[tag](msg)
-            if(/[!]/g.test(tag)){
+            if(/[*]/g.test(tag)){
                 let res = this.tagfunc[tag](msg)
                 return  [!res[0], res[1]]
             }
-            if(/[&]|[*]/g.test(tag)){
-                let words = '&wrd*wrd1&wrd2'.split(/[&]|[*]/g).slice(1)
-                let specs = '&wrd*wrd1&wrd2'.match(/[&]|[*]/g)
-                let obj = {pres: [], nonp: []}
-                words.forEach((i, k) => {
-                    if(specs[k] === '&')
-                        obj.pres.push(i)
-                    else
-                        obj.nonp.push(i)
-                })
-                let res = obj.pres.reduce((acc, i) => {acc = (acc&&(this.keyword(i)[0])); return acc}, true) 
-                    && obj.nonp.reduce((acc, i) => {acc = (acc&&(!this.keyword(i)[0])); return acc}, true)
-                return [res[0], '']
+            if(/[&]|[!]/g.test(tag)){
+                let [ins, ...out] = tag.split('!')
+                return [this.keyword(msg, ins.slice(1))[0] && 
+                    !out.some((i) => tags.keyword(msg, i)[0]), '']
             }
             return this.keyword(msg, tag)
         } catch(err) {
