@@ -1,14 +1,12 @@
-import { database, db } from "./DataKeeper.js"
+import { db, fd, database} from "./DataKeeper.js"
 import { ChatManager } from "./ChatManager.js"
 import { DataBase } from "./Utils.js"
 
 const data = new DataBase()
-let txt = 'abcdjnaisbafbianda'
-console.log(txt.replaceAll('a', '0'), txt)
-/*
+let txt = ['aqui tem ~mat~ e ~cpf~', 'aqui é só ~nome~', 'aqui é nada']
+
 const fc = async function(){
-    let conn = await db.connect()
-    console.log(await conn.query(`insert into cadastro (numero) values ('123');`))
+    let data = fd.setTags(txt, {num: '559892437964@c.us', matAt: 0})
+    console.log(data)
 }
 fc(2)
-*/

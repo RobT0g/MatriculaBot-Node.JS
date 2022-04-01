@@ -20,7 +20,7 @@ import { mysql } from '../Dependencies/Index.js'
             host        : 'localhost',
             user        : 'root',
             password    : '',
-            database    : 'venom'
+            database    : 'botdata'
         });	
         this.con = con	
         console.log('Conectado.')
@@ -42,7 +42,8 @@ import { mysql } from '../Dependencies/Index.js'
             await this.load()
         try {
             let conn = await this.connect()
-            return (await conn.query(sql))[0]
+            //console.log(sql)
+            return (await conn.query(sql))
         } catch (err) {
             console.log('Erro no request.\n', err)
         }
@@ -131,16 +132,18 @@ class FormatedData{
 
     async setTags(msg, obj){
         let txt = msg.map((i) => i)
-        return txt.map((i) => {
-            let tags = {}
-            i.match(/[~]\w+[~]/g).forEach(async (j) => {
-                if(!(j in tags))
-                    tags[j] = await this.getTextInfo(j, obj)
-            })
-            Object.keys(tags).forEach((j) => {
-                i.replaceAll(j, tags[j])
-            })
-        })
+        let tags = {}
+        for(let i in txt){
+            try{
+                let t = txt[i].match(/[~]\w+[~]/g)
+                for(let j in t){
+                    if(!(t[j] in tags))
+                        tags[t[j]] = await this.getTextInfo(t[j], obj)
+                    txt[i] = txt[i].replaceAll(t[j], tags[t[j]])
+                }    
+            } catch(err){}
+        }      
+        return txt
     }
 
     getSQL(tag, obj){
@@ -323,4 +326,4 @@ class DataBaseAccess{
 
 const database = new DataBaseAccess()
 
-export { database, db }
+export { db, fd, database }
