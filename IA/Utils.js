@@ -28,8 +28,9 @@ class DataBase{                 //Guarda todos os usuários
     async userRegister(num){
         if(num in this.users) 
             return 0
-        let user = (await database.getUserRegister(num))
-        if(user.length > 0)
+        let user = await database.getUserRegister(num)
+        console.log(user, user.length)
+        if(user.length > 1)
             console.log('ERRO! MULTIPLOS USUÁRIOS NO MESMO NUMERO!')
         user = user[0]
         if(user){

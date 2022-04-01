@@ -56,6 +56,8 @@ class FormatedData{
     constructor(){
         this.cursosName = ['Administração', 'Engenharia da Computação', 'Física', 'Construção de Edifícios']
         this.cursos = ['adm', 'ec', 'fis', 'tce']
+        this.registerFields = {'~datanas~':'nascimento', '~mat~':'matricula', '~ano~': 'turma', 
+            '~addmatnums~': 'discId'}
         this.requests = {
             '~mat~'         : async (obj) => {
                 return (await db.request(`select matricula from registro where numero = '${obj.num}';`))[0][obj.matAt].matricula
@@ -190,7 +192,7 @@ class DataBaseAccess{
     async getUserRegister(num){
         try{
             let user = (await db.request(`select talkat from registro where numero = '${num}' and finished = '0';`))[0]
-            if(user > 0)
+            if(user.length > 0)
                 return user
             return (await db.request(`select talkat from inst_cadastro where numero = '${num}';`))[0]
         } catch(err){
