@@ -122,7 +122,25 @@ class FormatedData{
     }
 
     getTextInfo(tag, obj){
-        return this.requests[tag](obj)
+        try{
+            return this.requests[tag](obj)
+        } catch(err){
+            console.log('Erro ao retornar a informação.\n', err)
+        }
+    }
+
+    async setTags(msg, obj){
+        let txt = msg.map((i) => i)
+        return txt.map((i) => {
+            let tags = {}
+            i.match(/[~]\w+[~]/g).forEach(async (j) => {
+                if(!(j in tags))
+                    tags[j] = await this.getTextInfo(j, obj)
+            })
+            Object.keys(tags).forEach((j) => {
+                i.replaceAll(j, tags[j])
+            })
+        })
     }
 
     getSQL(tag, obj){
