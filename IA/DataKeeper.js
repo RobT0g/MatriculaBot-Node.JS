@@ -55,9 +55,6 @@ class FormatedData{
     constructor(){
         this.cursosName = ['Administração', 'Engenharia da Computação', 'Física', 'Construção de Edifícios']
         this.cursos = ['adm', 'ec', 'fis', 'tce']
-        this.registerSQL = 'update -database- set -info- where -identifier-;'
-        this.simpleSQL = "select what from cadastro where numero = '-num-';"
-        this.simpleExtraInfo = "select text from messages where tag = 'request';"
         this.requests = {
             '~mat~'         : async (obj) => {
                 return (await db.request(`select matricula from registro where numero = '${obj.num}';`))[0][obj.matAt].matricula
@@ -121,60 +118,6 @@ class FormatedData{
             '~getformremat~': async (obj) => {
                 return (await db.request(`select text from messages where tag = '~getformremat~';`))[0][0].text
             },
-        }
-        this.sql = {
-            '~mat~'         : this.simpleSQL.replaceAll('what', 'matricula'),
-            '~nome~'        : this.simpleSQL.replaceAll('what', 'nome'),
-            '~email~'       : this.simpleSQL.replaceAll('what', 'email'),
-            '~curso~'       : this.simpleSQL.replaceAll('what', 'curso'),
-            '~ano~'         : this.simpleSQL.replaceAll('what', 'turma'),
-            '~cpf~'         : this.simpleSQL.replaceAll('what', 'cpf'),
-            '~recdisc~'     : `select id, nome, carga from disc_-curso- where id not in (select discId from req_-curso- where reqId >= '-maxreq-') and ativa = '1';`,
-            '~userinfo~'    : `select * from cadastro where numero = '-num-';`,
-            '~discesc~'     : `select u.discId, d.nome, d.carga, u.adicionar from user_-curso- as u 
-                join disc_-curso- as d on u.discId = d.id where u.matricula = '-matricula-' order by u.discId;`,
-            '~getmatriz~'   : this.simpleExtraInfo.replaceAll('request', '~getmatriz~'),
-            '~getformremat~': this.simpleExtraInfo.replaceAll('request', '~getformremat~')
-        }
-        this.formate = {
-            '~mat~'         : (data) => {return data[0].matricula},
-            '~nome~'        : (data) => {return data[0].nome},
-            '~email~'       : (data) => {return data[0].email},
-            '~curso~'       : (data) => {return this.cursosName[(Number(data[0].curso))-1]},
-            '~ano~'         : (data) => {return data[0].turma},
-            '~cpf~'         : (data) => {return data[0].cpf},
-            '~recdisc~'     : (data) => {
-                let retn = ''
-                for(let i in data)
-                    retn += `\n${data[i].id} - ${data[i].nome} (${data[i].carga} horas)${i == data.length-1?'.':';'}`
-                return retn
-            },
-            '~userinfo~'    : (data) => {
-                return `\n> Nome: ${data[0].nome};\n> Matricula: ${data[0].matricula};\n> Email: ${data[0].email};\n` + 
-                    `> Curso: ${this.cursosName[Number(data[0].curso)-1]} turma de ${data[0].turma};\n` + 
-                    `> CPF: ${data[0].cpf}.`
-            },
-            '~discesc~'     : (data) => {
-                if(data.length == 0)
-                    return 'Você ainda não selecionou nenhuma matéria para retirar ou adicionar.'
-                try{
-                    let res = ['', '']
-                    for(let i in data){
-                        res[(data[i].adicionar == '1')?0:1] += `\n> ${data[i].discId} - ${data[i].nome} (${data[i].carga} horas);`
-                    }
-                    let txt = ''
-                    if(res[0].length > 0)
-                        txt += ('Matérias para adicionar:' + res[0].slice(0, -1) + '.')
-                    if(res[0].length > 0)
-                        txt += ('\nMatérias para retirar:' + res[1] + '.')
-                    return txt
-                } catch(err){
-                    console.log('Erro em ~discesc~.\n', err)
-                    return 'Você ainda não selecionou nenhuma matéria.'
-                }
-            },
-            '~getmatriz~'   : (data) => {return data[0].text},
-            '~getformremat~': (data) => {return data[0].text}
         }
     }
 
