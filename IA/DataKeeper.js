@@ -89,13 +89,38 @@ class FormatedData{
                 return retn 
             },
             '~userinfo~'    : async (obj) => {
-                let info = (await db.request(`select * from registro where numero = '${obj.num}';`))[0][obj.matAt]
-                
+                let data = (await db.request(`select * from registro where numero = '${obj.num}';`))[0][obj.matAt]
+                return `\n> Nome: ${data.nome};\n> Matricula: ${data.matricula};\n> Email: ${data.email};\n` + 
+                    `> Curso: ${this.cursosName[data.curso]} turma de ${data.turma};\n` + 
+                    `> CPF: ${data.cpf}.`
             },
-            '~discesc~'     : `select u.discId, d.nome, d.carga, u.adicionar from user_-curso- as u 
-                join disc_-curso- as d on u.discId = d.id where u.matricula = '-matricula-' order by u.discId;`,
-            '~getmatriz~'   : this.simpleExtraInfo.replaceAll('request', '~getmatriz~'),
-            '~getformremat~': this.simpleExtraInfo.replaceAll('request', '~getformremat~')
+            '~discesc~'     : async (obj) => { 
+                let data = (await db.request(`select u.discId, d.nome, d.carga, u.adicionar from user_-curso- as u 
+                join disc_-curso- as d on u.discId = d.id where u.matricula = '-matricula-' order by u.discId;`))[0]
+                if(data.length == 0)
+                    return 'Você ainda não selecionou nenhuma matéria para retirar ou adicionar.'
+                try{
+                    let res = ['', '']
+                    for(let i in data){
+                        res[(data[i].adicionar == '1')?0:1] += `\n> ${data[i].discId} - ${data[i].nome} (${data[i].carga} horas);`
+                    }
+                    let txt = ''
+                    if(res[0].length > 0)
+                        txt += ('Matérias para adicionar:' + res[0].slice(0, -1) + '.')
+                    if(res[0].length > 0)
+                        txt += ('\nMatérias para retirar:' + res[1] + '.')
+                    return txt
+                } catch(err){
+                    console.log('Erro em ~discesc~.\n', err)
+                    return 'Você ainda não selecionou nenhuma matéria.'
+                }
+            },
+            '~getmatriz~'   : async (obj) => {
+                return (await db.request(`select text from messages where tag = '~getmatriz~';`))[0][0].text
+            },
+            '~getformremat~': async (obj) => {
+                return (await db.request(`select text from messages where tag = '~getformremat~';`))[0][0].text
+            },
         }
         this.sql = {
             '~mat~'         : this.simpleSQL.replaceAll('what', 'matricula'),
