@@ -197,29 +197,28 @@ class DataBaseAccess{
         }
     }
 
-    async addUser(numero){
+    addUser(num){
         try{
-            await db.upload(`insert into cadastro (numero) value ('${numero}');`)
-            console.log(`Usuário cadastrado!`)
+            return db.request(`insert into inst_cadastro values (default, '${num}', '0')`)
         } catch(err){
             console.log(err)
         }
     }
 
     async updateUser(num, obj){
-        let conn = await this.connect()
         console.log(obj)
         let line = Object.keys(obj).reduce((acc, i) => {acc += 
             `${i in fd.registerFields?(fd.registerFields[i]):i.slice(1, -1)} = '${obj[i]}', `; 
             return acc}, '').slice(0, -2)
         try{
-            await conn.query(`update cadastro set ${line} where numero = '${num}';`)
-            console.log(`Usuário atualizado!`)
+            if((await db.request(`select talkat from registro where numero = '${num}';`))[0].length > 0)
+                return db.request(`update registro set ${line} where numero = '${num}';`)
+            return db.request(`update inst_cadastro set ${line} where numero = '${num}';`)
         } catch(err){
             console.log(err)
         }
     }
-
+    /*
     async getUserInfo(num){
         let conn = await this.connect()
         try{
@@ -324,6 +323,7 @@ class DataBaseAccess{
         let conn = await this.connect()
         await conn.query(`insert into inst_save values (default, '${info.matricula}', '${sql}');`)
     }
+    */
 }
 
 const database = new DataBaseAccess()
