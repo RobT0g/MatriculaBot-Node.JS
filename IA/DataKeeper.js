@@ -127,6 +127,7 @@ class FormatedData{
             return this.requests[tag](obj)
         } catch(err){
             console.log('Erro ao retornar a informação.\n', err)
+            return('ERROR, data not found.')
         }
     }
 
@@ -186,9 +187,10 @@ class DataBaseAccess{
         this.loaded = false
     }
 
-    getUserRegister(num){
+    async getUserRegister(num){
         try{
-            return db.request(`select talkat from cadastro where numero = '${num}';`)
+            return {...((await db.request(`select talkat from registro where numero = '${num}';`))[0][0]),
+                ...((await db.request(`select talkat from inst_cadastro where numero = '${num}';`))[0][0])}
         } catch(err){
             console.log('Erro em getUserRegister.\n', err)
             return null
