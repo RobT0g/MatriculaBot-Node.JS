@@ -191,16 +191,22 @@ class DataBaseAccess{
 
     async getUserInfo(num){
         let user = (await db.request(`select * from registro where finished = '0' and numero = '${num}';`))[0]
+        let actualUser = []
         if(user.length > 1){
             console.log('MULTIPLOS USUÁRIOS NO MESMO NÚMERO E SEM FINALIZAR!')
             //Coment this if it is not usefull
             user.forEach(async (i) => {
                 if(!(Object.keys(i).map((j) => i[j]).includes(null))){
                     await db.request(`update registro set finished = '1' where matricula = '${i.matricula}';`)
-                }
+                } else
+                    actualUser.push(i)
             })
             //Untill here
         }
+        if(actualUser.length > 1){
+            console.log('NOW THIS IS A REAL PROBLEM')
+        }
+        return actualUser[0]
     }
 
     async getUserRegister(num){
