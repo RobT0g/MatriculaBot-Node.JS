@@ -189,6 +189,20 @@ class DataBaseAccess{
         this.loaded = false
     }
 
+    async getUserInfo(num){
+        let user = (await db.request(`select * from registro where finished = '0' and numero = '${num}';`))[0]
+        if(user.length > 1){
+            console.log('MULTIPLOS USUÁRIOS NO MESMO NÚMERO E SEM FINALIZAR!')
+            //Coment this if it is not usefull
+            user.forEach(async (i) => {
+                if(!(Object.keys(i).map((j) => i[j]).includes(null))){
+                    await db.request(`update registro set finished = '1' where matricula = '${i.matricula}';`)
+                }
+            })
+            //Untill here
+        }
+    }
+
     async getUserRegister(num){
         try{
             let user = (await db.request(`select talkat from registro where numero = '${num}' and finished = '0';`))[0]

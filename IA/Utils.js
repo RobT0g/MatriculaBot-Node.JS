@@ -29,7 +29,6 @@ class DataBase{                 //Guarda todos os usuários
         if(num in this.users) 
             return 0
         let user = await database.getUserRegister(num)
-        console.log(user, user.length)
         if(user.length > 1)
             console.log('ERRO! MULTIPLOS USUÁRIOS NO MESMO NUMERO!')
         user = user[0]
@@ -52,7 +51,6 @@ class DataBase{                 //Guarda todos os usuários
 class User{     //Guarda atributos sobre o usuário
     constructor(num){
         this.num = num
-        this.matAt = 0
         this.chat = new ChatManager(num)
     }
 }
