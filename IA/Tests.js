@@ -7,6 +7,6 @@ const data = new DataBase()
 
 
 const fc = async function(){
-    console.log((await db.request(`select * from registro where matricula = '10ab';`))[0])
+    console.log(await database.getUserInfo('2016'))
 }
 fc(2)

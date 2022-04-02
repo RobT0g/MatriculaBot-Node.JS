@@ -195,18 +195,20 @@ class DataBaseAccess{
         if(user.length > 1){
             console.log('MULTIPLOS USUÁRIOS NO MESMO NÚMERO E SEM FINALIZAR!')
             //Coment this if it is not usefull
-            user.forEach(async (i) => {
+            user.forEach(async (i, k) => {
                 if(!(Object.keys(i).map((j) => i[j]).includes(null))){
+                    console.log('USUÁRIO EM REGISTRO FINALIZADO NAO COLOCOU O CADASTRO COMO FINALIZADO')
                     await db.request(`update registro set finished = '1' where matricula = '${i.matricula}';`)
                 } else
-                    actualUser.push(i)
+                    actualUser.push(k)
             })
             //Untill here
-        }
+        } else
+            actualUser = [0]
         if(actualUser.length > 1){
             console.log('NOW THIS IS A REAL PROBLEM')
         }
-        return actualUser[0]
+        return user[actualUser[0]]
     }
 
     async getUserRegister(num){
