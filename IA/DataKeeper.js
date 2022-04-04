@@ -194,7 +194,7 @@ class DataBaseAccess{
         let actualUser = []
         if(user.length > 1){
             console.log('MULTIPLOS USUÁRIOS NO MESMO NÚMERO E SEM FINALIZAR!')
-            //Coment this if it is not usefull
+            //Coment this if it is problematic
             user.forEach(async (i, k) => {
                 if(!(Object.keys(i).map((j) => i[j]).includes(null))){
                     console.log('USUÁRIO EM REGISTRO FINALIZADO NAO COLOCOU O CADASTRO COMO FINALIZADO')
@@ -256,7 +256,7 @@ class DataBaseAccess{
             return null
         }
     }
-
+    
     async setDataOntoText(msg, obj) {
         let msgs = msg.map((i) => i)
         let info = await this.getUserInfo(obj.num)

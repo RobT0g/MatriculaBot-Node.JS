@@ -1,3 +1,5 @@
+const processes = {}
+
 class TextSender{
     static sendMsg(msg, num, client){
         return new Promise(function(resolve, reject){
@@ -10,12 +12,24 @@ class TextSender{
 
     static async delivText(texts, num, client){   //Envia uma array de mensagens de forma async
         try{
-            let txt = (typeof(texts) == 'string')?[texts]:texts
+            let txt = (typeof(texts) === 'string')?[texts]:texts
             for (let v in txt)
                 await this.sendMsg(txt[v], num, client)
         }
         catch(err){
             console.log(err)
+        }
+        return
+    }
+
+    static async answerUser(texts, num, client){
+        processes[num] = this.delivText(texts, num, client)
+    }
+
+    static async resolveMessages(num){
+        if(num in processes){
+            await processes[num]
+            delete processes[num]
         }
     }
 
