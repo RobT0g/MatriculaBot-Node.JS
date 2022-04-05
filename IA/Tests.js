@@ -9,8 +9,7 @@ import { StepStuff } from "./Messages.js"
 //let obj = {'a': 'abc', 'b': 'bc', 'c':'c'}
 
 const fc = async function(){
-    let a = new StepStuff([], [], [])
-    console.log(Object.entries(a))
     //console.log(chat.steps[2].fulfill.getActions())
+    console.log((await db.request(`select * from registro;`))[0])
 }
 fc(2)

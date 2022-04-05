@@ -130,10 +130,12 @@ class TagAnalyzer{
             console.log(tag)
             return [!tag.split(/[&]/g).some((j) => !(new RegExp(j, 'g').test(msg.filterMsg.toLowerCase()))), '']})
         this.actions = {
-            'updateUser'    : async (obj, tag, args) => {
-                let data = new Object()
-                data[tag] = args.info[1]
-                await database.updateUser(obj.num, data)
+            'prepareUser'    : async (man, obj, num) => {
+                let user = await database.getUserInfo(num)
+                if('matricula' in user){
+                    await database.updateUser()
+                    //PAREI AQUI, TEM QUE REVER TODA ESSA FUNÇÃO PRA VER COMO FUNCIONA
+                }
             },
             'effetivateUser': async (obj) => {
 
@@ -189,9 +191,10 @@ class TagAnalyzer{
         `${data[1].length == 1?'0'+data[1]:data[1]}/${data[2].length == 2?'19'+data[2]:data[2]}`
     }
 
-    async handleAction(obj, tag, args){
+    async handleAction(manager, obj, num){
         try{
-            await this.actions[tag](obj, tag, args)
+            for(let i in obj.actions)
+                await this.actions[obj.actions[i]](manager, obj, num)
         } catch(err){
             console.log(err)
         }
@@ -265,7 +268,7 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
 
     async fulfillStep(obj){         //Chamada quando um step é fulfill
         if(obj.actions.length > 0)
-            await tags.handleAction(this, obj)
+            await tags.handleAction(this, obj, this.num)
         await this.move.goNext(obj.opt)
         return await this.setDataOntoText(this.step.msgs)
     }
@@ -273,7 +276,7 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
     async unfulfillStep(obj){       //Chamada quando um step não é fulfill
         let st = this.step
         if(obj.actions.length > 0)
-            await tags.handleAction(obj.actions)
+            await tags.handleAction(this, obj, this.num)
         if(st.unFulfill[obj.stepTags[0]].msg.length > 0)
             return await this.setDataOntoText(st.unFulfill[obj.stepTags[0]].msg)
         return await this.setDataOntoText(this.step.msgs)

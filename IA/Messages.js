@@ -70,7 +70,7 @@ messages.push(...[{
 
 {
 'txt':['Vou precisar de alguma informações suas. Primeiramente me informe seu código de matrícula.'],
-'full': new StepStuff([['~mat~']], [['updateUser']], []),
+'full': new StepStuff([['~mat~']], [['prepareUser']], []),
 'unf': new StepStuff([['!num!']], [], [['Por favor, me mande um código de matrícula válido.']]),
 'def':['Preciso que me mande sua matrícula.'],
 'from':[1],
@@ -78,7 +78,7 @@ messages.push(...[{
 
 {
 'txt':['Sua matrícula é ~mat~. Você confirma?'],
-'full': new StepStuff([['~sim~']], [['effetivateUser']], []),
+'full': new StepStuff([['~sim~']], [['effetivate']], []),
 'unf': new StepStuff([['~nao~']], ['goBack'], [['Ok, me envie o código de matrícula correto agora 🤨']]),
 'def':['Você só precisa me mandar um "sim" ou "não" para confirmar.'],
 'from':[2],
@@ -111,7 +111,7 @@ messages.push(...[{
 
 {
 'txt':['Seu email é ~email~. Você confirma?'],
-'full': new StepStuff([['~sim~']], [], []),
+'full': new StepStuff([['~sim~']], [['effetivate']], []),
 'unf': new StepStuff([['~nao~']], ['goBack'], [['Ok, me envie o email correto agora 🤨']]),
 'def':['Você só precisa me mandar um "sim" ou "não" para confirmar.'],
 'from':[6],
@@ -128,7 +128,7 @@ messages.push(...[{
 
 {
 'txt':['Beleza, e qual o ano da sua turma? (ano em que você ingressou na instituição)'],
-'full': new StepStuff([['~ano~']], [['updateUser']], []),
+'full': new StepStuff([['~ano~']], [['insUpdateUser']], []),
 'unf': new StepStuff([['~sim~', '~nao~']], [], [['Só precisa me enviar o ano da sua turma.']]),
 'def':['Eu preciso do ano da sua turma, ou seja, o ano em que você entrou na instituição.'],
 'from':[8],
@@ -136,7 +136,7 @@ messages.push(...[{
 
 {
 'txt':['Então você é do curso ~curso~ da turma de ~ano~. Você confirma?'],
-'full': new StepStuff([['~sim~']], [], []),
+'full': new StepStuff([['~sim~']], [['effetivate']], []),
 'unf': new StepStuff([['~nao~']], ['goTo-8'], [['Ok, vamos voltar atrás então. Qual é mesmo o seu curso?']]),
 'def':['Você só precisa me mandar um "sim" ou "não" para confirmar.'],
 'from':[9],

@@ -20,7 +20,7 @@ import { mysql } from '../Dependencies/Index.js'
             host        : 'localhost',
             user        : 'root',
             password    : '',
-            database    : 'botdata'
+            database    : 'venom'
         });	
         this.con = con	
         console.log('Conectado.')
@@ -191,6 +191,10 @@ class DataBaseAccess{
 
     async getUserInfo(num){
         let user = (await db.request(`select * from registro where finished = '0' and numero = '${num}';`))[0]
+        if(user.length === 0){
+            return (await db.request(`select * from inst_cadastro where numero = '${num}';`))[0][0]
+        }
+        /*
         let actualUser = []
         if(user.length > 1){
             console.log('MULTIPLOS USUÁRIOS NO MESMO NÚMERO E SEM FINALIZAR!')
@@ -207,8 +211,8 @@ class DataBaseAccess{
             actualUser = [0]
         if(actualUser.length > 1){
             console.log('NOW THIS IS A REAL PROBLEM')
-        }
-        return user[actualUser[0]]
+        }*/
+        return user[0]
     }
 
     async getUserRegister(num){
@@ -244,6 +248,8 @@ class DataBaseAccess{
             console.log(err)
         }
     }
+
+    async saveOnEffetivate(num, ){}
     /*
     async getUserInfo(num){
         let conn = await this.connect()

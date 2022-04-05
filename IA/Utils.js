@@ -29,9 +29,6 @@ class DataBase{                 //Guarda todos os usuários
         if(num in this.users) 
             return 0
         let user = await database.getUserRegister(num)
-        if(user.length > 1)
-            console.log('ERRO! MULTIPLOS USUÁRIOS NO MESMO NUMERO!')
-        user = user[0]
         if(user){
             this.users[num] = new User(num)
             await this.users[num].chat.goTo(user.talkat)
