@@ -207,7 +207,7 @@ class TagAnalyzer{
             return acc
         }, [false, '']))
         obj.outcomes = obj.tagInfo.map((i) => i[0])                         //[fulfill1_Res, fulfill2_Res]
-        obj.actions = chat.getActions()
+        obj.actions = step[cond].getActions()
     }
 }
 
@@ -239,17 +239,23 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
 
     newMessage(msg){     //Chamado quando uma mensagem é recebida
         try{
-            let stepTags = this.step.fulfill.getTags()                          
-            let tagInfo =  tags.getTagInfo(stepTags, msg)                       
-            let outcomes = tagInfo.map((i) => i[0])                             
-            if(![0, 1].includes(outcomes.filter((i) => i==true).length)){
+            let results = tags.getStepObject(this.step, msg, true)                             
+            if(![0, 1].includes(results.outcomes.filter((i) => i==true).length)){
                 console.log('PROBLEMA AQUI, MULTIPLA CONDIÇÃO DE FULFILL ENCONTRADA!')
             }
-            let opt = outcomes.indexOf(true)
-            let act = chat.getActions(this.talkat)
-            if(opt != -1)
-                return this.fulfillStep(stepTags[opt], tagInfo[opt], act.full[opt], opt)
-            return  this.unfulfillStep(act.unf, msg)
+            let opt = results.outcomes.indexOf(true)
+            if(opt != -1){
+                Object.keys(results).forEach((i) => { results[i] = results[i][opt] })
+                obj.opt = opt
+                return this.fulfillStep(results)
+            }
+            results = tags.getStepObject(this.step, msg, false)
+            if((Object.entries(this.step.unFulfill).length === 0) || results.tagInfo === [] || !results.outcomes.includes(true))
+                return st.default
+            opt = results.outcomes.indexOf(true)
+            Object.keys(results).forEach((i) => { results[i] = results[i][opt] })
+            obj.opt = opt
+            return this.unfulfillStep(results)
         } catch(err){
             console.log(err)
             return ['Houve um erro na minha execução. Se ele persistir, leia a descrição desse perfil.', 
@@ -257,30 +263,21 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
         }
     }
 
-    async fulfillStep(tag, info, act, opt){         //Chamada quando um step é fulfill
-        if(act)
-            await tags.handleAction(this, tag, {info, act})
-        await this.move.goNext(opt)
+    async fulfillStep(obj){         //Chamada quando um step é fulfill
+        if(obj.actions.length > 0)
+            await tags.handleAction(this, obj)
+        await this.move.goNext(obj.opt)
         return await this.setDataOntoText(this.step.msgs)
     }
 
-    async unfulfillStep(act, msg){
-        //Chamada quando um step não é fulfill
+    async unfulfillStep(obj){       //Chamada quando um step não é fulfill
         let st = this.step
-        if(Object.keys(st.unFulfill).length == 0)
-            return st.default
         try{
-            let stepTags = st.unFulfill.getTags()
-            let tagInfo = await this.getTagInfo(stepTags, msg)
-            let outcomes = tagInfo.map((i) => i[0])
-            if(tagInfo === [] || !outcomes.includes(true))
-                return this.step.default
-            let opt = outcomes.indexOf(true)
-            if(act[opt] === 'goBack')
-                await this.move.goBack(opt)
-            if(/goTo/g.test(act[opt]))
-                await this.move.goTo(act[opt].slice(5))
-            return await this.setDataOntoText(st.unFulfill[stepTags[opt][0]].msg)
+            if(obj.actions.length > 0)
+                await tags.handleAction(obj.actions)
+            if(st.unFulfill[obj.stepTags[0]].msg.length > 0)
+                return await this.setDataOntoText(st.unFulfill[obj.stepTags[0]].msg)
+            return await this.setDataOntoText(this.step.msgs)
         } catch(err){
             console.log('Erro no unfulfill!\n', err)
         }
