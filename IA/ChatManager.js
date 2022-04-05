@@ -272,16 +272,11 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
 
     async unfulfillStep(obj){       //Chamada quando um step não é fulfill
         let st = this.step
-        try{
-            if(obj.actions.length > 0)
-                await tags.handleAction(obj.actions)
-            if(st.unFulfill[obj.stepTags[0]].msg.length > 0)
-                return await this.setDataOntoText(st.unFulfill[obj.stepTags[0]].msg)
-            return await this.setDataOntoText(this.step.msgs)
-        } catch(err){
-            console.log('Erro no unfulfill!\n', err)
-        }
-        return st.default
+        if(obj.actions.length > 0)
+            await tags.handleAction(obj.actions)
+        if(st.unFulfill[obj.stepTags[0]].msg.length > 0)
+            return await this.setDataOntoText(st.unFulfill[obj.stepTags[0]].msg)
+        return await this.setDataOntoText(this.step.msgs)
     }
 
     async setDataOntoText(msg){
