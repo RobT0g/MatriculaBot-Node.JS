@@ -191,9 +191,10 @@ class DataBaseAccess{
 
     async getUserInfo(num){
         let user = (await db.request(`select * from registro where finished = '0' and numero = '${num}';`))[0]
-        if(user.length === 0){
-            return (await db.request(`select * from inst_cadastro where numero = '${num}';`))[0][0]
-        }
+        if(user.length > 0)
+            return user[0]
+        return (await db.request(`select * from inst_cadastro where numero = '${num}';`))[0][0]
+        
         /*
         let actualUser = []
         if(user.length > 1){
@@ -212,19 +213,6 @@ class DataBaseAccess{
         if(actualUser.length > 1){
             console.log('NOW THIS IS A REAL PROBLEM')
         }*/
-        return user[0]
-    }
-
-    async getUserRegister(num){
-        try{
-            let user = (await db.request(`select talkat from registro where numero = '${num}' and finished = '0';`))[0]
-            if(user.length > 0)
-                return user
-            return (await db.request(`select talkat from inst_cadastro where numero = '${num}';`))[0]
-        } catch(err){
-            console.log('Erro em getUserRegister.\n', err)
-            return null
-        }
     }
 
     addUser(num){

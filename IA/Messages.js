@@ -79,7 +79,7 @@ messages.push(...[{
 {
 'txt':['Sua matrícula é ~mat~. Você confirma?'],
 'full': new StepStuff([['~sim~']], [['effetivate']], []),
-'unf': new StepStuff([['~nao~']], ['goBack'], [['Ok, me envie o código de matrícula correto agora 🤨']]),
+'unf': new StepStuff([['~nao~']], [['goBack']], [['Ok, me envie o código de matrícula correto agora 🤨']]),
 'def':['Você só precisa me mandar um "sim" ou "não" para confirmar.'],
 'from':[2],
 'to':[4]},

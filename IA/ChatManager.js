@@ -127,7 +127,6 @@ class TagAnalyzer{
             '~nop~'     : ((msg) => {return [false, '']})
         }
         this.keyword = ((msg, tag) => {
-            console.log(tag)
             return [!tag.split(/[&]/g).some((j) => !(new RegExp(j, 'g').test(msg.filterMsg.toLowerCase()))), '']});
         this.getUpdateObj = (obj) => {
             let ret = {}
@@ -146,10 +145,10 @@ class TagAnalyzer{
                 await database.effetivate(num)
             }, 
             'goBack'        : async (man, obj, num) => {
-                await obj.move.goBack()
+                await man.move.goBack()
             },
             'updateUser': async (man, obj, num) => {
-                
+
             },
         }
     }
@@ -197,6 +196,7 @@ class TagAnalyzer{
     }
 
     async handleAction(manager, obj, num){
+        //console.log(obj)
         try{
             for(let i in obj.actions)
                 await this.actions[obj.actions[i]](manager, obj, num)
@@ -206,16 +206,20 @@ class TagAnalyzer{
     }
 
     getStepObject(step, msg, full = true){
-        let cond = full?'fulfill':'unFulfill'
-        let obj = { stepTags: step[cond].getTags() }                        //[[full1Tag1, full1Tag2], [full2Tag1]]
-        obj.tagInfo = obj.stepTags.map((i) =>  i.reduce((acc, j, k) => {    //[[f1Res, Data], [f2Res, Data]]
-            let t =  this.getTag(j, msg);
-            acc[0] = acc[0] || t[0];
-            acc[1] = k==0?t[1]:acc[1]
-            return acc
-        }, [false, '']))
-        obj.outcomes = obj.tagInfo.map((i) => i[0])                         //[fulfill1_Res, fulfill2_Res]
-        obj.actions = step[cond].getActions()
+        try{let cond = full?'fulfill':'unFulfill'
+            let obj = { stepTags: step[cond].getTags() }                        //[[full1Tag1, full1Tag2], [full2Tag1]]
+            obj.tagInfo = obj.stepTags.map((i) =>  i.reduce((acc, j, k) => {    //[[f1Res, Data], [f2Res, Data]]
+                let t =  this.getTag(j, msg);
+                acc[0] = acc[0] || t[0];
+                acc[1] = k==0?t[1]:acc[1]
+                return acc
+            }, [false, '']))
+            obj.outcomes = obj.tagInfo.map((i) => i[0])                         //[fulfill1_Res, fulfill2_Res]
+            obj.actions = step[cond].getActions()
+            return obj
+        } catch(err){
+            return {}
+        }
     }
 }
 
@@ -232,37 +236,38 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
             },
             goNext  : async (opt=0) => {        //Avança para o próximo step
                 this.talkat = chat.nextStepId(this.talkat, opt)
-                await this.refStep()
+                await this.move.refStep()
             },
             goBack  : async (opt=0) => {       //Retorna para o step anterior
                 this.talkat = chat.lastStepId(this.talkat, opt)
-                await this.refStep()
+                await this.move.refStep()
             },
-            goTo    : async (opt=0) => {          //Vai para um step específico
+            goTo    : async (newID) => {          //Vai para um step específico
                 this.talkat = newID
-                await this.refStep()
+                await this.move.refStep()
             },
         }
     }
 
     newMessage(msg){     //Chamado quando uma mensagem é recebida
         try{
-            let results = tags.getStepObject(this.step, msg, true)                             
+            let results = tags.getStepObject(this.step, msg, true)
+            console.log(results)                           
             if(![0, 1].includes(results.outcomes.filter((i) => i==true).length)){
                 console.log('PROBLEMA AQUI, MULTIPLA CONDIÇÃO DE FULFILL ENCONTRADA!')
             }
             let opt = results.outcomes.indexOf(true)
             if(opt != -1){
                 Object.keys(results).forEach((i) => { results[i] = results[i][opt] })
-                obj.opt = opt
+                results.opt = opt
                 return this.fulfillStep(results)
             }
             results = tags.getStepObject(this.step, msg, false)
             if((Object.entries(this.step.unFulfill).length === 0) || results.tagInfo === [] || !results.outcomes.includes(true))
-                return st.default
+                return this.step.default
             opt = results.outcomes.indexOf(true)
             Object.keys(results).forEach((i) => { results[i] = results[i][opt] })
-            obj.opt = opt
+            results.opt = opt
             return this.unfulfillStep(results)
         } catch(err){
             console.log(err)

@@ -28,10 +28,10 @@ class DataBase{                 //Guarda todos os usuários
     async userRegister(num){
         if(num in this.users) 
             return 0
-        let user = await database.getUserRegister(num)
+        let user = await database.getUserInfo(num)
         if(user){
             this.users[num] = new User(num)
-            await this.users[num].chat.goTo(user.talkat)
+            await this.users[num].chat.move.goTo(user.talkat)
             return 1
         }
         this.users[num] = new User(num)
