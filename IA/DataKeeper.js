@@ -56,8 +56,8 @@ class FormatedData{
     constructor(){
         this.cursosName = ['Administração', 'Engenharia da Computação', 'Física', 'Construção de Edifícios']
         this.cursos = ['adm', 'ec', 'fis', 'tce']
-        this.registerFields = {'~datanas~':'nascimento', '~mat~':'matricula', '~ano~': 'turma', 
-            '~addmatnums~': 'discId'}
+        this.altTags = {'datanas':'nascimento', 'mat':'matricula', 'ano': 'turma', 
+            'addmatnums': 'discId'}
         this.requests = {
             '~mat~'         : async (obj) => {
                 return (await db.request(`select matricula from registro where numero = '${obj.num}';`))[0][obj.matAt].matricula
@@ -229,17 +229,20 @@ class DataBaseAccess{
 
     addUser(num){
         try{
-            return db.request(`insert into inst_cadastro values (default, '${num}', '0')`)
+            return db.request(`insert into inst_cadastro values (default, '${num}', '0');`)
         } catch(err){
             console.log(err)
         }
     }
 
+
+
     async updateUser(num, obj){
         console.log(obj)
-        let line = Object.keys(obj).reduce((acc, i) => {acc += 
-            `${i in fd.registerFields?(fd.registerFields[i]):i.slice(1, -1)} = '${obj[i]}', `; 
-            return acc}, '').slice(0, -2)
+        let line = Object.keys(obj).reduce((acc, i) => {
+            acc += `${i in fd.altTags?fd.altTags[i]:i} = '${obj[i]}', `
+            return acc
+        }, '').slice(0, -2)
         try{
             if((await db.request(`select talkat from registro where numero = '${num}';`))[0].length > 0)
                 return db.request(`update registro set ${line} where numero = '${num}';`)
@@ -249,7 +252,19 @@ class DataBaseAccess{
         }
     }
 
-    async saveOnEffetivate(num, ){}
+    async saveOnEffetivate(num, sql, data){
+        let prev = (await db.request(`select * from effetivate where numero = '${num}';`))[0]
+        if(prev.length === 0)
+            return db.request(`insert into effetivate values ('${num}', '${sql}', '${data}');`)
+        return db.request(`update effetivate set query = '${sql}', data = '${data}' where numero = '${num}';`)
+    }
+
+    async effetivate(num){
+        let sql = (await db.request(`select query from effetivate where numero = '${num}';`))[0][0].query.split(';').slice(0, -1)
+        await db.request(`delete from effetivate where numero = '${num}';`)
+        for(let i in sql)
+            await db.request(sql[i].replaceAll(`"`, `'`) + ';')
+    }
     /*
     async getUserInfo(num){
         let conn = await this.connect()

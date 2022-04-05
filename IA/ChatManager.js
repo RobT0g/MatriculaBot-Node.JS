@@ -128,23 +128,28 @@ class TagAnalyzer{
         }
         this.keyword = ((msg, tag) => {
             console.log(tag)
-            return [!tag.split(/[&]/g).some((j) => !(new RegExp(j, 'g').test(msg.filterMsg.toLowerCase()))), '']})
+            return [!tag.split(/[&]/g).some((j) => !(new RegExp(j, 'g').test(msg.filterMsg.toLowerCase()))), '']});
+        this.getUpdateObj = (obj) => {
+            let ret = {}
+            ret[obj.stepTags[0]].slice(1, -1) = obj.tagInfo[1]
+            return ret
+        }
         this.actions = {
             'prepareUser'    : async (man, obj, num) => {
                 let user = await database.getUserInfo(num)
-                if('matricula' in user){
-                    await database.updateUser()
-                    //PAREI AQUI, TEM QUE REVER TODA ESSA FUNÇÃO PRA VER COMO FUNCIONA
-                }
+                let sql = `insert into registro (matricula, numero, talkat) values ("${obj.tagInfo[1]}", "${num}", "${user.talkat}"); delete from inst_cadastro where numero = "${num}";`
+                if('matricula' in user)
+                    sql = `update registro set matricula = "${obj.tagInfo[1]}" where numero = "${num}" and finished = "0";`
+                await database.saveOnEffetivate(num, sql, obj.tagInfo[1])
             },
-            'effetivateUser': async (obj) => {
-
+            'effetivate'    : async (man, obj, num) => {
+                await database.effetivate(num)
             }, 
-            'goBack'        : async (obj) => {
+            'goBack'        : async (man, obj, num) => {
                 await obj.move.goBack()
             },
-            'effetivate'    : async (obj) => {
-
+            'updateUser': async (man, obj, num) => {
+                
             },
         }
     }

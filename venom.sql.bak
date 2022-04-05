@@ -329,7 +329,7 @@ INSERT INTO `disc_tce` (`id`, `nome`, `periodo`, `ativa`, `carga`) VALUES
 --
 
 CREATE TABLE `effetivate` (
-  `numero` varchar(25) NOT NULL,
+  `matricula` varchar(20) NOT NULL,
   `query` text NOT NULL,
   `data` text,
   `tag` varchar(20)
@@ -997,6 +997,12 @@ ALTER TABLE `user_tce`
 --
 -- Restrições para despejos de tabelas
 --
+
+--
+-- Limitadores para a tabela `effetivate`
+--
+ALTER TABLE `effetivate`
+  ADD CONSTRAINT `effetivate_ibfk_1` FOREIGN KEY (`matricula`) REFERENCES `registro` (`matricula`);
 
 --
 -- Limitadores para a tabela `user_adm`
