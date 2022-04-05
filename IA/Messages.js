@@ -9,16 +9,17 @@ const messages = []
  */ 
 
 class StepStuff{
-    constructor(tags=[[]], actions=[''], msg=[[]]){
-        let t = typeof(tags)=='object'?(typeof(tags[0])=='object'?tags:[tags]):[[tags]]
-        let a = typeof(actions)=='object'?actions:[actions]
-        let m = typeof(msg)=='object'?(typeof(msg[0])=='object'?msg:[msg]):[[msg]]
-        for (let i in t)
-            this[t[i]] = { alts:t[i].splice(1), actions:(a[i]?a[i]:''), msg:(m[i]?m[i]:[]) }
+    constructor(tags=[], actions=[], msg=[]){
+        for (let i in tags)
+            this[tags[i][0]] = { alts:tags[i].slice(1), actions:(actions[i]?actions[i]:[]), msg:(msg[i]?msg[i]:[]) }
     }
 
     getTags(){
         return Object.keys(this).map((i) => {let j = [i]; j.push(...this[i].alts); return j})
+    }
+
+    getActions(){
+        return Object.keys(this).map((i) => this[i].actions)
     }
 }
 
@@ -69,7 +70,7 @@ messages.push(...[{
 
 {
 'txt':['Vou precisar de alguma informações suas. Primeiramente me informe seu código de matrícula.'],
-'full': new StepStuff([['~mat~']], ['updateUser'], []),
+'full': new StepStuff([['~mat~']], [['updateUser']], []),
 'unf': new StepStuff([['!num!']], [], [['Por favor, me mande um código de matrícula válido.']]),
 'def':['Preciso que me mande sua matrícula.'],
 'from':[1],
@@ -77,7 +78,7 @@ messages.push(...[{
 
 {
 'txt':['Sua matrícula é ~mat~. Você confirma?'],
-'full': new StepStuff([['~sim~']], ['effetivateUser'], []),
+'full': new StepStuff([['~sim~']], [['effetivateUser']], []),
 'unf': new StepStuff([['~nao~']], ['goBack'], [['Ok, me envie o código de matrícula correto agora 🤨']]),
 'def':['Você só precisa me mandar um "sim" ou "não" para confirmar.'],
 'from':[2],
@@ -85,7 +86,7 @@ messages.push(...[{
 
 {
 'txt':['Agora me informe seu nome completo.'],
-'full': new StepStuff([['~nome~']], ['updateUser'], []),
+'full': new StepStuff([['~nome~']], [['updateUser']], []),
 'unf': new StepStuff([['1-wrd']], [], [['Poderia rever o nome que você enviou?', 'Eu pedi que me enviasse ' + 
 'seu nome completo, mas você só me enviou uma palavra.']]),
 'def':['Por favor, me informe seu nome.'],
@@ -94,7 +95,7 @@ messages.push(...[{
 
 {
 'txt':['Seu nome completo é ~nome~. Você confirma?'],
-'full': new StepStuff([['~sim~']], ['effetivate'], []),
+'full': new StepStuff([['~sim~']], [['effetivate']], []),
 'unf': new StepStuff([['~nao~']], ['goBack'], [['Ok, me envie o nome correto agora 🤨']]),
 'def':['Você só precisa me mandar um "sim" ou "não" para confirmar.'],
 'from':[4],
@@ -102,7 +103,7 @@ messages.push(...[{
 
 {
 'txt':['Agora me informe seu Email.'],
-'full': new StepStuff([['~email~']], ['updateUser'], []),
+'full': new StepStuff([['~email~']], [['updateUser']], []),
 'unf': new StepStuff([['*@']], [], [['Me envie um email válido, por favor.']]),
 'def':['Preciso do seu email.'],
 'from':[5],
@@ -118,7 +119,7 @@ messages.push(...[{
 
 {
 'txt':['Agora preciso saber qual é o seu curso.'],
-'full': new StepStuff([['~curso~']], ['updateUser'], []),
+'full': new StepStuff([['~curso~']], [['updateUser']], []),
 'unf': new StepStuff([['~sim~', '~nao~']], [], [['Só precisa me enviar o nome do seu curso.']]),
 'def':['Por favor, me mande o nome do seu curso.', 'É preciso ser um dos 4 do nosso campus: ' + 
 'Administração, Engenharia da Computação, Física e Construção de Edifícios.'],
@@ -127,7 +128,7 @@ messages.push(...[{
 
 {
 'txt':['Beleza, e qual o ano da sua turma? (ano em que você ingressou na instituição)'],
-'full': new StepStuff([['~ano~']], ['updateUser'], []),
+'full': new StepStuff([['~ano~']], [['updateUser']], []),
 'unf': new StepStuff([['~sim~', '~nao~']], [], [['Só precisa me enviar o ano da sua turma.']]),
 'def':['Eu preciso do ano da sua turma, ou seja, o ano em que você entrou na instituição.'],
 'from':[8],
@@ -143,7 +144,7 @@ messages.push(...[{
 
 {
 'txt':['Me informe seu CPF.'],
-'full': new StepStuff([['~cpf~']], ['updateUser'], []),
+'full': new StepStuff([['~cpf~']], [['updateUser']], []),
 'unf': new StepStuff([['~num~']], [], [['Por favor, me envie um cpf válido.', 'Ele deve conter exatamente 11 ' + 
     'dígitos.']]),
 'def':['Por favor, me informe o seu CPF.'],
@@ -182,7 +183,7 @@ messages.push(...[{
     ' uma vez.', 'Após você me enviar eu informarei os requisitos das matérias selecionadas e você terá' + 
     ' a opção de confirmar a seleção ou voltar e selecionar novamente.', 'Se quiser, você pode enviar "voltar"' + 
     ' para voltar sem escolher nenhuma matéria.', 'Você pode escolher as matérias agora.'],
-'full': new StepStuff([['~matnums~'], ['add_discs']], [], []),
+'full': new StepStuff([['~matnums~']], [['add_discs']], []),
 'unf': basicMatSulUnf,
 'def':['Basta me enviar "Adicionar" ou "Retirar" para continuarmos.'],
 'from':[13],
@@ -197,7 +198,7 @@ messages.push(...[{
     ' uma vez.', 'Após você me enviar eu informarei os requisitos das matérias selecionadas e você terá' + 
     ' a opção de confirmar a seleção ou selecionar novamente.', 'Se quiser, você pode enviar "voltar"' + 
     ' para voltar sem escolher nenhuma matéria.', 'Você pode escolher as matérias agora.'],
-'full': new StepStuff([['~matnums~'], ['del_discs']], [], []),
+'full': new StepStuff([['~matnums~']], [['del_discs']], []),
 'unf': basicMatSulUnf,
 'def':['Basta me enviar "Adicionar" ou "Retirar" para continuarmos.'],
 'from':[13],
@@ -206,7 +207,7 @@ messages.push(...[{
 {
 'txt':['Você selecionou essas matérias: ~inst_mat_sel~.', 'Está tudo certo com a seleção? Basta' + 
     ' responder com "sim" ou "não".'],
-'full': new StepStuff([['~sim~'], ['effetivate']], [], []),
+'full': new StepStuff([['~sim~']], [['effetivate']], []),
 'unf': new StepStuff([['~nao~']], [['goBack']], []),
 'def':['Basta me enviar "Adicionar" ou "Retirar" para continuarmos.'],
 'from':[13],
@@ -215,7 +216,7 @@ messages.push(...[{
 {
 'txt':['Aqui a gente para.'],
 'full': new StepStuff([['~nop~']], [], []),
-'unf': new StepStuff([['~nao~']], ['goBack'], [['Ok, me envie o nome correto agora 🤨']]),
+'unf': new StepStuff([['~nao~']], [['goBack']], [['Ok, me envie o nome correto agora 🤨']]),
 'def':['Você só precisa me mandar um "sim" ou "não" para confirmar.'],
 'from':[13],
 'to':[14]},

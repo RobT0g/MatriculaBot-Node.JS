@@ -47,19 +47,12 @@ class ChatFlow{     //Guarda todo o fluxo
         }
     }
     //==================================================//
-
-    //============== Funções de Utilidade ==============//
-    getActions(id){
-        let st = this.currentStep(id)
-        return {full: Object.keys(st.fulfill).map((i) => st.fulfill[i].actions), unf: Object.keys(st.unFulfill).map((i) => st.unFulfill[i].actions)}
-    }
-    //==================================================//
 }
 
 class ChatStep{             //Unidade mínima de conversação
     constructor(msg, fulfill, unFulfill, defaul=[], from, to){
         this.msgs = msg
-        this.fllfill = fulfill
+        this.fulfill = fulfill
         this.unFulfill = unFulfill
         this.default = defaul
         this.comesFrom = typeof(from)==='object'?from:[from]

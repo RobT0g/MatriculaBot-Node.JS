@@ -197,16 +197,17 @@ class TagAnalyzer{
         }
     }
 
-    getTagInfo(stepTags, msg){
-        return stepTags.map((i) =>  i.reduce((acc, j, k) => {
-            let t =  tags.getTag(j, msg);
+    getStepObject(step, msg, full = true){
+        let cond = full?'fulfill':'unFulfill'
+        let obj = { stepTags: step[cond].getTags() }                        //[[full1Tag1, full1Tag2], [full2Tag1]]
+        obj.tagInfo = obj.stepTags.map((i) =>  i.reduce((acc, j, k) => {    //[[f1Res, Data], [f2Res, Data]]
+            let t =  this.getTag(j, msg);
             acc[0] = acc[0] || t[0];
             acc[1] = k==0?t[1]:acc[1]
             return acc
         }, [false, '']))
-    }
-
-    getStepObject(step, msg, full){
+        obj.outcomes = obj.tagInfo.map((i) => i[0])                         //[fulfill1_Res, fulfill2_Res]
+        obj.actions = chat.getActions()
     }
 }
 
@@ -238,9 +239,9 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
 
     newMessage(msg){     //Chamado quando uma mensagem é recebida
         try{
-            let stepTags = this.step.fulfill.getTags()                          //[[full1Tag1, full1Tag2], [full2Tag1]]
-            let tagInfo =  tags.getTagInfo(stepTags, msg)                       //[[f1Res, Data], [f2Res, Data]]
-            let outcomes = tagInfo.map((i) => i[0])                             //[fulfill1_Res, fulfill2_Res]
+            let stepTags = this.step.fulfill.getTags()                          
+            let tagInfo =  tags.getTagInfo(stepTags, msg)                       
+            let outcomes = tagInfo.map((i) => i[0])                             
             if(![0, 1].includes(outcomes.filter((i) => i==true).length)){
                 console.log('PROBLEMA AQUI, MULTIPLA CONDIÇÃO DE FULFILL ENCONTRADA!')
             }
