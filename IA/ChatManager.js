@@ -280,6 +280,7 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
     }
 
     async setDataOntoText(msg){
+        return msg  //REMOVE THIS WHEN DATABASE ACCESS IS SOMEWHAT FUNCTIONAL!!!
         try {
             return await database.setDataOntoText(msg, {'num': this.num})
         } catch(err){

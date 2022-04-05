@@ -168,7 +168,7 @@ messages.push(...[{
     ' você me mandou, assim como todas as matérias que você escolheu retirar ou adicionar. Além disso, você' + 
     ' pode me enviar "ver matriz curricular" ou "ver formulário" para revê-los.', 'Para continuarmos agora,'+
     ' você pode me enviar "adicionar" ou "retirar" para selecionar as matérias.'],
-'full': new StepStuff([['adicionar'], ['retirar']], [], []),
+'full': new StepStuff([['~nop~']], [], []),//new StepStuff([['adicionar'], ['retirar']], [], []),
 'unf': basicMatSulUnf,
 'def':['Só dizer alguma das opções para continuarmos.'],
 'from':[12],
