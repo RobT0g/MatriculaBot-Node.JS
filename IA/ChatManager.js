@@ -15,6 +15,7 @@ import { database } from './DataKeeper.js'
 */
 class TagAnalyzer{
     constructor(){
+        this.altTags = {'datanas':'nascimento', 'mat':'matricula', 'ano': 'turma', 'addmatnums': 'discId'}
         this.tagfunc = {
             '~sim~'     : ((msg) => {return [(['sim', 'ok', 'certo', 'beleza', 'concordo'].some((x) => msg.wrds.includes(x)) || 
             msg.wrds.includes('tudo') && msg.wrds.includes('bem')) &&
@@ -130,16 +131,17 @@ class TagAnalyzer{
             return [!tag.split(/[&]/g).some((j) => !(new RegExp(j, 'g').test(msg.filterMsg.toLowerCase()))), '']});
         this.getUpdateObj = (obj) => {
             let ret = {}
-            ret[obj.stepTags[0]].slice(1, -1) = obj.tagInfo[1]
+            let tag = obj.stepTags[0].slice(1, -1)
+            ret[tag in this.altTags?this.altTags[tag]:tag] = obj.tagInfo[1]
             return ret
         }
         this.actions = {
-            'prepareUser'    : async (man, obj, num) => {
+            'prepareUser'   : async (man, obj, num) => {
                 let user = await database.getUserInfo(num)
                 let sql = `insert into registro (matricula, numero, talkat) values ("${obj.tagInfo[1]}", "${num}", "${user.talkat}"); delete from inst_cadastro where numero = "${num}";`
                 if('matricula' in user)
                     sql = `update registro set matricula = "${obj.tagInfo[1]}" where numero = "${num}" and finished = "0";`
-                await database.saveOnEffetivate(num, sql, obj.tagInfo[1])
+                await database.saveOnEffetivate(num, sql, this.getUpdateObj(obj))
             },
             'effetivate'    : async (man, obj, num) => {
                 await database.effetivate(num)
@@ -147,9 +149,12 @@ class TagAnalyzer{
             'goBack'        : async (man, obj, num) => {
                 await man.move.goBack()
             },
-            'updateUser': async (man, obj, num) => {
-
+            'updateUser'    : async (man, obj, num) => {
+                await database.updateUser(num, this.getUpdateObj(obj))
             },
+            'insUpdateUser' : async (man, obj, num) => {
+                let prev
+            }
         }
     }
 
@@ -280,7 +285,7 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
         if(obj.actions.length > 0)
             await tags.handleAction(this, obj, this.num)
         await this.move.goNext(obj.opt)
-        return await this.setDataOntoText(this.step.msgs)
+        return await this.setDataOntoText(this.step.msgs, num)
     }
 
     async unfulfillStep(obj){       //Chamada quando um step não é fulfill
@@ -288,14 +293,15 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
         if(obj.actions.length > 0)
             await tags.handleAction(this, obj, this.num)
         if(st.unFulfill[obj.stepTags[0]].msg.length > 0)
-            return await this.setDataOntoText(st.unFulfill[obj.stepTags[0]].msg)
-        return await this.setDataOntoText(this.step.msgs)
+            return await this.setDataOntoText(st.unFulfill[obj.stepTags[0]].msg, num)
+        return await this.setDataOntoText(this.step.msgs, num)
     }
 
-    async setDataOntoText(msg){
-        return msg  //REMOVE THIS WHEN DATABASE ACCESS IS SOMEWHAT FUNCTIONAL!!!
+    async setDataOntoText(msg, num){
         try {
-            return await database.setDataOntoText(msg, {'num': this.num})
+            if(!msg.some((i) => /[~]\w+[~]/g.test(i)))
+                return msg
+            return database.setDataOntoText(num)
         } catch(err){
             console.log('Erro em setDataOntoText (ChatManager).\n', err)
             return msg

@@ -56,8 +56,6 @@ class FormatedData{
     constructor(){
         this.cursosName = ['Administração', 'Engenharia da Computação', 'Física', 'Construção de Edifícios']
         this.cursos = ['adm', 'ec', 'fis', 'tce']
-        this.altTags = {'datanas':'nascimento', 'mat':'matricula', 'ano': 'turma', 
-            'addmatnums': 'discId'}
         this.requests = {
             '~mat~'         : async (obj) => {
                 return (await db.request(`select matricula from registro where numero = '${obj.num}';`))[0][obj.matAt].matricula
@@ -194,25 +192,6 @@ class DataBaseAccess{
         if(user.length > 0)
             return user[0]
         return (await db.request(`select * from inst_cadastro where numero = '${num}';`))[0][0]
-        
-        /*
-        let actualUser = []
-        if(user.length > 1){
-            console.log('MULTIPLOS USUÁRIOS NO MESMO NÚMERO E SEM FINALIZAR!')
-            //Coment this if it is problematic
-            user.forEach(async (i, k) => {
-                if(!(Object.keys(i).map((j) => i[j]).includes(null))){
-                    console.log('USUÁRIO EM REGISTRO FINALIZADO NAO COLOCOU O CADASTRO COMO FINALIZADO')
-                    await db.request(`update registro set finished = '1' where matricula = '${i.matricula}';`)
-                } else
-                    actualUser.push(k)
-            })
-            //Untill here
-        } else
-            actualUser = [0]
-        if(actualUser.length > 1){
-            console.log('NOW THIS IS A REAL PROBLEM')
-        }*/
     }
 
     addUser(num){
@@ -223,17 +202,15 @@ class DataBaseAccess{
         }
     }
 
-
-
     async updateUser(num, obj){
         console.log(obj)
         let line = Object.keys(obj).reduce((acc, i) => {
-            acc += `${i in fd.altTags?fd.altTags[i]:i} = '${obj[i]}', `
+            acc += `${i} = '${obj[i]}', `
             return acc
         }, '').slice(0, -2)
         try{
-            if((await db.request(`select talkat from registro where numero = '${num}';`))[0].length > 0)
-                return db.request(`update registro set ${line} where numero = '${num}';`)
+            let sql = `update registro set ${line} where numero = "${num}';`
+            await this.saveOnEffetivate(num, sql, obj)
             return db.request(`update inst_cadastro set ${line} where numero = '${num}';`)
         } catch(err){
             console.log(err)
@@ -243,8 +220,12 @@ class DataBaseAccess{
     async saveOnEffetivate(num, sql, data){
         let prev = (await db.request(`select * from effetivate where numero = '${num}';`))[0]
         if(prev.length === 0)
-            return db.request(`insert into effetivate values ('${num}', '${sql}', '${data}');`)
-        return db.request(`update effetivate set query = '${sql}', data = '${data}' where numero = '${num}';`)
+            return db.request(`insert into effetivate values ('${num}', '${sql}', '${JSON.stringify(data)}');`)
+        return db.request(`update effetivate set query = '${sql}', data = '${JSON.stringify(data)}' where numero = '${num}';`)
+    }
+
+    async getEffetivate(num){
+        return JSON.parse((await db.request(`select data from effetivate where numero = '${num}';`))[0][0].data)
     }
 
     async effetivate(num){
@@ -253,112 +234,10 @@ class DataBaseAccess{
         for(let i in sql)
             await db.request(sql[i].replaceAll(`"`, `'`) + ';')
     }
-    /*
-    async getUserInfo(num){
-        let conn = await this.connect()
-        try{
-            let data = (await conn.query(`select * from cadastro where numero = '${num}';`))[0][0]
-            data.curso = data.curso?Number(data.curso)-1:null
-            return data
-        }catch(err){
-            console.log('Erro em getCurso.\n', err)
-            return null
-        }
-    }
     
-    async setDataOntoText(msg, obj) {
-        let msgs = msg.map((i) => i)
-        let info = await this.getUserInfo(obj.num)
-        for(let i in info)
-            if(info[i])
-                obj[i] = info[i]
-        if(obj.curso){
-            obj = fd.setInfoOnObj(obj, this.disciplinasId)
-            obj.curso = fd.cursos[obj.curso-1]
-            console.log(obj.curso)
-        }
-        try{
-            for(let i in msgs){
-                let tags = msgs[i].match(/[~]\w+[~]/g)
-                for(let j in tags){
-                    let sql = fd.getSQL(tags[j], obj)
-                    let conn = await this.connect()
-                    let data = (await conn.query(sql))[0]
-                    msgs[i] = fd.formateData(msgs[i], data, tags[j])
-                }
-            }
-        } catch(err){
-            console.log('Erro no setDataOntoText (database).\n', err)
-        }
-        return msgs
-    }
-
-    async registerDiscs(num, items, add){
-        let info = await this.getUserInfo(num)
-        let conn = await this.connect()
-        try{
-            let discs = await conn.query(`select discId, adicionar from user_${fd.cursos[(info.curso)]} 
-                where matricula = '${info.matricula}';`)
-            let modifier = {add: [], del: []}
-            let ondb = []
-            //console.log(discs[0])
-            discs[0].forEach((i) => {
-                if(items.includes(String(i.discId))){
-                    if((i.adicionar == '1') !== add)
-                        modifier.del.push(String(i.discId))
-                    else
-                        ondb.push(String(i.discId))
-                }
-            })
-            items.forEach((i) => {
-                if(!(ondb.includes(i))){
-                    modifier.add.push(i)
-                }
-            })
-            let sql = ''
-            if(modifier.del.length > 0){
-                sql += ` delete from user_${fd.cursos[(info.curso)]} where ${modifier.del.reduce((acc, i) => {
-                    acc += `discId = "${i}" or `;
-                    return acc
-                }, '').slice(0, -4)};`
-            }
-            sql += `insert into user_${fd.cursos[(info.curso)]} values ${modifier.add.reduce((acc, i) => {
-                acc += (`(default, "${info.matricula}", "${i}", "${add?'1':'0'}"), `);
-                return acc;
-            }, '').slice(0, -2)};`
-            let exists = (await conn.query(`select * from inst_save where matricula = '${info.matricula}';`))[0].length == 0
-            if(exists)
-                await conn.query(`insert into inst_save value (default, '${info.matricula}', '${sql}')`)
-            else
-                await conn.query(`update inst_save set query = '${sql}' where matricula = '${info.matricula}';`)
-        } catch(err){
-            console.log('Erro em registerDiscs.\n', err)
-        }
-    }
-
-    async effetivate(num){
-        try{
-            let info = await this.getUserInfo(num)
-            let conn = await this.connect()
-            let sql = (await conn.query(`select query from inst_save where matricula = '${info.matricula}';`)
-                )[0][0].query.split(';')
-            sql.pop()
-            for(let i in sql){
-                await conn.query(sql[i].replaceAll(`"`, `'`) + ';')
-            }
-            await conn.query(`delete from inst_save where matricula = '${info.matricula}';`)  
-        } catch(err){
-            console.log('Erro no effetivate.\n', err)
-        }
+    async setDataOntoText(msg, num){
         
     }
-
-    async uploadIntoInstSave(num, sql){
-        let info = await this.getUserInfo(num)
-        let conn = await this.connect()
-        await conn.query(`insert into inst_save values (default, '${info.matricula}', '${sql}');`)
-    }
-    */
 }
 
 const database = new DataBaseAccess()
