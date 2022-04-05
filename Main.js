@@ -21,10 +21,8 @@ create({
 function start(client) {
     client.onMessage(async (message) => {
         let num = message.from
-        await TextSender.resolveMessages(num)
+        await TextSender.resolveMessages(num)       //Checa se o bot está enviando mensagens para o usuário, caso sim, espera que ele termine
         if(TextSender.unvalidNumber(num))
-            return
-        if(num !== '559888470242@c.us')
             return
         try{
             let userOn = await usersBank.userRegister(num)

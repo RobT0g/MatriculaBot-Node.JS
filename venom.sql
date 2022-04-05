@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 31-Mar-2022 às 17:21
+-- Tempo de geração: 05-Abr-2022 às 03:17
 -- Versão do servidor: 10.4.22-MariaDB
 -- versão do PHP: 7.4.27
 
@@ -325,6 +325,19 @@ INSERT INTO `disc_tce` (`id`, `nome`, `periodo`, `ativa`, `carga`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Estrutura da tabela `effetivate`
+--
+
+CREATE TABLE `effetivate` (
+  `matricula` varchar(20) NOT NULL,
+  `query` text NOT NULL,
+  `data` text,
+  `tag` varchar(20)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
 -- Estrutura da tabela `inst_cadastro`
 --
 
@@ -332,18 +345,6 @@ CREATE TABLE `inst_cadastro` (
   `id` int(10) UNSIGNED NOT NULL,
   `numero` varchar(25) DEFAULT NULL,
   `talkat` int(10) UNSIGNED DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Estrutura da tabela `inst_save`
---
-
-CREATE TABLE `inst_save` (
-  `id` int(11) NOT NULL,
-  `matricula` varchar(20) NOT NULL,
-  `query` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -381,7 +382,7 @@ CREATE TABLE `registro` (
   `curso` enum('0','1','2','3') DEFAULT NULL,
   `turma` year(4) DEFAULT NULL,
   `cpf` char(11) DEFAULT NULL,
-  `finished` boolean(1) DEFAULT '0';
+  `finished` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -820,18 +821,17 @@ ALTER TABLE `disc_tce`
   ADD UNIQUE KEY `nome` (`nome`);
 
 --
+-- Índices para tabela `disc_tce`
+--
+ALTER TABLE `effetivate`
+  ADD PRIMARY KEY (`matricula`);
+
+--
 -- Índices para tabela `inst_cadastro`
 --
 ALTER TABLE `inst_cadastro`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `numero` (`numero`);
-
---
--- Índices para tabela `inst_save`
---
-ALTER TABLE `inst_save`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `matricula` (`matricula`);
 
 --
 -- Índices para tabela `messages`
@@ -941,12 +941,6 @@ ALTER TABLE `inst_cadastro`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de tabela `inst_save`
---
-ALTER TABLE `inst_save`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT de tabela `messages`
 --
 ALTER TABLE `messages`
@@ -1003,6 +997,12 @@ ALTER TABLE `user_tce`
 --
 -- Restrições para despejos de tabelas
 --
+
+--
+-- Limitadores para a tabela `effetivate`
+--
+ALTER TABLE `effetivate`
+  ADD CONSTRAINT `effetivate_ibfk_1` FOREIGN KEY (`matricula`) REFERENCES `registro` (`matricula`);
 
 --
 -- Limitadores para a tabela `user_adm`
