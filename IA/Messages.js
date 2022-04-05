@@ -69,7 +69,7 @@ messages.push(...[{
 
 {
 'txt':['Vou precisar de alguma informações suas. Primeiramente me informe seu código de matrícula.'],
-'full': new StepStuff([['~mat~']], ['effetivateUser'], []),
+'full': new StepStuff([['~mat~']], ['updateUser'], []),
 'unf': new StepStuff([['!num!']], [], [['Por favor, me mande um código de matrícula válido.']]),
 'def':['Preciso que me mande sua matrícula.'],
 'from':[1],
@@ -77,7 +77,7 @@ messages.push(...[{
 
 {
 'txt':['Sua matrícula é ~mat~. Você confirma?'],
-'full': new StepStuff([['~sim~']], [], []),
+'full': new StepStuff([['~sim~']], ['effetivateUser'], []),
 'unf': new StepStuff([['~nao~']], ['goBack'], [['Ok, me envie o código de matrícula correto agora 🤨']]),
 'def':['Você só precisa me mandar um "sim" ou "não" para confirmar.'],
 'from':[2],
@@ -94,7 +94,7 @@ messages.push(...[{
 
 {
 'txt':['Seu nome completo é ~nome~. Você confirma?'],
-'full': new StepStuff([['~sim~']], [], []),
+'full': new StepStuff([['~sim~']], ['effetivate'], []),
 'unf': new StepStuff([['~nao~']], ['goBack'], [['Ok, me envie o nome correto agora 🤨']]),
 'def':['Você só precisa me mandar um "sim" ou "não" para confirmar.'],
 'from':[4],

@@ -130,28 +130,20 @@ class TagAnalyzer{
             console.log(tag)
             return [!tag.split(/[&]/g).some((j) => !(new RegExp(j, 'g').test(msg.filterMsg.toLowerCase()))), '']})
         this.actions = {
-            'goBack'        : async (obj) => {
-                await obj.goBack()
-            },
-            'effetivateUser': async (obj) => {
-
-            },
             'updateUser'    : async (obj, tag, args) => {
                 let data = new Object()
                 data[tag] = args.info[1]
                 await database.updateUser(obj.num, data)
             },
-            'add_discs'     : async (obj, tag, args) => {
-                let data = args.info[1]
-                await database.registerDiscs(obj.num, data, true)
+            'effetivateUser': async (obj) => {
+
             }, 
-            'del_discs'     : async (obj, tag, args) => {
-                let data = args.info[1]
-                await database.registerDiscs(obj.num, data, false)
-            }, 
-            'effetivate'    : async (obj, tag, args) => {
-                await database.effetivate(obj.num)
-            }, 
+            'goBack'        : async (obj) => {
+                await obj.move.goBack()
+            },
+            'effetivate'    : async (obj) => {
+
+            },
         }
     }
 
@@ -204,37 +196,6 @@ class TagAnalyzer{
             console.log(err)
         }
     }
-}
-
-const tags = new TagAnalyzer()
-
-class ChatManager{  //Cada usuário contém uma instância do manager, para facilitar a movimentação no flow
-    constructor(num){
-        this.talkat = 0
-        this.num = num
-    }
-
-    //======================== Movimentação ========================//
-    async refStep(){          //Atualiza o step atual de acordo com o id
-        this.step = chat.currentStep(this.talkat)
-        await database.updateUser(this.num, {talkat: this.talkat})
-    }
-
-    async goNext(opt=0){        //Avança para o próximo step
-        this.talkat = chat.nextStepId(this.talkat, opt)
-        await this.refStep()
-    }
-
-    async goBack(opt=0){        //Retorna para o step anterior
-        this.talkat = chat.lastStepId(this.talkat, opt)
-        await this.refStep()
-    }
-
-    async goTo(newID){           //Vai para um step específico
-        this.talkat = newID
-        await this.refStep()
-    }
-    //==============================================================//
 
     getTagInfo(stepTags, msg){
         return stepTags.map((i) =>  i.reduce((acc, j, k) => {
@@ -245,61 +206,82 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
         }, [false, '']))
     }
 
-    async newMessage(msg){     //Chamado quando uma mensagem é recebida
-        try{
-            let stepTags = this.step.fullfill.getTags()             //[[full1Tag1, full1Tag2], [full2Tag1]]
-            let tagInfo =  this.getTagInfo(stepTags, msg)           //[[f1Res, Data], [f2Res, Data]]
-            let outcomes = tagInfo.map((i) => i[0])                 //[fullfill1_Res, fullfill2_Res]
-            if(![0, 1].includes(outcomes.filter((i) => i==true).length)){   //Para testes
-                console.log('PROBLEMA AQUI, MULTIPLA CONDIÇÃO DE FULLFILL ENCONTRADA!')
-            }
-            let act = chat.getActions(this.talkat)
-            let opt = outcomes.indexOf(true)
-            if(opt != -1)
-                return await this.fullfillStep(stepTags[opt], tagInfo[opt], act.full[opt], opt)
-            return await this.unfullfillStep(act.unf, msg)
-        } catch(err){
-            console.log(err)
-            return 'ERRO ERRO ERRO ERRO'
+    getStepObject(step, msg, full){
+    }
+}
+
+const tags = new TagAnalyzer()
+
+class ChatManager{  //Cada usuário contém uma instância do manager, para facilitar a movimentação no flow
+    constructor(num){
+        this.talkat = 0
+        this.num = num
+        this.move = {
+            refStep : async() => {          //Atualiza o step atual de acordo com o id
+                this.step = chat.currentStep(this.talkat)
+                await database.updateUser(this.num, {talkat: this.talkat})
+            },
+            goNext  : async (opt=0) => {        //Avança para o próximo step
+                this.talkat = chat.nextStepId(this.talkat, opt)
+                await this.refStep()
+            },
+            goBack  : async (opt=0) => {       //Retorna para o step anterior
+                this.talkat = chat.lastStepId(this.talkat, opt)
+                await this.refStep()
+            },
+            goTo    : async (opt=0) => {          //Vai para um step específico
+                this.talkat = newID
+                await this.refStep()
+            },
         }
     }
 
-    async fullfillStep(tag, info, act, opt){
-        //Chamada quando um step é fullfill
+    newMessage(msg){     //Chamado quando uma mensagem é recebida
         try{
-            if(act)
-                await tags.handleAction(this, tag, {info, act})
-            /*if(act === 'register'){
-                let data = new Object()
-                data[tags.columns[tag[0]]] = info[1]
-                await database.updateUser(this.num, data)
-            }*/
+            let stepTags = this.step.fulfill.getTags()                          //[[full1Tag1, full1Tag2], [full2Tag1]]
+            let tagInfo =  tags.getTagInfo(stepTags, msg)                       //[[f1Res, Data], [f2Res, Data]]
+            let outcomes = tagInfo.map((i) => i[0])                             //[fulfill1_Res, fulfill2_Res]
+            if(![0, 1].includes(outcomes.filter((i) => i==true).length)){
+                console.log('PROBLEMA AQUI, MULTIPLA CONDIÇÃO DE FULFILL ENCONTRADA!')
+            }
+            let opt = outcomes.indexOf(true)
+            let act = chat.getActions(this.talkat)
+            if(opt != -1)
+                return this.fulfillStep(stepTags[opt], tagInfo[opt], act.full[opt], opt)
+            return  this.unfulfillStep(act.unf, msg)
         } catch(err){
-            console.log('Erro ao chamar o registro do banco de dados.\n', err)
+            console.log(err)
+            return ['Houve um erro na minha execução. Se ele persistir, leia a descrição desse perfil.', 
+                'Poderia repetir o que havia tentado dizer antes?']
         }
-        await this.goNext(opt)
+    }
+
+    async fulfillStep(tag, info, act, opt){         //Chamada quando um step é fulfill
+        if(act)
+            await tags.handleAction(this, tag, {info, act})
+        await this.move.goNext(opt)
         return await this.setDataOntoText(this.step.msgs)
     }
 
-    async unfullfillStep(act, msg){
-        //Chamada quando um step não é fullfill
+    async unfulfillStep(act, msg){
+        //Chamada quando um step não é fulfill
         let st = this.step
-        if(Object.keys(st.unFullfill).length == 0)
+        if(Object.keys(st.unFulfill).length == 0)
             return st.default
         try{
-            let stepTags = st.unFullfill.getTags()
+            let stepTags = st.unFulfill.getTags()
             let tagInfo = await this.getTagInfo(stepTags, msg)
             let outcomes = tagInfo.map((i) => i[0])
             if(tagInfo === [] || !outcomes.includes(true))
                 return this.step.default
             let opt = outcomes.indexOf(true)
             if(act[opt] === 'goBack')
-                await this.goBack(opt)
+                await this.move.goBack(opt)
             if(/goTo/g.test(act[opt]))
-                await this.goTo(act[opt].slice(5))
-            return await this.setDataOntoText(st.unFullfill[stepTags[opt][0]].msg)
+                await this.move.goTo(act[opt].slice(5))
+            return await this.setDataOntoText(st.unFulfill[stepTags[opt][0]].msg)
         } catch(err){
-            console.log('Erro no unfullfill!\n', err)
+            console.log('Erro no unfulfill!\n', err)
         }
         return st.default
     }
