@@ -331,7 +331,7 @@ INSERT INTO `disc_tce` (`id`, `nome`, `periodo`, `ativa`, `carga`) VALUES
 CREATE TABLE `effetivate` (
   `numero` varchar(25) NOT NULL,
   `query` text NOT NULL,
-  `data` text,
+  `data` varchar(75),
   `tag` varchar(20)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
