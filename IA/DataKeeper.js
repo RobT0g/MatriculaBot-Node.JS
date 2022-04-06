@@ -236,7 +236,22 @@ class DataBaseAccess{
     }
     
     async setDataOntoText(msg, num){
-        
+        let txt = msg.map((i) => i)
+        let info = {}
+        try{
+            for(let i in txt){
+                let tags = txt[i].match(/[~]\w+[~]/g)
+                for(let j in tags){
+                    if(!(tags[j] in info)){
+                        info[tags[j]] = fd.requests[tags[j]](num)
+                    }
+                    txt[i] = txt[i].replaceAll(tags[j], info[tags[j]])
+                }
+            }
+        }catch(err){
+            console.log('Erro no setDataOntoText!\n', err)
+        }
+        return txt
     }
 }
 
