@@ -7,6 +7,7 @@ import { mysql } from '../Dependencies/Index.js'
  class DataBaseCon{
     constructor(){
         this.loaded = false
+        this.cursos = ['adm', 'ec', 'fis', 'tce']
     }
 
     async connect(){
@@ -35,6 +36,7 @@ import { mysql } from '../Dependencies/Index.js'
             group by periodo;`))[0]).map((j) => j.id))
         }
         this.loaded = true
+        console.log(this.disciplinasId)
     }
 
     async request(sql) {
@@ -42,7 +44,7 @@ import { mysql } from '../Dependencies/Index.js'
             await this.load()
         try {
             let conn = await this.connect()
-            //console.log(sql)
+            console.log(sql)
             return (await conn.query(sql))
         } catch (err) {
             console.log('Erro no request.\n', err)
@@ -84,26 +86,30 @@ class FormatedData{
             '~cpf~'         : async (num) => {
                 return this.requests.userData('cpf', num)
             },
-            '~recdisc~'     : async (obj) => {
-                let info = (await db.request(`select * from registro where numero = '${obj.num}';`))[0][obj.matAt]
-                let data = (await db.request(`select u.discId, d.nome, d.carga, u.adicionar from 
-                    user_${this.cursos[info.curso]} as u join disc_${this.cursos[info.curso]} as d 
-                    on u.discId = d.id where u.matricula = '${info.matricula}' order by u.discId;`))[0]
+            '~recdisc~'     : async (num) => {
+                let info = (await db.request(`select * from registro where numero = '${num}' and finished = '0';`))[0][0]
+                let y = new Date().getFullYear() - info.turma
+                let req = db.disciplinasId[this.cursos[info.curso]][(y >= db.disciplinasId[this.cursos[info.curso]].length)?-1:y]
+                let data = (await db.request(`select id, nome, carga from disc_${this.cursos[info.curso]} 
+                    where id not in (select discId from req_${this.cursos[info.curso]} where 
+                    reqId >= '${req}') and ativa = '1';`))[0]
                 let retn = ''
                 data.forEach((i, k) => {
                     retn += `\n${i.id} - ${i.nome} (${i.carga} horas)${k == data.length-1?'.':';'}`
                 })
                 return retn 
             },
-            '~userinfo~'    : async (obj) => {
-                let data = (await db.request(`select * from registro where numero = '${obj.num}';`))[0][obj.matAt]
+            '~userinfo~'    : async (num) => {
+                let data = (await db.request(`select * from registro where numero = '${num}' and finished = '0';;`))[0][0]
                 return `\n> Nome: ${data.nome};\n> Matricula: ${data.matricula};\n> Email: ${data.email};\n` + 
                     `> Curso: ${this.cursosName[data.curso]} turma de ${data.turma};\n` + 
                     `> CPF: ${data.cpf}.`
             },
-            '~discesc~'     : async (obj) => { 
-                let data = (await db.request(`select u.discId, d.nome, d.carga, u.adicionar from user_-curso- as u 
-                join disc_-curso- as d on u.discId = d.id where u.matricula = '-matricula-' order by u.discId;`))[0]
+            '~discesc~'     : async (num) => { 
+                let info = (await db.request(`select * from registro where numero = '${num}' and finished = '0';`))[0][0]
+                let data = (await db.request(`select u.discId, d.nome, d.carga, u.adicionar from 
+                    user_${this.cursos[info.curso]} as u join disc_${this.cursos[info.curso]} as d on 
+                    u.discId = d.id where u.matricula = '${info.matricula}' order by u.discId;`))[0]
                 if(data.length == 0)
                     return 'Você ainda não selecionou nenhuma matéria para retirar ou adicionar.'
                 try{
@@ -122,10 +128,10 @@ class FormatedData{
                     return 'Você ainda não selecionou nenhuma matéria.'
                 }
             },
-            '~getmatriz~'   : async (obj) => {
+            '~getmatriz~'   : async (num) => {
                 return (await db.request(`select text from messages where tag = '~getmatriz~';`))[0][0].text
             },
-            '~getformremat~': async (obj) => {
+            '~getformremat~': async (num) => {
                 return (await db.request(`select text from messages where tag = '~getformremat~';`))[0][0].text
             },
         }

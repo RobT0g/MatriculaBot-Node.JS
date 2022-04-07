@@ -11,6 +11,6 @@ import { StepStuff } from "./Messages.js"
 //let man = new ChatManager('2010')
 
 const fc = async function(){
-    console.log(await database.setDataOntoText(['Aqui está sua matrícula: ~mat~.'], '2010'))
+    console.log(await database.setDataOntoText(['~recdisc~'], '2010'))
 }
 fc(2)
