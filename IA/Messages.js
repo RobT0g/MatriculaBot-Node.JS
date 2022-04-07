@@ -128,14 +128,14 @@ messages.push(...[{
 
 {
 'txt':['Beleza, e qual o ano da sua turma? (ano em que você ingressou na instituição)'],
-'full': new StepStuff([['~ano~']], [['insUpdateUser']], []),
+'full': new StepStuff([['~turma~']], [['insUpdateUser']], []),
 'unf': new StepStuff([['~sim~', '~nao~']], [], [['Só precisa me enviar o ano da sua turma.']]),
 'def':['Eu preciso do ano da sua turma, ou seja, o ano em que você entrou na instituição.'],
 'from':[8],
 'to':[10]},
 
 {
-'txt':['Então você é do curso ~curso~ da turma de ~ano~. Você confirma?'],
+'txt':['Então você é do curso ~curso~ da turma de ~turma~. Você confirma?'],
 'full': new StepStuff([['~sim~']], [['effetivate']], []),
 'unf': new StepStuff([['~nao~']], ['goTo-8'], [['Ok, vamos voltar atrás então. Qual é mesmo o seu curso?']]),
 'def':['Você só precisa me mandar um "sim" ou "não" para confirmar.'],

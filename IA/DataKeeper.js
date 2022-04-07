@@ -57,23 +57,32 @@ class FormatedData{
         this.cursosName = ['Administração', 'Engenharia da Computação', 'Física', 'Construção de Edifícios']
         this.cursos = ['adm', 'ec', 'fis', 'tce']
         this.requests = {
-            '~mat~'         : async (obj) => {
-                return (await db.request(`select matricula from registro where numero = '${obj.num}';`))[0][obj.matAt].matricula
+            userData        : async (tag, num) => {
+                let eff = (await db.request(`select data from effetivate where numero = '${num}';`))[0][0]
+                if(eff){
+                    eff = JSON.parse(eff.data)
+                    if(tag in eff)
+                        return eff[tag]
+                }
+                return (await db.request(`select ${tag} from registro where numero = '${num}' and finished = '0';`))[0][0][tag]
             },
-            '~nome~'        : async (obj) => {
-                return (await db.request(`select nome from registro where numero = '${obj.num}';`))[0][obj.matAt].nome
+            '~mat~'         : async (num) => {
+                return this.requests.userData('matricula', num)
             },
-            '~email~'       : async (obj) => {
-                return (await db.request(`select email from registro where numero = '${obj.num}';`))[0][obj.matAt].email
+            '~nome~'        : async (num) => {
+                return this.requests.userData('nome', num)
             },
-            '~curso~'       : async (obj) => {
-                return (await db.request(`select curso from registro where numero = '${obj.num}';`))[0][obj.matAt].curso
+            '~email~'       : async (num) => {
+                return this.requests.userData('email', num)    
             },
-            '~ano~'         : async (obj) => {
-                return (await db.request(`select ano from registro where numero = '${obj.num}';`))[0][obj.matAt].ano
+            '~curso~'       : async (num) => {
+                return this.requests.userData('curso', num)
             },
-            '~cpf~'         : async (obj) => {
-                return (await db.request(`select cpf from registro where numero = '${obj.num}';`))[0][obj.matAt].cpf
+            '~turma~'       : async (num) => {
+                return this.requests.userData('turma', num)    
+            },
+            '~cpf~'         : async (num) => {
+                return this.requests.userData('cpf', num)
             },
             '~recdisc~'     : async (obj) => {
                 let info = (await db.request(`select * from registro where numero = '${obj.num}';`))[0][obj.matAt]
@@ -122,9 +131,9 @@ class FormatedData{
         }
     }
 
-    getTextInfo(tag, obj){
+    getTextInfo(tag, num){
         try{
-            return this.requests[tag](obj)
+            return this.requests[tag](num)
         } catch(err){
             console.log('Erro ao retornar a informação.\n', err)
             return('ERROR, data not found.')
@@ -243,7 +252,7 @@ class DataBaseAccess{
                 let tags = txt[i].match(/[~]\w+[~]/g)
                 for(let j in tags){
                     if(!(tags[j] in info)){
-                        info[tags[j]] = fd.requests[tags[j]](num)
+                        info[tags[j]] = await fd.getTextInfo(tags[j], num)
                     }
                     txt[i] = txt[i].replaceAll(tags[j], info[tags[j]])
                 }

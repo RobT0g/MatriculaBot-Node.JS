@@ -15,7 +15,7 @@ import { database } from './DataKeeper.js'
 */
 class TagAnalyzer{
     constructor(){
-        this.altTags = {'datanas':'nascimento', 'mat':'matricula', 'ano': 'turma', 'addmatnums': 'discId'}
+        this.altTags = {'datanas':'nascimento', 'mat':'matricula', 'addmatnums': 'discId'}
         this.tagfunc = {
             '~sim~'     : ((msg) => {return [(['sim', 'ok', 'certo', 'beleza', 'concordo'].some((x) => msg.wrds.includes(x)) || 
             msg.wrds.includes('tudo') && msg.wrds.includes('bem')) &&
@@ -106,7 +106,7 @@ class TagAnalyzer{
                     return [true, String(opt.indexOf(true)+1)]
                 return [false, '']
             }),
-            '~ano~'     : ((msg) => {
+            '~turma~'     : ((msg) => {
                 let ano = msg.msgbody.match(/\d{4}/g)
                 if(ano.length > 0)
                     return [true, ano[0]]
