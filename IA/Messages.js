@@ -96,7 +96,7 @@ messages.push(...[{
 {
 'txt':['Seu nome completo é ~nome~. Você confirma?'],
 'full': new StepStuff([['~sim~']], [['effetivate']], []),
-'unf': new StepStuff([['~nao~']], ['goBack'], [['Ok, me envie o nome correto agora 🤨']]),
+'unf': new StepStuff([['~nao~']], [['goBack']], [['Ok, me envie o nome correto agora 🤨']]),
 'def':['Você só precisa me mandar um "sim" ou "não" para confirmar.'],
 'from':[4],
 'to':[6]},
@@ -112,7 +112,7 @@ messages.push(...[{
 {
 'txt':['Seu email é ~email~. Você confirma?'],
 'full': new StepStuff([['~sim~']], [['effetivate']], []),
-'unf': new StepStuff([['~nao~']], ['goBack'], [['Ok, me envie o email correto agora 🤨']]),
+'unf': new StepStuff([['~nao~']], [['goBack']], [['Ok, me envie o email correto agora 🤨']]),
 'def':['Você só precisa me mandar um "sim" ou "não" para confirmar.'],
 'from':[6],
 'to':[8]},
@@ -137,7 +137,7 @@ messages.push(...[{
 {
 'txt':['Então você é do curso ~curso~ da turma de ~turma~. Você confirma?'],
 'full': new StepStuff([['~sim~']], [['effetivate']], []),
-'unf': new StepStuff([['~nao~']], ['goTo-8'], [['Ok, vamos voltar atrás então. Qual é mesmo o seu curso?']]),
+'unf': new StepStuff([['~nao~']], [['goTo-8']], [['Ok, vamos voltar atrás então. Qual é mesmo o seu curso?']]),
 'def':['Você só precisa me mandar um "sim" ou "não" para confirmar.'],
 'from':[9],
 'to':[11]},
@@ -154,7 +154,7 @@ messages.push(...[{
 {
 'txt':['Seu CPF é ~cpf~. Você confirma?'],
 'full': new StepStuff([['~sim~']], [], []),
-'unf': new StepStuff([['~nao~']], ['goBack'], [['Ok, me envie o CPF correto agora 🤨']]),
+'unf': new StepStuff([['~nao~']], [['goBack']], [['Ok, me envie o CPF correto agora 🤨']]),
 'def':['Você só precisa me mandar um "sim" ou "não" para confirmar.'],
 'from':[11],
 'to':[13]},

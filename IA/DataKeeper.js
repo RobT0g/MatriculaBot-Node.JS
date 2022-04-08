@@ -76,7 +76,7 @@ class FormatedData{
                 return this.requests.userData('email', num)    
             },
             '~curso~'       : async (num) => {
-                return this.requests.userData('curso', num)
+                return this.cursosName[await this.requests.userData('curso', num)]
             },
             '~turma~'       : async (num) => {
                 return this.requests.userData('turma', num)    
@@ -218,18 +218,18 @@ class DataBaseAccess{
     async updateUser(num, obj, eff = true){
         //console.log(obj)
         let line = Object.keys(obj).reduce((acc, i) => {
-            acc += `${i} = '${obj[i]}', `
+            acc += `${i} = "${obj[i]}", `
             return acc
         }, '').slice(0, -2)
         try{
             let user = await this.getUserInfo(num)
-            let sql = `update registro set ${line} where numero = "${num}";`
+            console.log(user)
+            let sql = `update registro set ${line} where matricula = "${user.matricula}";`
             if(!('matricula' in user))
                 sql = `update inst_cadastro set ${line} where numero = "${num}";`
-            if(eff){
-                await this.saveOnEffetivate(num, sql, obj)
-                return await db.request(`update inst_cadastro set ${line} where numero = '${num}';`)
-            }
+            console.log(sql)
+            if(eff)
+                return await this.saveOnEffetivate(num, sql, obj)
             await db.request(sql.replaceAll(`"`, `'`))
         } catch(err){
             console.log(err)

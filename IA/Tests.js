@@ -23,7 +23,8 @@ const fc = async function(message){
 
 const main = async function(){
     await fc('Opaa')
-    //await fc('Minha matrícula é 202036A')
-    //await fc('Pronto!')
+    await fc('Eu sou de engenharia da computação')
+    await fc('da turma de 2020')
+    await fc('Agora sim')
 }
 main()

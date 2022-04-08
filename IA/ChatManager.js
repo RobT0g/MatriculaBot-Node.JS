@@ -96,7 +96,7 @@ class TagAnalyzer{
                 let cursos = [['adm', 'administracao'], ['engenharia', 'computacao'], ['fis', 'fisica'], ['tce', 'construcao']]
                 let opt = cursos.map((i) => i.some((j) => this.keyword(msg, j)[0]))
                 if(opt.includes(true))
-                    return [true, String(opt.indexOf(true)+1)]
+                    return [true, String(opt.indexOf(true))]
                 return [false, '']
             }),
             '~turma~'     : ((msg) => {
