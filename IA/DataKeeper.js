@@ -36,7 +36,6 @@ import { mysql } from '../Dependencies/Index.js'
             group by periodo;`))[0]).map((j) => j.id))
         }
         this.loaded = true
-        console.log(this.disciplinasId)
     }
 
     async request(sql) {
@@ -44,7 +43,6 @@ import { mysql } from '../Dependencies/Index.js'
             await this.load()
         try {
             let conn = await this.connect()
-            console.log(sql)
             return (await conn.query(sql))
         } catch (err) {
             console.log('Erro no request.\n', err)
@@ -217,16 +215,22 @@ class DataBaseAccess{
         }
     }
 
-    async updateUser(num, obj){
-        console.log(obj)
+    async updateUser(num, obj, eff = true){
+        //console.log(obj)
         let line = Object.keys(obj).reduce((acc, i) => {
             acc += `${i} = '${obj[i]}', `
             return acc
         }, '').slice(0, -2)
         try{
-            let sql = `update registro set ${line} where numero = "${num}';`
-            await this.saveOnEffetivate(num, sql, obj)
-            return db.request(`update inst_cadastro set ${line} where numero = '${num}';`)
+            let user = await this.getUserInfo(num)
+            let sql = `update registro set ${line} where numero = "${num}";`
+            if(!('matricula' in user))
+                sql = `update inst_cadastro set ${line} where numero = "${num}";`
+            if(eff){
+                await this.saveOnEffetivate(num, sql, obj)
+                return await db.request(`update inst_cadastro set ${line} where numero = '${num}';`)
+            }
+            await db.request(sql.replaceAll(`"`, `'`))
         } catch(err){
             console.log(err)
         }

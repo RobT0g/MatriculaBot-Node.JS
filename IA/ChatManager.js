@@ -6,13 +6,6 @@ import { database } from './DataKeeper.js'
  *  
  */ 
 
-/*
-    TagAnalyzer é uma classe que contém diversas funções que conseguem detectar e extrair determinadas 
-    informações da mensagem (Classe Message) com base no sistema de tags existentes.
-    As tags se apresentam basicamente de duas formas:
-    > '~tag~' -> Referencia uma informação com uma função especifica
-    > 'kwrd1&kwrd2' -> Refencia a existencia de determinadas palavras chaves no texto
-*/
 class TagAnalyzer{
     constructor(){
         this.altTags = {'datanas':'nascimento', 'mat':'matricula', 'addmatnums': 'discId'}
@@ -211,7 +204,8 @@ class TagAnalyzer{
     }
 
     getStepObject(step, msg, full = true){
-        try{let cond = full?'fulfill':'unFulfill'
+        try{
+            let cond = full?'fulfill':'unFulfill'
             let obj = { stepTags: step[cond].getTags() }                        //[[full1Tag1, full1Tag2], [full2Tag1]]
             obj.tagInfo = obj.stepTags.map((i) =>  i.reduce((acc, j, k) => {    //[[f1Res, Data], [f2Res, Data]]
                 let t =  this.getTag(j, msg);
@@ -223,6 +217,7 @@ class TagAnalyzer{
             obj.actions = step[cond].getActions()
             return obj
         } catch(err){
+            console.log(err)
             return {}
         }
     }
@@ -237,7 +232,7 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
         this.move = {
             refStep : async() => {          //Atualiza o step atual de acordo com o id
                 this.step = chat.currentStep(this.talkat)
-                await database.updateUser(this.num, {talkat: this.talkat})
+                await database.updateUser(this.num, {talkat: this.talkat}, false)
             },
             goNext  : async (opt=0) => {        //Avança para o próximo step
                 this.talkat = chat.nextStepId(this.talkat, opt)
@@ -255,26 +250,28 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
     }
 
     newMessage(msg){     //Chamado quando uma mensagem é recebida
+        let results, opt
         try{
-            let results = tags.getStepObject(this.step, msg, true)
-            console.log(results)                           
-            if(![0, 1].includes(results.outcomes.filter((i) => i==true).length)){
-                console.log('PROBLEMA AQUI, MULTIPLA CONDIÇÃO DE FULFILL ENCONTRADA!')
-            }
-            let opt = results.outcomes.indexOf(true)
+            results = tags.getStepObject(this.step, msg, true)
+            opt = results.outcomes.indexOf(true)
             if(opt != -1){
                 Object.keys(results).forEach((i) => { results[i] = results[i][opt] })
                 results.opt = opt
                 return this.fulfillStep(results)
             }
+        } catch(err){}
+        try{
             results = tags.getStepObject(this.step, msg, false)
-            if((Object.entries(this.step.unFulfill).length === 0) || results.tagInfo === [] || !results.outcomes.includes(true))
+            if((Object.entries(results).length === 0) || results.tagInfo === [])
+                return this.step.default
+            if(!results.outcomes.includes(true))
                 return this.step.default
             opt = results.outcomes.indexOf(true)
             Object.keys(results).forEach((i) => { results[i] = results[i][opt] })
             results.opt = opt
             return this.unfulfillStep(results)
-        } catch(err){
+        }
+        catch(err){
             console.log(err)
             return ['Houve um erro na minha execução. Se ele persistir, leia a descrição desse perfil.', 
                 'Poderia repetir o que havia tentado dizer antes?']
@@ -285,7 +282,7 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
         if(obj.actions.length > 0)
             await tags.handleAction(this, obj, this.num)
         await this.move.goNext(obj.opt)
-        return await this.setDataOntoText(this.step.msgs, num)
+        return await this.setDataOntoText(this.step.msgs, this.num)
     }
 
     async unfulfillStep(obj){       //Chamada quando um step não é fulfill
@@ -293,15 +290,16 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
         if(obj.actions.length > 0)
             await tags.handleAction(this, obj, this.num)
         if(st.unFulfill[obj.stepTags[0]].msg.length > 0)
-            return await this.setDataOntoText(st.unFulfill[obj.stepTags[0]].msg, num)
-        return await this.setDataOntoText(this.step.msgs, num)
+            return await this.setDataOntoText(st.unFulfill[obj.stepTags[0]].msg, this.num)
+        return await this.setDataOntoText(this.step.msgs, this.num)
     }
 
     async setDataOntoText(msg, num){
+        //console.log(msg)
         try {
             if(!msg.some((i) => /[~]\w+[~]/g.test(i)))
                 return msg
-            return database.setDataOntoText(num)
+            return database.setDataOntoText(msg, num)
         } catch(err){
             console.log('Erro em setDataOntoText (ChatManager).\n', err)
             return msg

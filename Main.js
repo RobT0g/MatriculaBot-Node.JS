@@ -20,7 +20,7 @@ create({
 function start(client) {
     client.onMessage(async (message) => {
         let num = message.from
-        await TextSender.resolveMessages(num)       //Checa se o bot está enviando mensagens para o usuário, caso sim, espera que ele termine
+        await TextSender.resolveMessages(num)
         if(TextSender.unvalidNumber(num))
             return
         try{
