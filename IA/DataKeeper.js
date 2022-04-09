@@ -248,10 +248,12 @@ class DataBaseAccess{
     }
 
     async effetivate(num){
-        let sql = (await db.request(`select query from effetivate where numero = '${num}';`))[0][0].query.split(';').slice(0, -1)
-        await db.request(`delete from effetivate where numero = '${num}';`)
+        let sql = (await Promise.all([(db.request(`select query from effetivate where numero = '${num}';`))[0][0].query.split(';').slice(0, -1),
+        db.request(`delete from effetivate where numero = '${num}';`)]))[0]
+        let querys = []
         for(let i in sql)
-            await db.request(sql[i].replaceAll(`"`, `'`) + ';')
+            querys.push(db.request(sql[i].replaceAll(`"`, `'`) + ';'))
+        await Promise.all(querys)
     }
     
     async setDataOntoText(msg, num){
