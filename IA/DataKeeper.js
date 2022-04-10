@@ -248,8 +248,9 @@ class DataBaseAccess{
     }
 
     async effetivate(num){
-        let sql = (await Promise.all([(db.request(`select query from effetivate where numero = '${num}';`))[0][0].query.split(';').slice(0, -1),
-        db.request(`delete from effetivate where numero = '${num}';`)]))[0]
+        let sql = await Promise.all([db.request(`select query from effetivate where numero = '${num}';`),
+            db.request(`delete from effetivate where numero = '${num}';`)])
+        sql = sql[0][0][0].query.split(';').slice(0, -1)
         let querys = []
         for(let i in sql)
             querys.push(db.request(sql[i].replaceAll(`"`, `'`) + ';'))

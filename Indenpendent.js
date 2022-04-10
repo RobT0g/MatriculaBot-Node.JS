@@ -1,4 +1,4 @@
-sampleFunction(nome){
+function sampleFunction(nome){
    console.log(nome)
 }
 

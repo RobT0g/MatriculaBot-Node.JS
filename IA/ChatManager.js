@@ -146,7 +146,11 @@ class TagAnalyzer{
                 await database.updateUser(num, this.getUpdateObj(obj))
             },
             'insUpdateUser' : async (man, obj, num) => {
-                let prev
+                let prev = await database.getEffetivate(num)
+                obj.stepTags.forEach((i) => {
+                    prev[i.slice(1, -1)] = obj.tagInfo[1]
+                })
+                await database.updateUser(num, prev)
             }
         }
     }
