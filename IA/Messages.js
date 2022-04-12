@@ -137,7 +137,7 @@ messages.push(...[{
 {
 'txt':['Então você é do curso ~curso~ da turma de ~turma~. Você confirma?'],
 'full': new StepStuff([['~sim~']], [['effetivate']], []),
-'unf': new StepStuff([['~nao~']], [['goTo-8']], [['Ok, vamos voltar atrás então. Qual é mesmo o seu curso?']]),
+'unf': new StepStuff([['~nao~']], [['goTo8']], [['Ok, vamos voltar atrás então. Qual é mesmo o seu curso?']]),
 'def':['Você só precisa me mandar um "sim" ou "não" para confirmar.'],
 'from':[9],
 'to':[11]},

@@ -99,7 +99,7 @@ class TagAnalyzer{
                     return [true, String(opt.indexOf(true))]
                 return [false, '']
             }),
-            '~turma~'     : ((msg) => {
+            '~turma~'   : ((msg) => {
                 let ano = msg.msgbody.match(/\d{4}/g)
                 if(ano.length > 0)
                     return [true, ano[0]]
@@ -112,7 +112,7 @@ class TagAnalyzer{
                 return [false, '']
             }),
             '~discnome~': ((msg) => {return [false, '']}),
-            '1-wrd'     : ((msg) => {return [msg.wrdslen == 1, '']}),
+            '1-wrd'     : ((msg) => {return [msg.wrds.length == 1, '']}),
             '~matnums~' : ((msg) => {
                 let nums = msg.msgbody.match(/\d+/g)
                 return nums?[true, nums]:[false, '']
@@ -128,6 +128,7 @@ class TagAnalyzer{
             ret[tag in this.altTags?this.altTags[tag]:tag] = obj.tagInfo[1]
             return ret
         }
+        this.actionsReferences = {'goTo': /goTo\d+/g}
         this.actions = {
             'prepareUser'   : async (man, obj, num) => {
                 let user = await database.getUserInfo(num)
@@ -141,6 +142,10 @@ class TagAnalyzer{
             }, 
             'goBack'        : async (man, obj, num) => {
                 await man.move.goBack()
+            },
+            'goTo'          : async (man, obj, num) => {
+                num = obj.actions.filter((i) => /goTo\d+/.test(i))[0].match(/\d+/g)[0]
+                await man.goTo(num)
             },
             'updateUser'    : async (man, obj, num) => {
                 await database.updateUser(num, this.getUpdateObj(obj))
@@ -198,10 +203,17 @@ class TagAnalyzer{
     }
 
     async handleAction(manager, obj, num){
-        //console.log(obj)
         try{
             for(let i in obj.actions)
-                await this.actions[obj.actions[i]](manager, obj, num)
+                if (obj.actions[i] in this.actions){
+                    await this.actions[obj.actions[i]](manager, obj, num)
+                } else {
+                    let actionsList = Object.keys(this.actionsReferences)
+                    for(let j in actionsList){
+                        if(this.actionsReferences[actionsList[j]].test(obj.actions[i]))
+                            await this.actions[actionsList[j]](manager, obj, num)
+                    }
+                }
         } catch(err){
             console.log(err)
         }
