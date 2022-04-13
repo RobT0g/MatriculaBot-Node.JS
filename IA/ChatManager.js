@@ -1,5 +1,5 @@
 import {chat} from './ChatFlow.js'
-import { database } from './DataKeeper.js'
+import { fd, database } from './DataKeeper.js'
 
 //--------TODO--------//
 /**
@@ -117,6 +117,7 @@ class TagAnalyzer{
                 let nums = msg.msgbody.match(/\d+/g)
                 return nums?[true, nums]:[false, '']
             }),
+            '~voltar~'  : ((msg) => {return this.keyword(msg, 'voltar')}),
             '~def~'     : ((msg) => {return [true, '']}),
             '~nop~'     : ((msg) => {return [false, '']})
         }
@@ -156,6 +157,21 @@ class TagAnalyzer{
                     prev[i.slice(1, -1)] = obj.tagInfo[1]
                 })
                 await database.updateUser(num, prev)
+            },
+            'add_discs'     : async (man, obj, num) => {
+                await this.actions['managediscs'](man, obj, num, '1')
+            },
+            'del_discs'     : async (man, obj, num) => {
+                await this.actions['managediscs'](man, obj, num, '0')
+            },
+            'managediscs'   : async (man, obj, num, add) => {
+                let nums = obj.tagInfo[1]
+                let info = await database.getUserInfo(num)
+                let sql = nums.reduce((acc, i) => {
+                    acc += `(default, '${info.matricula}', '${i}', '${add}')}`
+                    return acc
+                }, `insert into user_${fd.cursos[info.curso]} values `) + ';'
+                await database.saveOnEffetivate(num, sql, {ids: nums})
             }
         }
     }

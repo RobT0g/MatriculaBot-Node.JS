@@ -824,7 +824,7 @@ ALTER TABLE `disc_tce`
 -- Índices para tabela `disc_tce`
 --
 ALTER TABLE `effetivate`
-  ADD PRIMARY KEY (`matricula`);
+  ADD PRIMARY KEY (`numero`);
 
 --
 -- Índices para tabela `inst_cadastro`

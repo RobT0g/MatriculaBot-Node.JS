@@ -13,6 +13,6 @@
     "mysql2": "^2.3.3",
     "npm-check-updates": "^12.5.3",
     "readline-sync": "^1.4.10",
-    "venom-bot": "^4.0.7"
+    "venom-bot": "^4.0.9"
   }
 }

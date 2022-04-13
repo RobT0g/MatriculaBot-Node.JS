@@ -132,6 +132,33 @@ class FormatedData{
             '~getformremat~': async (num) => {
                 return (await db.request(`select text from messages where tag = '~getformremat~';`))[0][0].text
             },
+            '~instmatseladd~'  : async (num) => {
+                let data = await this.requests['getsubjectsoneff'](num)
+                return data.info.reduce((acc, i, k) => {
+                    acc += `\n> ${i.id} - ${i.nome} (${i.carga} horas). Requisitos:${data.reqs[k].reduce((acc1, i1) => {
+                        acc1 += `\n   > ${i1.nome};`; return acc1;
+                    }, ``).slice(0, -1) + '.'}`
+                    return acc
+                }, ``)
+            },
+            '~instmatseldel~'  : async (num) => {
+                let {info} = await this.requests['getsubjectsoneff'](num)
+                return info.reduce((acc, i, k) => {
+                    acc += `\n> ${i.id} - ${i.nome} (${i.carga} horas);`
+                    return acc
+                }, ``).slice(0, -1) + '.'
+            },
+            'getsubjectsoneff'  : async (num) => {
+                let eff = JSON.parse((await db.request(`select data from effetivate where numero = '${num}';`))[0][0])
+                let user = (await db.request(`select * from registro where numero = '${num}' and finished = '0';`))[0][0]
+                let info = (await db.request(`select * from disc_${this.cursos[user.curso]} where id in 
+                    (${eff.ids.reduce((acc, i) => { acc += `i, `; return acc }, '').slice(0, -2)});`))[0]
+                let reqs = await Promise.all(info.map(async (i) => {
+                    let ids = (await db.request(`select reqId from req_${this.cursos[user.curso]} where discId = ${i.id};`))[0]
+                    return await Promise.all(ids.map((j) => db.request(`select nome form disc_${this.cursos[user.curso]} where id = ${j.reqId}`)))
+                }))
+                return {info, reqs}
+            }
         }
     }
 

@@ -168,7 +168,7 @@ messages.push(...[{
     ' você me mandou, assim como todas as matérias que você escolheu retirar ou adicionar. Além disso, você' + 
     ' pode me enviar "ver matriz curricular" ou "ver formulário" para revê-los.', 'Para continuarmos agora,'+
     ' você pode me enviar "adicionar" ou "retirar" para selecionar as matérias.'],
-'full': new StepStuff([['~nop~']], [], []),//new StepStuff([['adicionar'], ['retirar']], [], []),
+'full': new StepStuff([['adicionar'], ['retirar']], [], []),
 'unf': basicMatSulUnf,
 'def':['Só dizer alguma das opções para continuarmos.'],
 'from':[12],
@@ -183,35 +183,40 @@ messages.push(...[{
     ' uma vez.', 'Após você me enviar eu informarei os requisitos das matérias selecionadas e você terá' + 
     ' a opção de confirmar a seleção ou voltar e selecionar novamente.', 'Se quiser, você pode enviar "voltar"' + 
     ' para voltar sem escolher nenhuma matéria.', 'Você pode escolher as matérias agora.'],
-'full': new StepStuff([['~matnums~']], [['add_discs']], []),
+'full': new StepStuff([['~matnums~'], ['~voltar~']], [['add_discs']], []),
 'unf': basicMatSulUnf,
-'def':['Basta me enviar "Adicionar" ou "Retirar" para continuarmos.'],
+'def':['Basta me enviar os índices das matérias para continuarmos!'],
 'from':[13],
 'to':[17, 13]},
 
 {
-'txt':['Aqui nós começaremos a selecionar as matérias para adicionar. Irei listar algumas matérias' + 
-    ' recomendadas para você adicionar com base no seu curso e ano de turma.', 
-    'Caso você tenha cursado regularmente e não tenha reprovado em nenhuma matéria, você terá todos os' + 
-    ' requisitos para adicionar quaisquer dessas matérias.', '~recdisc~', 'Para selecionar as matérias' + 
-    ' basta você me enviar os IDs das matérias (número que acompanha a matéria). Pode enviar vários de' + 
-    ' uma vez.', 'Após você me enviar eu informarei os requisitos das matérias selecionadas e você terá' + 
-    ' a opção de confirmar a seleção ou selecionar novamente.', 'Se quiser, você pode enviar "voltar"' + 
-    ' para voltar sem escolher nenhuma matéria.', 'Você pode escolher as matérias agora.'],
-'full': new StepStuff([['~matnums~']], [['del_discs']], []),
+'txt':['Aqui nós começaremos a selecionar as matérias para retirar.', 
+    'Basta mandar o id da matéria, eu irei confirmar as informações da matéria com você e então' + 
+    ' você me confirma se tá tudo certo!'],
+'full': new StepStuff([['~matnums~'], ['~voltar~']], [['del_discs']], []),
 'unf': basicMatSulUnf,
-'def':['Basta me enviar "Adicionar" ou "Retirar" para continuarmos.'],
+'def':['Basta me enviar os índices das matérias para continuarmos!'],
 'from':[13],
 'to':[18, 13]},
 
 {
-'txt':['Você selecionou essas matérias: ~inst_mat_sel~.', 'Está tudo certo com a seleção? Basta' + 
+'txt':['Agora vamos confirmar se você escolheu tudo certinho.',
+    'Estas são as matérias e seus requisitos:~instmatseladd~.', 
+    'Basta me dizer "sim" ou "não" para confirmar as escolhas agora!'],
+'full': new StepStuff([['~sim~']], [['effetivate']], []),
+'unf': new StepStuff([['~nao~']], [['goBack']], [['Ok. Pode reenviar os números das matérias que deseja adicionar.']]),
+'def':['Basta me confirmar com um sim ou não.'],
+'from':[14],
+'to':[16, 13]},
+
+{
+'txt':['Você selecionou essas matérias: ~instmatsel~.', 'Está tudo certo com a seleção? Basta' + 
     ' responder com "sim" ou "não".'],
 'full': new StepStuff([['~sim~']], [['effetivate']], []),
-'unf': new StepStuff([['~nao~']], [['goBack']], []),
-'def':['Basta me enviar "Adicionar" ou "Retirar" para continuarmos.'],
-'from':[13],
-'to':[17, 13]},
+'unf': new StepStuff([['~nao~']], [['goBack']], [['Ok. Pode reenviar os números das matérias que deseja retirar.']]),
+'def':['Basta me confirmar com um sim ou não.'],
+'from':[15],
+'to':[16]},
 
 {
 'txt':['Aqui a gente para.'],
