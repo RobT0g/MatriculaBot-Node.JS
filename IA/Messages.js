@@ -197,29 +197,29 @@ messages.push(...[{
 'unf': basicMatSulUnf,
 'def':['Basta me enviar os índices das matérias para continuarmos!'],
 'from':[13],
-'to':[18, 13]},
+'to':[17, 13]},
 
 {
 'txt':['Agora vamos confirmar se você escolheu tudo certinho.',
     'Estas são as matérias e seus requisitos:~instmatseladd~.', 
     'Basta me dizer "sim" ou "não" para confirmar as escolhas agora!'],
-'full': new StepStuff([['~sim~']], [['effetivate']], []),
+'full': new StepStuff([['~sim~'], ['~voltar~']], [['effetivate'], ['cleareff']], []),
 'unf': new StepStuff([['~nao~']], [['goBack']], [['Ok. Pode reenviar os números das matérias que deseja adicionar.']]),
 'def':['Basta me confirmar com um sim ou não.'],
 'from':[14],
-'to':[16, 13]},
+'to':[13, 13]},
 
 {
 'txt':['Você selecionou essas matérias: ~instmatsel~.', 'Está tudo certo com a seleção? Basta' + 
     ' responder com "sim" ou "não".'],
-'full': new StepStuff([['~sim~']], [['effetivate']], []),
+'full': new StepStuff([['~sim~'], ['~voltar~']], [['effetivate'], ['cleareff']], []),
 'unf': new StepStuff([['~nao~']], [['goBack']], [['Ok. Pode reenviar os números das matérias que deseja retirar.']]),
 'def':['Basta me confirmar com um sim ou não.'],
 'from':[15],
-'to':[16]},
+'to':[13, 13]},
 
 {
-'txt':['Aqui a gente para.'],
+'txt':['OK, suas escolhas foram salvas.', 'Agora, você pode escolher se' ],
 'full': new StepStuff([['~nop~']], [], []),
 'unf': new StepStuff([['~nao~']], [['goBack']], [['Ok, me envie o nome correto agora 🤨']]),
 'def':['Você só precisa me mandar um "sim" ou "não" para confirmar.'],
