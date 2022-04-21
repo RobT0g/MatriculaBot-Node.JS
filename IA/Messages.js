@@ -174,15 +174,17 @@ messages.push(...[{
 'from':[12],
 'to':[14, 15]},
 
+//Step 14
 {
-'txt':['Aqui nós começaremos a selecionar as matérias para adicionar. Irei listar algumas matérias' + 
-    ' recomendadas para você adicionar com base no seu curso e ano de turma.', 
-    'Caso você tenha cursado regularmente e não tenha reprovado em nenhuma matéria, você terá todos os' + 
-    ' requisitos para adicionar quaisquer dessas matérias.', '~recdisc~', 'Para selecionar as matérias' + 
-    ' basta você me enviar os IDs das matérias (número que acompanha a matéria). Pode enviar vários de' + 
-    ' uma vez.', 'Após você me enviar eu informarei os requisitos das matérias selecionadas e você terá' + 
-    ' a opção de confirmar a seleção ou voltar e selecionar novamente.', 'Se quiser, você pode enviar "voltar"' + 
-    ' para voltar sem escolher nenhuma matéria.', 'Você pode escolher as matérias agora.'],
+'txt':['Ok, agora você irá selecionar as matérias que você deseja adicionar.', 'Para selecioná-las, basta me' + 
+    ' mandar o id (número) das matérias, pode mandar vários de uma vez. Em seguida eu vou te mostrar' + 
+    ' os requisitos delas, para que você confirme que pode cursar a matéria, então não precisa se preocupar' + 
+    ' em escolher errado neste momento.', 'Caso você não queira escolher as matérias, basta me mandar ' + 
+    'um "voltar", para voltar pro passo anterior.',
+    'Você pode me enviar "matriz curricular" ou "formulário" se quiser consultá-los novamente.',
+    'Baseado no seu perfil, você provavelmente possui todos os requisitos para qualquer uma das matérias que' +
+    ' estão nessa lista: ~recdisc~\n\nNão precisa escolher dessa lista necessariamente, é só pra lhe dar' + 
+    ' algumas ideias de matérias que você pode escolher.',],
 'full': new StepStuff([['~matnums~'], ['~voltar~']], [['add_discs']], []),
 'unf': basicMatSulUnf,
 'def':['Basta me enviar os índices das matérias para continuarmos!'],
