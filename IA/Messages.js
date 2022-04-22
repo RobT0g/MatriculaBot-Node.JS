@@ -208,7 +208,7 @@ messages.push(...[{
 //Step 16
 {
 'txt':['Agora vamos confirmar se você escolheu tudo certinho.',
-    'Estas são as matérias e seus requisitos:~instmatseladd~.', 
+    'Estas são as matérias e seus requisitos:~instmatseladd~', 
     'Basta me dizer "sim" ou "não" para confirmar as escolhas agora!'],
 'full': new StepStuff([['~sim~'], ['~voltar~']], [['effetivate'], ['cleareff']], []),
 'unf': new StepStuff([['~nao~']], [['goBack']], [['Ok. Pode reenviar os números das matérias que deseja adicionar.']]),

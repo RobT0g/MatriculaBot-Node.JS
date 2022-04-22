@@ -4,11 +4,11 @@ import { DataBase, Message } from "./Utils.js"
 import { chat } from "./ChatFlow.js"
 import { StepStuff } from "./Messages.js"
 
-console.log('abcd'.match(/\d+/g))
 
 async function test(){
+    //await database.saveOnEffetivate('2010', `insert into user_ec values (default, "20210ENG", "20", "1"), (default, "20210ENG", "23", "1");`, {ids: ['20', '23']})
     //console.log(chat.steps[14])
-    let msg = await database.setDataOntoText(chat.steps[15].msgs, '2010')
+    let msg = await database.setDataOntoText(chat.steps[16].msgs, '2010')
     console.log('\n')
     for(let i in msg){
         console.log(msg[i] + '\n')
