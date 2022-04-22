@@ -134,7 +134,10 @@ class FormatedData{
             },
             '~instmatseladd~'  : async (num) => {
                 let data = await this.requests['getsubjectsoneff'](num)
-                console.log(data.reqs)
+                data.reqs = (await Promise.all(data.info.map(async (i) => {
+                    let ids = (await db.request(`select reqId from req_${this.cursos[data.user.curso]} where discId = ${i.id};`))[0]
+                    return await Promise.all(ids.map(async (j) => (await db.request(`select nome from disc_${this.cursos[data.user.curso]} where id = '${j.reqId}';`))[0][0]))
+                })))
                 return data.info.reduce((acc, i, k) => {
                     acc += `\n> ${i.id} - ${i.nome} (${i.carga} horas). Requisitos:${data.reqs[k].reduce((acc1, i1) => {
                         acc1 += `\n   > ${i1.nome};`; return acc1;
@@ -154,11 +157,7 @@ class FormatedData{
                 let user = (await db.request(`select * from registro where numero = '${num}' and finished = '0';`))[0][0]
                 let info = (await db.request(`select * from disc_${this.cursos[user.curso]} where id in 
                     (${eff.ids.reduce((acc, i) => { acc += `${i}, `; return acc }, '').slice(0, -2)});`))[0]
-                let reqs = (await Promise.all(info.map(async (i) => {
-                    let ids = (await db.request(`select reqId from req_${this.cursos[user.curso]} where discId = ${i.id};`))[0]
-                    return await Promise.all(ids.map(async (j) => (await db.request(`select nome from disc_${this.cursos[user.curso]} where id = '${j.reqId}';`))[0][0]))
-                })))
-                return {info, reqs}
+                return {info, user}
             }
         }
     }
