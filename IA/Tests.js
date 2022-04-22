@@ -8,7 +8,7 @@ console.log('abcd'.match(/\d+/g))
 
 async function test(){
     //console.log(chat.steps[14])
-    let msg = await database.setDataOntoText(chat.steps[14].msgs, '2010')
+    let msg = await database.setDataOntoText(chat.steps[15].msgs, '2010')
     console.log('\n')
     for(let i in msg){
         console.log(msg[i] + '\n')
