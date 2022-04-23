@@ -108,18 +108,19 @@ class FormatedData{
                 let data = (await db.request(`select u.discId, d.nome, d.carga, u.adicionar from 
                     user_${this.cursos[info.curso]} as u join disc_${this.cursos[info.curso]} as d on 
                     u.discId = d.id where u.matricula = '${info.matricula}' order by u.discId;`))[0]
+                //console.log(data)
                 if(data.length == 0)
                     return 'Você ainda não selecionou nenhuma matéria para retirar ou adicionar.'
                 try{
-                    let res = ['', '']
-                    for(let i in data){
-                        res[(data[i].adicionar == '1')?0:1] += `\n> ${data[i].discId} - ${data[i].nome} (${data[i].carga} horas);`
-                    }
+                    let res = data.reduce((acc, i) => {
+                        acc[Number(i.adicionar)] += `\n> ${i.discId} - ${i.nome} (${i.carga} horas);`
+                        return acc
+                    }, ['', ''])
                     let txt = ''
+                    if(res[1].length > 0)
+                        txt += ('\nMatérias para adicionar:' + res[1] + '.')
                     if(res[0].length > 0)
-                        txt += ('Matérias para adicionar:' + res[0].slice(0, -1) + '.')
-                    if(res[0].length > 0)
-                        txt += ('\nMatérias para retirar:' + res[1] + '.')
+                        txt += ('Matérias para retirar:' + res[0].slice(0, -1) + '.')
                     return txt
                 } catch(err){
                     console.log('Erro em ~discesc~.\n', err)

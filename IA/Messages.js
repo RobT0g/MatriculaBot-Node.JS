@@ -169,7 +169,7 @@ messages.push(...[{
     ' pode me enviar "ver matriz curricular" ou "ver formulário" para revê-los.', 'Para continuarmos agora,'+
     ' você pode me enviar "adicionar" ou "retirar" para selecionar as matérias.'],
 'full': new StepStuff([['adicionar'], ['retirar']], [], []),
-'unf': basicMatSulUnf,
+'unf': basicMatSulUnf,  //Tem que ter um FINALIZAR aqui
 'def':['Só dizer alguma das opções para continuarmos.'],
 'from':[12],
 'to':[14, 15]},
@@ -228,8 +228,10 @@ messages.push(...[{
 
 //Step 18
 {
-'txt':['OK, suas escolhas foram salvas.', 'Agora, você pode escolher se' ],
-'full': new StepStuff([['~nop~']], [], []),
+'txt':['OK, suas escolhas foram salvas.', 'Agora, você pode escolher se quer voltar e adicionar/retirar' + 
+    ' outras matérias, basta me mandar "voltar".', 'Se você já tiver terminado com suas escolhas, basta' +
+    ' me mandar "pronto".', 'Estas foram suas escolhas até o momento:', '~discesc~'],
+'full': new StepStuff([['~voltar~', '']], [], []),
 'unf': new StepStuff([['~nao~']], [['goBack']], [['Ok, me envie o nome correto agora 🤨']]),
 'def':['Você só precisa me mandar um "sim" ou "não" para confirmar.'],
 'from':[13],
