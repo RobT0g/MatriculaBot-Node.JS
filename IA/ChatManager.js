@@ -1,9 +1,9 @@
 import {chat} from './ChatFlow.js'
-import { fd, database } from './DataKeeper.js'
+import { db, fd, database } from './DataKeeper.js'
 
 //--------TODO--------//
 /**
- *  
+ *  Adicionar limite do valor de matnums
  */ 
 
 class TagAnalyzer{
@@ -28,6 +28,9 @@ class TagAnalyzer{
                     console.log('Erro na tag ~nome~.\n', err)
                     return [false, '']
                 }
+            }),
+            '~1-wrd~'   : ((msg) => {
+                return [msg.wrds.length == 1, '']
             }),
             '~cpf~'     : ((msg) => {
                 try{
@@ -133,7 +136,7 @@ class TagAnalyzer{
         this.actionsReferences = {'goTo': /goTo\d+/g}
         this.actions = {
             'prepareUser'   : async (man, obj, num) => {
-                let user = await database.getUserInfo(num)
+                let user = await fd.getUser(num)
                 let sql = `insert into registro (matricula, numero, talkat) values ("${obj.tagInfo[1]}", "${num}", "${user.talkat}"); delete from inst_cadastro where numero = "${num}";`
                 if('matricula' in user)
                     sql = `update registro set matricula = "${obj.tagInfo[1]}" where numero = "${num}" and finished = "0";`
@@ -147,7 +150,7 @@ class TagAnalyzer{
             },
             'goTo'          : async (man, obj, num) => {
                 num = obj.actions.filter((i) => /goTo\d+/.test(i))[0].match(/\d+/g)[0]
-                await man.goTo(num)
+                await man.move.goTo(num)
             },
             'updateUser'    : async (man, obj, num) => {
                 await database.updateUser(num, this.getUpdateObj(obj))
@@ -166,8 +169,8 @@ class TagAnalyzer{
                 await this.actions['managediscs'](man, obj, num, '0')
             },
             'managediscs'   : async (man, obj, num, add) => {
-                let nums = obj.tagInfo[1]
-                let info = await database.getUserInfo(num)
+                let info = await fd.getUser(num)
+                let nums = obj.tagInfo[1].filter((i) => i <= db.amount[fd.cursos[info.curso]])
                 let sql = nums.reduce((acc, i) => {
                     acc += `(default, '${info.matricula}', '${i}', '${add}')}`
                     return acc
@@ -286,6 +289,7 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
 
     newMessage(msg){     //Chamado quando uma mensagem é recebida
         let results, opt, problem = false
+        console.log(this.step)
         try{
             results = tags.getStepObject(this.step, msg, true)
             opt = results.outcomes.indexOf(true)
@@ -337,12 +341,12 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
             let txt = [...msg]
             for(let i in msg){
                 try{
-                    txt[i] = await msg[i].match(/[~]\w+[~]/g).reduce(async (acc, j) => {
-                        if(!(j in requests))
-                            requests[j] = await database.getRequest(j, this.num)
-                        acc = acc.replaceAll(j, requests[j])
-                        return acc
-                    }, msg[i])
+                    let tag = msg[i].match(/[~]\w+[~]/g)
+                    for(let j in tag){
+                        if(!(tag[j] in requests))
+                            requests[tag[j]] = await database.getRequest(tag[j], this.num)
+                        txt[i] = txt[i].replaceAll(tag[j], requests[tag[j]])
+                    }
                 } catch(err){}
             }
             console.log(requests)

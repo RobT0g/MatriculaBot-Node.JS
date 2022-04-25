@@ -29,11 +29,12 @@ import { mysql } from '../Dependencies/Index.js'
     }
 
     async load() {
-        this.disciplinasId = {}
+        this.disciplinasId = {}, this.amount = {}
         let conn = await this.connect()
         for(let i in this.cursos){
             this.disciplinasId[this.cursos[i]] = (((await conn.query(`select id from disc_${this.cursos[i]} 
             group by periodo;`))[0]).map((j) => j.id))
+            this.amount[this.cursos[i]] = (await conn.query(`select max(id) from disc_${this.cursos[i]};`))[0][0].id
         }
         this.loaded = true
     }
@@ -55,7 +56,7 @@ const db = new DataBaseCon()
 class FormatedData{
     constructor(){
         this.cursosName = ['Administração', 'Engenharia da Computação', 'Física', 'Construção de Edifícios']
-        this.cursos = ['adm', 'ec', 'fis', 'tce']
+        this.cursos = fd.cursos
         this.requests = {
             userData        : async (tag, num) => {
                 let eff = (await db.request(`select data from effetivate where numero = '${num}';`))[0][0]
@@ -76,7 +77,7 @@ class FormatedData{
                 return this.requests.userData('email', num)    
             },
             '~curso~'       : async (num) => {
-                return this.cursosName[await this.requests.userData('curso', num)]
+                return this.cursosName[(await this.requests.userData('curso', num))]
             },
             '~turma~'       : async (num) => {
                 return this.requests.userData('turma', num)    
@@ -159,7 +160,7 @@ class FormatedData{
                     (${eff.ids.reduce((acc, i) => { acc += `${i}, `; return acc }, '').slice(0, -2)});`))[0]
                 return {info, user}
             },
-            '~finalize'         : async (num) => {
+            '~finalizar~'         : async (num) => {
                 let user = await this.getUser(num)
                 if((await db.request(`select * from user_${this.cursos[user.curso]} where matricula = '${user.matricula}';`))[0].length == 0){
                     return ''

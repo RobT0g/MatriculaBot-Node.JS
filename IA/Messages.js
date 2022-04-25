@@ -87,7 +87,7 @@ messages.push(...[{
 {
 'txt':['Agora me informe seu nome completo.'],
 'full': new StepStuff([['~nome~']], [['updateUser']], []),
-'unf': new StepStuff([['1-wrd']], [], [['Poderia rever o nome que você enviou?', 'Eu pedi que me enviasse ' + 
+'unf': new StepStuff([['~1-wrd~']], [], [['Poderia rever o nome que você enviou?', 'Eu pedi que me enviasse ' + 
 'seu nome completo, mas você só me enviou uma palavra.']]),
 'def':['Por favor, me informe seu nome.'],
 'from':[3],
@@ -122,7 +122,7 @@ messages.push(...[{
 'full': new StepStuff([['~curso~']], [['updateUser']], []),
 'unf': new StepStuff([['~sim~', '~nao~']], [], [['Só precisa me enviar o nome do seu curso.']]),
 'def':['Por favor, me mande o nome do seu curso.', 'É preciso ser um dos 4 do nosso campus: ' + 
-'Administração, Engenharia da Computação, Física e Construção de Edifícios.'],
+'Administração, Engenharia da Computação, Física ou Construção de Edifícios.'],
 'from':[7],
 'to':[9]},
 
@@ -167,7 +167,7 @@ messages.push(...[{
     ' ou formulário de rematrícula. Basta me enviar "revisar" para ver um resumo de todas as informações que' + 
     ' você me mandou, assim como todas as matérias que você escolheu retirar ou adicionar. Além disso, você' + 
     ' pode me enviar "ver matriz curricular" ou "ver formulário" para revê-los.', 'Para continuarmos agora,'+
-    ' você pode me enviar "adicionar" ou "retirar" para selecionar as matérias.', '~finalize~'],
+    ' você pode me enviar "adicionar" ou "retirar" para selecionar as matérias.', '~finalizar~'],
 'full': new StepStuff([['adicionar'], ['retirar'], ['~finalizar~']], [], []),
 'unf': basicMatSulUnf,  //Tem que ter um FINALIZAR aqui
 'def':['Só dizer alguma das opções para continuarmos.'],
@@ -178,7 +178,7 @@ messages.push(...[{
 {
 'txt':['Ok, agora você irá selecionar as matérias que você deseja adicionar.', 'Para selecioná-las, basta me' + 
     ' mandar o id (número) das matérias, pode mandar vários de uma vez. Em seguida eu vou te mostrar' + 
-    ' os requisitos delas, para que você confirme que pode cursar a matéria, então não precisa se preocupar' + 
+    ' os requisitos delas, para que você confirme que pode cursar a matéria.', 'Não precisa se preocupar' + 
     ' em escolher errado neste momento, você poderá voltar se tiver escolhido alguma matéria errada.', 
     'Caso você não queira escolher as matérias, basta me mandar um "voltar", para voltar pro passo anterior.',
     'Você também pode me enviar "matriz curricular" ou "formulário" se quiser consultá-los novamente.',
@@ -189,7 +189,7 @@ messages.push(...[{
 'unf': basicMatSulUnf,
 'def':['Basta me enviar os índices das matérias para continuarmos!'],
 'from':[13],
-'to':[17, 13]},
+'to':[16, 13]},
 
 //Step 15
 {
