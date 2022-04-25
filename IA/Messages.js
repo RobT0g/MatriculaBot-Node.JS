@@ -167,12 +167,12 @@ messages.push(...[{
     ' ou formulário de rematrícula. Basta me enviar "revisar" para ver um resumo de todas as informações que' + 
     ' você me mandou, assim como todas as matérias que você escolheu retirar ou adicionar. Além disso, você' + 
     ' pode me enviar "ver matriz curricular" ou "ver formulário" para revê-los.', 'Para continuarmos agora,'+
-    ' você pode me enviar "adicionar" ou "retirar" para selecionar as matérias.'],
-'full': new StepStuff([['adicionar'], ['retirar']], [], []),
+    ' você pode me enviar "adicionar" ou "retirar" para selecionar as matérias.', '~finalize~'],
+'full': new StepStuff([['adicionar'], ['retirar'], ['~finalizar~']], [], []),
 'unf': basicMatSulUnf,  //Tem que ter um FINALIZAR aqui
 'def':['Só dizer alguma das opções para continuarmos.'],
 'from':[12],
-'to':[14, 15]},
+'to':[14, 15, 18]},
 
 //Step 14
 {
@@ -230,16 +230,18 @@ messages.push(...[{
 {
 'txt':['OK, suas escolhas foram salvas.', 'Agora, você pode escolher se quer voltar e adicionar/retirar' + 
     ' outras matérias, basta me mandar "voltar".', 'Se você já tiver terminado com suas escolhas, basta' +
-    ' me mandar "pronto".', 'Estas foram suas escolhas até o momento:', '~discesc~'],
-'full': new StepStuff([['~voltar~', '']], [], []),
+    ' me mandar "finalizar".', 'Estas foram suas escolhas até o momento:', '~discesc~'],
+'full': new StepStuff([['~voltar~'], ['~finalizar~']], [], []),
 'unf': new StepStuff([['~nao~']], [['goBack']], [['Ok, me envie o nome correto agora 🤨']]),
 'def':['Você só precisa me mandar um "sim" ou "não" para confirmar.'],
-'from':[13],
+'from':[13, 19],
 'to':[14]},
 
 //Step 19
 {
-'txt':['OK, suas escolhas foram salvas.', 'Agora, você pode escolher se' ],
+'txt':['Pronto! Estamos finalizados com a sua alteração de matrícula.', 'Eu irei te avisar quando o departamento', 
+    ' tiver processado seu cadastro.', 'Neste ponto, você também pode requisitar refazer todo o processo', 
+    ' para outra pessoa.'],
 'full': new StepStuff([['~nop~']], [], []),
 'unf': new StepStuff([['~nao~']], [['goBack']], [['Ok, me envie o nome correto agora 🤨']]),
 'def':['Você só precisa me mandar um "sim" ou "não" para confirmar.'],

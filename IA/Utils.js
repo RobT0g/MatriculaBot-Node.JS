@@ -1,6 +1,6 @@
 import {chat} from './ChatFlow.js'
 import {ChatManager} from './ChatManager.js'
-import {database} from './DataKeeper.js'
+import {fd, database} from './DataKeeper.js'
 
 //--------TODO--------//
 /**
@@ -28,7 +28,7 @@ class DataBase{                 //Guarda todos os usuários
     async userRegister(num){
         if(num in this.users) 
             return 0
-        let user = await database.getUserInfo(num)
+        let user = await fd.getUser(num)
         if(user){
             this.users[num] = new User(num)
             await this.users[num].chat.move.goTo(user.talkat)

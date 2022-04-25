@@ -85,7 +85,7 @@ class FormatedData{
                 return this.requests.userData('cpf', num)
             },
             '~recdisc~'     : async (num) => {
-                let info = (await db.request(`select * from registro where numero = '${num}' and finished = '0';`))[0][0]
+                let info = await this.getUser(num)
                 let y = new Date().getFullYear() - info.turma
                 let req = db.disciplinasId[this.cursos[info.curso]][(y >= db.disciplinasId[this.cursos[info.curso]].length)?-1:y]
                 let data = (await db.request(`select id, nome, carga from disc_${this.cursos[info.curso]} 
@@ -108,7 +108,6 @@ class FormatedData{
                 let data = (await db.request(`select u.discId, d.nome, d.carga, u.adicionar from 
                     user_${this.cursos[info.curso]} as u join disc_${this.cursos[info.curso]} as d on 
                     u.discId = d.id where u.matricula = '${info.matricula}' order by u.discId;`))[0]
-                //console.log(data)
                 if(data.length == 0)
                     return 'Você ainda não selecionou nenhuma matéria para retirar ou adicionar.'
                 try{
@@ -159,8 +158,22 @@ class FormatedData{
                 let info = (await db.request(`select * from disc_${this.cursos[user.curso]} where id in 
                     (${eff.ids.reduce((acc, i) => { acc += `${i}, `; return acc }, '').slice(0, -2)});`))[0]
                 return {info, user}
-            }
+            },
+            '~finalize'         : async (num) => {
+                let user = await this.getUser(num)
+                if((await db.request(`select * from user_${this.cursos[user.curso]} where matricula = '${user.matricula}';`))[0].length == 0){
+                    return ''
+                }
+                return 'Como você já selecionou algumas matérias, você pode finalizar aqui se quiser. Basta me mandar um "finalizar".'
+            },
         }
+    }
+
+    async getUser(num){
+        let user = (await db.request(`select * from registro where finished = '0' and numero = '${num}';`))[0]
+        if(user.length > 0)
+            return user[0]
+        return (await db.request(`select * from inst_cadastro where numero = '${num}';`))[0][0]
     }
 
     getTextInfo(tag, num){
@@ -228,13 +241,6 @@ class DataBaseAccess{
         this.loaded = false
     }
 
-    async getUserInfo(num){
-        let user = (await db.request(`select * from registro where finished = '0' and numero = '${num}';`))[0]
-        if(user.length > 0)
-            return user[0]
-        return (await db.request(`select * from inst_cadastro where numero = '${num}';`))[0][0]
-    }
-
     addUser(num){
         try{
             return db.request(`insert into inst_cadastro values (default, '${num}', '0');`)
@@ -250,7 +256,7 @@ class DataBaseAccess{
             return acc
         }, '').slice(0, -2)
         try{
-            let user = await this.getUserInfo(num)
+            let user = await fd.getUser(num)
             console.log(user)
             let sql = `update registro set ${line} where matricula = "${user.matricula}";`
             if(!('matricula' in user))
@@ -284,24 +290,9 @@ class DataBaseAccess{
             querys.push(db.request(sql[i].replaceAll(`"`, `'`) + ';'))
         await Promise.all(querys)
     }
-    
-    async setDataOntoText(msg, num){
-        let txt = msg.map((i) => i)
-        let info = {}
-        try{
-            for(let i in txt){
-                let tags = txt[i].match(/[~]\w+[~]/g)
-                for(let j in tags){
-                    if(!(tags[j] in info)){
-                        info[tags[j]] = await fd.getTextInfo(tags[j], num)
-                    }
-                    txt[i] = txt[i].replaceAll(tags[j], info[tags[j]])
-                }
-            }
-        }catch(err){
-            console.log('Erro no setDataOntoText!\n', err)
-        }
-        return txt
+
+    getRequest(tag, num){
+        return fd.getTextInfo(tag, num)
     }
 }
 

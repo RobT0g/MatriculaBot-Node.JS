@@ -118,6 +118,7 @@ class TagAnalyzer{
                 return nums?[true, nums]:[false, '']
             }),
             '~voltar~'  : ((msg) => {return this.keyword(msg, 'voltar')}),
+            '~finalizar~': ((msg) => {return this.keyword(msg, 'finalizar')}),
             '~def~'     : ((msg) => {return [true, '']}),
             '~nop~'     : ((msg) => {return [false, '']})
         }
@@ -245,11 +246,11 @@ class TagAnalyzer{
                 acc[1] = k==0?t[1]:acc[1]
                 return acc
             }, [false, '']))
-            obj.outcomes = obj.tagInfo.map((i) => i[0])                         //[fulfill1_Res, fulfill2_Res]
-            obj.actions = step[cond].getActions()
+            obj.outcomes = obj.tagInfo.map((i) => i[0])                         //[f1Res, f2Res]
+            obj.actions = step[cond].getActions()                               //[[act11, act12], [act21]]
             return obj
         } catch(err){
-            console.log(err)
+            console.log('Erro no getStepObject.\n', err)
             return {}
         }
     }
@@ -314,7 +315,7 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
         if(obj.actions.length > 0)
             await tags.handleAction(this, obj, this.num)
         await this.move.goNext(obj.opt)
-        return await this.setDataOntoText(this.step.msgs, this.num)
+        return await this.setDataOntoText(this.step.msgs)
     }
 
     async unfulfillStep(obj){       //Chamada quando um step não é fulfill
@@ -326,12 +327,22 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
         return await this.setDataOntoText(this.step.msgs, this.num)
     }
 
-    async setDataOntoText(msg, num){
-        //console.log(msg)
-        try {
-            if(!msg.some((i) => /[~]\w+[~]/g.test(i)))
-                return msg
-            return database.setDataOntoText(msg, num)
+    async setDataOntoText(msg){
+        try{
+            let requests = {}
+            let txt = [...msg]
+            for(let i in msg){
+                try{
+                    txt[i] = await msg[i].match(/[~]\w+[~]/g).reduce(async (acc, j) => {
+                        if(!(j in requests))
+                            requests[j] = await database.getRequest(j, this.num)
+                        acc = acc.replaceAll(j, requests[j])
+                        return acc
+                    }, msg[i])
+                } catch(err){}
+            }
+            console.log(requests)
+            return txt
         } catch(err){
             console.log('Erro em setDataOntoText (ChatManager).\n', err)
             return msg

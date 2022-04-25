@@ -14,12 +14,12 @@ class TextSender{
         try{
             let txt = (typeof(texts) === 'string')?[texts]:texts
             for (let v in txt)
-                await this.sendMsg(txt[v], num, client)
+                if(txt[v] !== '')
+                    await this.sendMsg(txt[v], num, client)
         }
         catch(err){
             console.log(err)
         }
-        return
     }
 
     static async answerUser(texts, num, client){
