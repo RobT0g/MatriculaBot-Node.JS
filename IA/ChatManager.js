@@ -247,6 +247,8 @@ class TagAnalyzer{
                 return acc
             }, [false, '']))
             obj.outcomes = obj.tagInfo.map((i) => i[0])                         //[f1Res, f2Res]
+            if(!obj.outcomes.includes(true))    //ISSO PODE DAR MERDA
+                return {}
             obj.actions = step[cond].getActions()                               //[[act11, act12], [act21]]
             return obj
         } catch(err){
@@ -283,7 +285,7 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
     }
 
     newMessage(msg){     //Chamado quando uma mensagem é recebida
-        let results, opt
+        let results, opt, problem = false
         try{
             results = tags.getStepObject(this.step, msg, true)
             opt = results.outcomes.indexOf(true)
@@ -292,12 +294,12 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
                 results.opt = opt
                 return this.fulfillStep(results)
             }
-        } catch(err){}
+        } catch(err){
+            problem = true
+        }
         try{
             results = tags.getStepObject(this.step, msg, false)
             if((Object.entries(results).length === 0) || results.tagInfo === [])
-                return this.step.default
-            if(!results.outcomes.includes(true))
                 return this.step.default
             opt = results.outcomes.indexOf(true)
             Object.keys(results).forEach((i) => { results[i] = results[i][opt] })
@@ -306,8 +308,10 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
         }
         catch(err){
             console.log(err)
-            return ['Houve um erro na minha execução. Se ele persistir, leia a descrição desse perfil.', 
+            if(problem)
+                return ['Houve um erro na minha execução. Se ele persistir, leia a descrição desse perfil.', 
                 'Poderia repetir o que havia tentado dizer antes?']
+            return this.step.default
         }
     }
 
