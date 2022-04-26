@@ -1,4 +1,4 @@
-import {textkeep, defaultans, defdef, messages} from './Messages.js'
+import {textkeep, defaultans, defdef, messages, recorrent} from './Messages.js'
 
 //--------TODO--------//
 /**
@@ -6,9 +6,10 @@ import {textkeep, defaultans, defdef, messages} from './Messages.js'
  */ 
 
 class ChatFlow{     //Guarda todo o fluxo
-    constructor(){
+    constructor(recorrent){
         this.steps = []
         this.defdef = defdef
+        this.recorrent = recorrent
     }
 
     /**
@@ -67,7 +68,7 @@ class ChatStep{             //Unidade mínima de conversação
     }
 }
 
-let chat = new ChatFlow()
+let chat = new ChatFlow(recorrent)
 messages.forEach((i) => {
     chat.newStep = new ChatStep(i['txt'], i['full'], i['unf'], i['def'], i['from'], i['to'])
 })

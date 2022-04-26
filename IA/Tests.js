@@ -15,4 +15,4 @@ async function test(){
     }
 }
 //test()
-console.log(('abc .def').split('.//'))
+console.log([1, 2, 3, 4, 5].filter(i => i > 5)[0])

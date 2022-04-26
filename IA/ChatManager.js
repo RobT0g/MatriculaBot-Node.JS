@@ -3,19 +3,20 @@ import { db, fd, database } from './DataKeeper.js'
 
 //--------TODO--------//
 /**
- *  Adicionar limite do valor de matnums
+ * Validação de cpf
+ * Validação de email
  */ 
 
 class TagAnalyzer{
     constructor(){
         this.altTags = {'datanas':'nascimento', 'mat':'matricula', 'addmatnums': 'discId'}
         this.tagfunc = {
-            '~sim~'     : ((msg) => {return [(['sim', 'ok', 'certo', 'beleza', 'concordo'].some((x) => msg.wrds.includes(x)) || 
+            '~sim~'         : ((msg) => {return [(['sim', 'ok', 'certo', 'beleza', 'concordo'].some((x) => msg.wrds.includes(x)) || 
             msg.wrds.includes('tudo') && msg.wrds.includes('bem')) &&
             !msg.wrds.includes('nao'), '']}),
-            '~nao~'     : ((msg) => {return [(['nao', 'discordo', 'errado'].some((x) => msg.wrds.includes(x))) &&
+            '~nao~'         : ((msg) => {return [(['nao', 'discordo', 'errado'].some((x) => msg.wrds.includes(x))) &&
             !msg.wrds.includes('sim'), '']}),
-            '~nome~'    : ((msg) => {
+            '~nome~'        : ((msg) => {
                 try{
                     if(msg.wrds.length > 1){
                         return [true, msg.wrds.reduce((acc, i) => {acc += ['do', 'de', 'da'].includes(i)?(
@@ -29,10 +30,10 @@ class TagAnalyzer{
                     return [false, '']
                 }
             }),
-            '~1-wrd~'   : ((msg) => {
+            '~1-wrd~'       : ((msg) => {
                 return [msg.wrds.length == 1, '']
             }),
-            '~cpf~'     : ((msg) => {
+            '~cpf~'         : ((msg) => {
                 try{
                     let numb = msg.msgbody.match(/\d{11}|(\d{3}[.]\d{3}[.]\d{3}[-]\d{2})/g)
                     //^ Primeira tentativa: 11 números em sequencia ou no formato 123.456.789-10 ^//
@@ -48,7 +49,7 @@ class TagAnalyzer{
                     return [false, '']
                 }
             }),
-            '~datanas~' : ((msg) => {
+            '~datanas~'     : ((msg) => {
                 let data = msg.msgbody.match(/\d+/g)
                 try{
                     if(data.length == 3){
@@ -69,7 +70,7 @@ class TagAnalyzer{
                     return [false, '']
                 }
             }),
-            '~mat~'     : ((msg) => {
+            '~mat~'         : ((msg) => {
                 //Alguma formatação aqui????
                 try{
                     let data = msg.msgbody.match(/\S+/g).reduce((acc, i) => {
@@ -83,7 +84,7 @@ class TagAnalyzer{
                     return [false, '']
                 }
             }),
-            '~email~'   : ((msg) => {
+            '~email~'       : ((msg) => {
                 try{
                 let data = msg.msgbody.toLowerCase().match(/\S+/g).reduce((acc, i) => {acc = (/[@]/g.test(i)?i:acc); return acc},'');
                 data = (typeof data == 'object')?data[0]:data
@@ -95,35 +96,37 @@ class TagAnalyzer{
                     console.log('Erro na tag ~email~.\n', err)
                 }
             }),
-            '~curso~'   : ((msg) => {
+            '~curso~'       : ((msg) => {
                 let cursos = [['adm', 'administracao'], ['engenharia', 'computacao'], ['fis', 'fisica'], ['tce', 'construcao']]
                 let opt = cursos.map((i) => i.some((j) => this.keyword(msg, j)[0]))
                 if(opt.includes(true))
                     return [true, String(opt.indexOf(true))]
                 return [false, '']
             }),
-            '~turma~'   : ((msg) => {
+            '~turma~'       : ((msg) => {
                 let ano = msg.msgbody.match(/\d{4}/g)
                 if(ano.length > 0)
-                    return [true, ano[0]]
+                    return [(new Date().getFullYear()-ano[0] <= 10), ano[0]]
                 return [false, '']
             }),
-            '~num~'     : ((msg) => {
+            '~num~'         : ((msg) => {
                 let num = msg.msgbody.match(/\d+/g)
                 if(num)
                     return [true, num]
                 return [false, '']
             }),
-            '~discnome~': ((msg) => {return [false, '']}),
-            '1-wrd'     : ((msg) => {return [msg.wrds.length == 1, '']}),
-            '~matnums~' : ((msg) => {
+            '~discnome~'    : ((msg) => {return [false, '']}),
+            '1-wrd'         : ((msg) => {return [msg.wrds.length == 1, '']}),
+            '~matnums~'     : ((msg) => {
                 let nums = msg.msgbody.match(/\d+/g)
                 return nums?[true, nums]:[false, '']
             }),
-            '~voltar~'  : ((msg) => {return this.keyword(msg, 'voltar')}),
-            '~finalizar~': ((msg) => {return this.keyword(msg, 'finalizar')}),
-            '~def~'     : ((msg) => {return [true, '']}),
-            '~nop~'     : ((msg) => {return [false, '']})
+            '~voltar~'      : ((msg) => {return [this.keyword(msg, 'voltar'), '']}),
+            '~finalizar~'   : ((msg) => {return [this.keyword(msg, 'finalizar'), '']}),
+            '~matriz~'      : ((msg) => {return [this.keyword(msg, '&matriz&curricular'), '']}),
+            '~revisar~'     : ((msg) => {return [this.keyword(msg, 'revisar')]}),
+            '~def~'         : ((msg) => {return [true, '']}),
+            '~nop~'         : ((msg) => {return [false, '']})
         }
         this.keyword = ((msg, tag) => {
             return [!tag.split(/[&]/g).some((j) => !(new RegExp(j, 'g').test(msg.filterMsg.toLowerCase()))), '']});
@@ -306,7 +309,7 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
         try{
             results = tags.getStepObject(this.step, msg, false)
             if((Object.entries(results).length === 0) || results.tagInfo === [])
-                return this.step.default
+                return this.checkRecorrent(msg)
             opt = results.outcomes.indexOf(true)
             Object.keys(results).forEach((i) => { results[i] = results[i][opt] })
             results.opt = opt
@@ -317,8 +320,8 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
             if(problem)
                 return ['Houve um erro na minha execução. Se ele persistir, leia a descrição desse perfil.', 
                 'Poderia repetir o que havia tentado dizer antes?']
-            return this.step.default
         }
+        return this.step.default
     }
 
     async fulfillStep(obj){         //Chamada quando um step é fulfill
@@ -335,6 +338,13 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
         if(st.unFulfill[obj.stepTags[0]].msg.length > 0)
             return await this.setDataOntoText(st.unFulfill[obj.stepTags[0]].msg, this.num)
         return await this.setDataOntoText(this.step.msgs, this.num)
+    }
+    
+    checkRecorrent(msg){
+        let ans = Object.keys(chat.recorrent).filter((i) => tags.getTag(i, msg)[0])[0]
+        if(ans)
+            return this.setDataOntoText(chat.recorrent[ans])
+        return this.step.default
     }
 
     async setDataOntoText(msg){

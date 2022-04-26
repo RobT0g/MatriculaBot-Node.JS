@@ -250,4 +250,9 @@ messages.push(...[{
 
 ])
 
-export {textkeep, defaultans, defdef, messages, StepStuff}
+const recorrent = {
+    '~matriz~'      : ['~getmatriz~'],
+    '~revisar~'     : ['Seus dados: ~userinfo~', '~discesc~'],
+}
+
+export {textkeep, defaultans, defdef, messages, recorrent, StepStuff}
