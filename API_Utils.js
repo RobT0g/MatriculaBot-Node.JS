@@ -12,7 +12,10 @@ class TextSender{
 
     static async delivText(texts, num, client){   //Envia uma array de mensagens de forma async
         try{
-            let txt = (typeof(texts) === 'string')?[texts]:texts
+            let txt = ((typeof(texts) === 'string')?[texts]:texts).reduce((acc, i) => {
+                acc.push(...i.split('.//'))
+                return acc
+            }, [])
             for (let v in txt)
                 if(txt[v] !== '')
                     await this.sendMsg(txt[v], num, client)

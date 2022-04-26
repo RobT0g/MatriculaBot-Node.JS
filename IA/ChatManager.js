@@ -170,9 +170,9 @@ class TagAnalyzer{
             },
             'managediscs'   : async (man, obj, num, add) => {
                 let info = await fd.getUser(num)
-                let nums = obj.tagInfo[1].filter((i) => i <= db.amount[fd.cursos[info.curso]])
+                let nums = obj.tagInfo[1].filter(i => Number(i) <= Number(db.amount[fd.cursos[info.curso]]))
                 let sql = nums.reduce((acc, i) => {
-                    acc += `(default, '${info.matricula}', '${i}', '${add}')}`
+                    acc += `(default, '${info.matricula}', '${i}', '${add}'), `
                     return acc
                 }, `insert into user_${fd.cursos[info.curso]} values `) + ';'
                 await database.saveOnEffetivate(num, sql, {ids: nums})
@@ -289,9 +289,11 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
 
     newMessage(msg){     //Chamado quando uma mensagem é recebida
         let results, opt, problem = false
-        console.log(this.step)
         try{
             results = tags.getStepObject(this.step, msg, true)
+            Object.keys(results).forEach((i) => {
+                console.log(i, results[i])
+            })
             opt = results.outcomes.indexOf(true)
             if(opt != -1){
                 Object.keys(results).forEach((i) => { results[i] = results[i][opt] })
@@ -349,7 +351,7 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
                     }
                 } catch(err){}
             }
-            console.log(requests)
+            //console.log(requests)
             return txt
         } catch(err){
             console.log('Erro em setDataOntoText (ChatManager).\n', err)

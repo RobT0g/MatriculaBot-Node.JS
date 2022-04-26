@@ -34,7 +34,7 @@ import { mysql } from '../Dependencies/Index.js'
         for(let i in this.cursos){
             this.disciplinasId[this.cursos[i]] = (((await conn.query(`select id from disc_${this.cursos[i]} 
             group by periodo;`))[0]).map((j) => j.id))
-            this.amount[this.cursos[i]] = (await conn.query(`select max(id) from disc_${this.cursos[i]};`))[0][0].id
+            this.amount[this.cursos[i]] = (await conn.query(`select max(id) from disc_${this.cursos[i]};`))[0][0]['max(id)']
         }
         this.loaded = true
     }
@@ -56,7 +56,7 @@ const db = new DataBaseCon()
 class FormatedData{
     constructor(){
         this.cursosName = ['Administração', 'Engenharia da Computação', 'Física', 'Construção de Edifícios']
-        this.cursos = fd.cursos
+        this.cursos = db.cursos
         this.requests = {
             userData        : async (tag, num) => {
                 let eff = (await db.request(`select data from effetivate where numero = '${num}';`))[0][0]
@@ -135,16 +135,29 @@ class FormatedData{
             },
             '~instmatseladd~'  : async (num) => {
                 let data = await this.requests['getsubjectsoneff'](num)
-                data.reqs = (await Promise.all(data.info.map(async (i) => {
+                data.reqs = await Promise.all(data.info.map(async (i) => {
                     let ids = (await db.request(`select reqId from req_${this.cursos[data.user.curso]} where discId = ${i.id};`))[0]
-                    return await Promise.all(ids.map(async (j) => (await db.request(`select nome from disc_${this.cursos[data.user.curso]} where id = '${j.reqId}';`))[0][0]))
-                })))
-                return data.info.reduce((acc, i, k) => {
-                    acc += `\n> ${i.id} - ${i.nome} (${i.carga} horas). Requisitos:${data.reqs[k].reduce((acc1, i1) => {
-                        acc1 += `\n   > ${i1.nome};`; return acc1;
-                    }, ``).slice(0, -1) + '.'}`
+                    if(ids.length == 1 && ids[0].reqId == 0)
+                        return []
+                    return (await db.request(`select id, nome from disc_${this.cursos[data.user.curso]} where id in 
+                        (${ids.reduce((acc, i) => {
+                            acc += i.reqId==0?'':`'${i.reqId}', `
+                            return acc
+                        }, '').slice(0, -2)});`))[0]
+                }))
+                return '\n----------------------------------------' + data.info.reduce((acc, i, k) => {
+                    acc += `\n${i.id} - ${i.nome} (${i.carga} horas).`
+                    if(data.reqs[k].length !== 0){
+                        acc += ` Requisitos:${data.reqs[k].reduce((acc1, i1) => {
+                            acc1 += `\n   > ${i1.id} - ${i1.nome};`; return acc1;
+                        }, ``).slice(0, -1) + ';'}`
+                    } else {
+                        acc += ' Sem requisitos;'
+                    }
+                    if(k !== data.info.length-1)
+                        acc += '\n----------------------------------------'
                     return acc
-                }, ``)
+                }, ``).slice(0, -1) + '.\n----------------------------------------'
             },
             '~instmatseldel~'  : async (num) => {
                 let {info} = await this.requests['getsubjectsoneff'](num)
@@ -154,9 +167,13 @@ class FormatedData{
                 }, ``).slice(0, -1) + '.'
             },
             'getsubjectsoneff'  : async (num) => {
-                let eff = JSON.parse((await db.request(`select data from effetivate where numero = '${num}';`))[0][0].data)
-                let user = (await db.request(`select * from registro where numero = '${num}' and finished = '0';`))[0][0]
-                let info = (await db.request(`select * from disc_${this.cursos[user.curso]} where id in 
+                let [eff, user] = await Promise.all([db.request(`select data from effetivate where numero = '${num}';`).then((info) => {
+                    return JSON.parse(info[0][0].data)
+                }).catch((err) => {
+                    console.log(err)
+                    return 'Error, data not found.'
+                }), this.getUser(num)])
+                let info = (await db.request(`select * from disc_${this.cursos[user.curso]} where id in
                     (${eff.ids.reduce((acc, i) => { acc += `${i}, `; return acc }, '').slice(0, -2)});`))[0]
                 return {info, user}
             },
@@ -272,10 +289,11 @@ class DataBaseAccess{
     }
 
     async saveOnEffetivate(num, sql, data){
+        let query = sql.replaceAll(`'`, `"`)
         let prev = (await db.request(`select * from effetivate where numero = '${num}';`))[0]
         if(prev.length === 0)
-            return db.request(`insert into effetivate values ('${num}', '${sql}', '${JSON.stringify(data)}');`)
-        return db.request(`update effetivate set query = '${sql}', data = '${JSON.stringify(data)}' where numero = '${num}';`)
+            return db.request(`insert into effetivate values ('${num}', '${query}', '${JSON.stringify(data)}');`)
+        return db.request(`update effetivate set query = '${query}', data = '${JSON.stringify(data)}' where numero = '${num}';`)
     }
 
     async getEffetivate(num){
