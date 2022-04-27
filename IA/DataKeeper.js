@@ -40,7 +40,7 @@ import { mysql } from '../Dependencies/Index.js'
     }
 
     async request(sql) {
-        console.log(sql)
+        //console.log(sql)
         if(!this.loaded)
             await this.load()
         try {

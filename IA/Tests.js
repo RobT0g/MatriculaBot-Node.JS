@@ -14,6 +14,6 @@ async function test(){
     /*for(let i in msg){
         console.log(msg[i] + '\n')
     }*/
-    tags.actions.managediscs({}, {}, '20102010', '1')
+    tags.actions.managediscs({}, {tagInfo: [1, ['10', '11', '19', '20', '21']]}, '20102010', '1')
 }
 test()

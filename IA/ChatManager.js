@@ -178,10 +178,17 @@ class TagAnalyzer{
                     return {user, choices: (await db.request(`select discId, adicionar from user_${fd.cursos[user.curso]} where matricula
                         = '${user.matricula}';`))[0]}
                 }))
-                let nums = obj.tagInfo[1].filter(i => Number(i) <= Number(db.amount[fd.cursos[info.curso]]))
-                let changes = nums.reduce((acc, i) => {
-                    
-                }, {add: [], del: []})
+                let nums = obj.tagInfo[1].filter(i => (Number(i) <= Number(db.amount[fd.cursos[info.user.curso]]))).map(i => Number(i))
+                console.log(info.choices, nums)
+                let changes = info.choices.reduce((acc, i) => {
+                    if(nums.includes(i.discId)){
+                        if(i.adicionar !== Number(add))
+                            acc.del.push(i.discId)
+                        nums.splice(nums.indexOf(i.discId), 1)
+                    }
+                    return acc
+                }, {del: []})
+                changes.add = [...nums]
                 let sql = nums.reduce((acc, i) => {
                     acc += `(default, '${info.matricula}', '${i}', '${add}'), `
                     return acc
