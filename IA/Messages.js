@@ -32,11 +32,6 @@ class StepStuff{
  * {txt, full, unf(estes dois são instancias de StepStuff), def, from, to}
  */
 
-let basicMatSulUnf = new StepStuff([['matriz&curricular'], ['formulario'], ['revisar']], [], [['~getmatriz~',
-'Quando estiver pronto para prosseguir, basta me mandar um "sim".'], ['O formulário de rematrícula'+
-' pode ser encontrado aqui: ~getformremat~'], ['Seus dados: ~userinfo~', '~discesc~', 'Basta me enviar '+
-'"adicionar" ou "retirar" para continuarmos.']])
-
 messages.push(...[{
 'txt':['Olá! Sou um bot programado para auxiliar o processo de matrícula do IFMA.',
     'Você gostaria de fazer alterações em sua matrícula?'],
@@ -169,7 +164,7 @@ messages.push(...[{
     ' pode me enviar "ver matriz curricular" ou "ver formulário" para revê-los.', 'Para continuarmos agora,'+
     ' você pode me enviar "adicionar" ou "retirar" para selecionar as matérias.', '~finalizar~'],
 'full': new StepStuff([['adicionar'], ['retirar'], ['~finalizar~']], [], []),
-'unf': basicMatSulUnf,  //Tem que ter um FINALIZAR aqui
+'unf': {},  //Tem que ter um FINALIZAR aqui
 'def':['Só dizer alguma das opções para continuarmos.'],
 'from':[12],
 'to':[14, 15, 18]},
@@ -186,7 +181,7 @@ messages.push(...[{
     ' estão nessa lista: ~recdisc~', 'Não precisa escolher dessa lista necessariamente, é só pra lhe dar' + 
     ' algumas ideias de matérias que você pode escolher.',],
 'full': new StepStuff([['~matnums~'], ['~voltar~']], [['add_discs']], []),
-'unf': basicMatSulUnf,
+'unf': {},
 'def':['Basta me enviar os índices das matérias para continuarmos!'],
 'from':[13],
 'to':[16, 13]},
@@ -200,7 +195,7 @@ messages.push(...[{
     'Caso você não queira escolher as matérias, basta me mandar um "voltar", para voltar pro passo anterior.',
     'Você também pode me enviar "matriz curricular" ou "formulário" se quiser consultá-los novamente.'],
 'full': new StepStuff([['~matnums~'], ['~voltar~']], [['del_discs']], []),
-'unf': basicMatSulUnf,
+'unf': {},
 'def':['Basta me enviar os índices das matérias para continuarmos!'],
 'from':[13],
 'to':[17, 13]},
