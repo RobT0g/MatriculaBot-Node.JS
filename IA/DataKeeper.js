@@ -145,7 +145,7 @@ class FormatedData{
                             return acc
                         }, '').slice(0, -2)});`))[0]
                 }))
-                return '\n----------------------------------------' + data.info.reduce((acc, i, k) => {
+                return '----------------------------------------' + data.info.reduce((acc, i, k) => {
                     acc += `\n${i.id} - ${i.nome} (${i.carga} horas).`
                     if(data.reqs[k].length !== 0){
                         acc += ` Requisitos:${data.reqs[k].reduce((acc1, i1) => {

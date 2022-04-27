@@ -121,10 +121,10 @@ class TagAnalyzer{
                 let nums = msg.msgbody.match(/\d+/g)
                 return nums?[true, nums]:[false, '']
             }),
-            '~voltar~'      : ((msg) => {return [this.keyword(msg, 'voltar'), '']}),
-            '~finalizar~'   : ((msg) => {return [this.keyword(msg, 'finalizar'), '']}),
-            '~matriz~'      : ((msg) => {return [this.keyword(msg, '&matriz&curricular'), '']}),
-            '~revisar~'     : ((msg) => {return [this.keyword(msg, 'revisar')]}),
+            '~voltar~'      : ((msg) => {return this.keyword(msg, 'voltar')}),
+            '~finalizar~'   : ((msg) => {return this.keyword(msg, 'finalizar')}),
+            '~matriz~'      : ((msg) => {return this.keyword(msg, '&matriz&curricular')}),
+            '~revisar~'     : ((msg) => {return this.keyword(msg, 'revisar')}),
             '~def~'         : ((msg) => {return [true, '']}),
             '~nop~'         : ((msg) => {return [false, '']})
         }
@@ -177,7 +177,7 @@ class TagAnalyzer{
                 let sql = nums.reduce((acc, i) => {
                     acc += `(default, '${info.matricula}', '${i}', '${add}'), `
                     return acc
-                }, `insert into user_${fd.cursos[info.curso]} values `) + ';'
+                }, `insert into user_${fd.cursos[info.curso]} values `).slice(0, -2) + ';'
                 await database.saveOnEffetivate(num, sql, {ids: nums})
             }
         }
@@ -339,9 +339,12 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
             return await this.setDataOntoText(st.unFulfill[obj.stepTags[0]].msg, this.num)
         return await this.setDataOntoText(this.step.msgs, this.num)
     }
-    
+
     checkRecorrent(msg){
-        let ans = Object.keys(chat.recorrent).filter((i) => tags.getTag(i, msg)[0])[0]
+        let ans = Object.keys(chat.recorrent).filter((i) => {
+            console.log(i)
+            return tags.getTag(i, msg)[0]
+        })[0]
         if(ans)
             return this.setDataOntoText(chat.recorrent[ans])
         return this.step.default

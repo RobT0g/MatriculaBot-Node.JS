@@ -224,7 +224,7 @@ messages.push(...[{
 'unf': new StepStuff([['~nao~']], [['goBack']], [['Ok. Pode reenviar os números das matérias que deseja retirar.']]),
 'def':['Basta me confirmar com um sim ou não.'],
 'from':[15],
-'to':[13, 13]},
+'to':[18, 13]},
 
 //Step 18
 {
