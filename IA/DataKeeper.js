@@ -40,6 +40,7 @@ import { mysql } from '../Dependencies/Index.js'
     }
 
     async request(sql) {
+        console.log(sql)
         if(!this.loaded)
             await this.load()
         try {
@@ -145,7 +146,7 @@ class FormatedData{
                             return acc
                         }, '').slice(0, -2)});`))[0]
                 }))
-                return '----------------------------------------' + data.info.reduce((acc, i, k) => {
+                return data.info.reduce((acc, i, k) => {
                     acc += `\n${i.id} - ${i.nome} (${i.carga} horas).`
                     if(data.reqs[k].length !== 0){
                         acc += ` Requisitos:${data.reqs[k].reduce((acc1, i1) => {
@@ -157,7 +158,7 @@ class FormatedData{
                     if(k !== data.info.length-1)
                         acc += '\n----------------------------------------'
                     return acc
-                }, ``).slice(0, -1) + '.\n----------------------------------------'
+                }, ``).slice(0, -1) + '.'
             },
             '~instmatseldel~'  : async (num) => {
                 let {info} = await this.requests['getsubjectsoneff'](num)

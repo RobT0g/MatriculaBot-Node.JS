@@ -5,6 +5,8 @@ import { db, fd, database } from './DataKeeper.js'
 /**
  * Validação de cpf
  * Validação de email
+ * Respostas recorrentes está substituindo o ~def~
+ * Revisar a parte de retirar ou adicionar matérias já escolhidas anteriormente
  */ 
 
 class TagAnalyzer{
@@ -172,8 +174,14 @@ class TagAnalyzer{
                 await this.actions['managediscs'](man, obj, num, '0')
             },
             'managediscs'   : async (man, obj, num, add) => {
-                let info = await fd.getUser(num)
+                let info = await (fd.getUser(num).then(async (user) => {
+                    return {user, choices: (await db.request(`select discId, adicionar from user_${fd.cursos[user.curso]} where matricula
+                        = '${user.matricula}';`))[0]}
+                }))
                 let nums = obj.tagInfo[1].filter(i => Number(i) <= Number(db.amount[fd.cursos[info.curso]]))
+                let changes = nums.reduce((acc, i) => {
+                    
+                }, {add: [], del: []})
                 let sql = nums.reduce((acc, i) => {
                     acc += `(default, '${info.matricula}', '${i}', '${add}'), `
                     return acc
@@ -341,12 +349,19 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
     }
 
     checkRecorrent(msg){
-        let ans = Object.keys(chat.recorrent).filter((i) => {
-            console.log(i)
-            return tags.getTag(i, msg)[0]
-        })[0]
-        if(ans)
-            return this.setDataOntoText(chat.recorrent[ans])
+        let ans = [false, '']
+        for(let i in chat.recorrent){
+            if(tags.getTag(i)[0]){
+                ans = [true, i]
+                break
+            }
+        }
+        if(ans[0]){
+            let msg = [...chat.recorrent[ans]]
+            if([ans[1], 'any'].some(i => i in this.step.afterRec))
+                msg.push(...this.step.afterRec[(ans[1] in this.step.afterRec)?ans[1]:'any'])
+            return this.setDataOntoText(msg)
+        }
         return this.step.default
     }
 

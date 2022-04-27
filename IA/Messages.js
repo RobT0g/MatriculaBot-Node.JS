@@ -5,7 +5,7 @@ const messages = []
 
 //--------TODO--------//
 /**
- *  A mensagem do step 13 tá ruim
+ * 
  */ 
 
 class StepStuff{
@@ -148,14 +148,19 @@ messages.push(...[{
 
 {
 'txt':['Seu CPF é ~cpf~. Você confirma?'],
-'full': new StepStuff([['~sim~']], [], []),
+'full': new StepStuff([['~sim~']], [['effetivate']], []),
 'unf': new StepStuff([['~nao~']], [['goBack']], [['Ok, me envie o CPF correto agora 🤨']]),
 'def':['Você só precisa me mandar um "sim" ou "não" para confirmar.'],
 'from':[11],
 'to':[13]},
 
 {
-'txt':['Tudo certo. Agora nós começaremos o processo de adicionar/retirar matérias. Após cada requerimento' + 
+'txt':['Tudo certo. Agora nós começaremos o processo de adicionar/retirar matérias.', 'Para escolher uma das opções, basta me enviar' + 
+    ' "adicionar" ou "retirar". Após cada processo de escolhas, você retornará para este ponto, e portanto pode mudar suas esolhas' + 
+    ' ou até escolher mais matérias.', 'A partir deste ponto, você também pode rever algumas informações, como "matriz curricular"' + 
+    ' para ver as disciplinas de cada curso e "revisar" se quiser rever todas as suas informações e escolhas.',
+
+    ' Após cada requerimento' + 
     ', isto é, sempre que você terminar de selecionar as matérias, você irá voltar para este ponto. Então não' +
     ' precisa se preocupar caso adicionar ou retirar uma matéria errada, basta pedir para adicionar ou retirar' +
     ' novamente.', 'Neste ponto, você também pode rever algumas informações suas, assim como a matriz curricular' + 
@@ -164,7 +169,7 @@ messages.push(...[{
     ' pode me enviar "ver matriz curricular" ou "ver formulário" para revê-los.', 'Para continuarmos agora,'+
     ' você pode me enviar "adicionar" ou "retirar" para selecionar as matérias.', '~finalizar~'],
 'full': new StepStuff([['adicionar'], ['retirar'], ['~finalizar~']], [], []),
-'unf': {},  //Tem que ter um FINALIZAR aqui
+'unf': {},
 'def':['Só dizer alguma das opções para continuarmos.'],
 'from':[12],
 'to':[14, 15, 18]},
@@ -208,8 +213,9 @@ messages.push(...[{
 'full': new StepStuff([['~sim~'], ['~voltar~']], [['effetivate'], ['cleareff']], []),
 'unf': new StepStuff([['~nao~']], [['goBack']], [['Ok. Pode reenviar os números das matérias que deseja adicionar.']]),
 'def':['Basta me confirmar com um sim ou não.'],
+'afterRec': {'any': 'Só precisa me dizer sim ou não para confirmar as suas escolhas.'},
 'from':[14],
-'to':[13, 13]},
+'to':[18, 13]},
 
 //Step 17
 {
@@ -218,6 +224,7 @@ messages.push(...[{
 'full': new StepStuff([['~sim~'], ['~voltar~']], [['effetivate'], ['cleareff']], []),
 'unf': new StepStuff([['~nao~']], [['goBack']], [['Ok. Pode reenviar os números das matérias que deseja retirar.']]),
 'def':['Basta me confirmar com um sim ou não.'],
+'afterRec': {'any': 'Só precisa me dizer sim ou não para confirmar as suas escolhas.'},
 'from':[15],
 'to':[18, 13]},
 
@@ -229,8 +236,8 @@ messages.push(...[{
 'full': new StepStuff([['~voltar~'], ['~finalizar~']], [], []),
 'unf': new StepStuff([['~nao~']], [['goBack']], [['Ok, me envie o nome correto agora 🤨']]),
 'def':['Você só precisa me mandar um "sim" ou "não" para confirmar.'],
-'from':[13, 19],
-'to':[14]},
+'from':[13],
+'to':[13, 19]},
 
 //Step 19
 {
