@@ -158,16 +158,7 @@ messages.push(...[{
 'txt':['Tudo certo. Agora nós começaremos o processo de adicionar/retirar matérias.', 'Para escolher uma das opções, basta me enviar' + 
     ' "adicionar" ou "retirar". Após cada processo de escolhas, você retornará para este ponto, e portanto pode mudar suas esolhas' + 
     ' ou até escolher mais matérias.', 'A partir deste ponto, você também pode rever algumas informações, como "matriz curricular"' + 
-    ' para ver as disciplinas de cada curso e "revisar" se quiser rever todas as suas informações e escolhas.',
-
-    ' Após cada requerimento' + 
-    ', isto é, sempre que você terminar de selecionar as matérias, você irá voltar para este ponto. Então não' +
-    ' precisa se preocupar caso adicionar ou retirar uma matéria errada, basta pedir para adicionar ou retirar' +
-    ' novamente.', 'Neste ponto, você também pode rever algumas informações suas, assim como a matriz curricular' + 
-    ' ou formulário de rematrícula. Basta me enviar "revisar" para ver um resumo de todas as informações que' + 
-    ' você me mandou, assim como todas as matérias que você escolheu retirar ou adicionar. Além disso, você' + 
-    ' pode me enviar "ver matriz curricular" ou "ver formulário" para revê-los.', 'Para continuarmos agora,'+
-    ' você pode me enviar "adicionar" ou "retirar" para selecionar as matérias.', '~finalizar~'],
+    ' para ver as disciplinas de cada curso e "revisar" se quiser rever todas as suas informações e escolhas.', '~finalizar~'],
 'full': new StepStuff([['adicionar'], ['retirar'], ['~finalizar~']], [], []),
 'unf': {},
 'def':['Só dizer alguma das opções para continuarmos.'],
