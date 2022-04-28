@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 05-Abr-2022 às 03:17
+-- Tempo de geração: 28-Abr-2022 às 05:26
 -- Versão do servidor: 10.4.22-MariaDB
 -- versão do PHP: 7.4.27
 
@@ -20,6 +20,8 @@ SET time_zone = "+00:00";
 --
 -- Banco de dados: `venom`
 --
+CREATE DATABASE IF NOT EXISTS `venom` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `venom`;
 
 -- --------------------------------------------------------
 
@@ -331,7 +333,7 @@ INSERT INTO `disc_tce` (`id`, `nome`, `periodo`, `ativa`, `carga`) VALUES
 CREATE TABLE `effetivate` (
   `numero` varchar(25) NOT NULL,
   `query` text NOT NULL,
-  `data` text
+  `data` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -820,7 +822,7 @@ ALTER TABLE `disc_tce`
   ADD UNIQUE KEY `nome` (`nome`);
 
 --
--- Índices para tabela `disc_tce`
+-- Índices para tabela `effetivate`
 --
 ALTER TABLE `effetivate`
   ADD PRIMARY KEY (`numero`);
