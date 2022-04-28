@@ -35,6 +35,7 @@ class DataBase{                 //Guarda todos os usuários
             return 1
         }
         this.users[num] = new User(num)
+        await this.users[num].chat.move.goTo(0)
         await database.addUser(num)
         return 2
     }

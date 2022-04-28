@@ -316,9 +316,6 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
         let results, opt, problem = false
         try{
             results = tags.getStepObject(this.step, msg, true)
-            Object.keys(results).forEach((i) => {
-                console.log(i, results[i])
-            })
             opt = results.outcomes.indexOf(true)
             if(opt != -1){
                 Object.keys(results).forEach((i) => { results[i] = results[i][opt] })
@@ -393,7 +390,6 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
                     }
                 } catch(err){}
             }
-            //console.log(requests)
             return txt
         } catch(err){
             console.log('Erro em setDataOntoText (ChatManager).\n', err)

@@ -280,7 +280,7 @@ class DataBaseAccess{
             let sql = `update registro set ${line} where matricula = "${user.matricula}";`
             if(!('matricula' in user))
                 sql = `update inst_cadastro set ${line} where numero = "${num}";`
-            console.log(sql)
+            //console.log(sql)
             if(eff)
                 return await this.saveOnEffetivate(num, sql, obj)
             await db.request(sql.replaceAll(`"`, `'`))
