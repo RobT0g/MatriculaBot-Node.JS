@@ -57,9 +57,9 @@ messages.push(...[{
     'Quando estiver pronto para prosseguir basta me mandar um "Tudo pronto".'
 ],
 'full': new StepStuff([['pronto']], [], []),
-'unf': new StepStuff([['matriz&curricular']], [], [['~getmatriz~',
-'Quando estiver pronto para prosseguir, basta me enviar "Tudo pronto".']]),
+'unf': {},
 'def':['Você só precisa me confirmar a qualquer momento para continuarmos.'],
+'recomp': {'any': ['Só me mandar um "tudo pronto" para continuarmos!']},
 'from':[0],
 'to':[2]},
 
@@ -204,7 +204,7 @@ messages.push(...[{
 'full': new StepStuff([['~sim~'], ['~voltar~']], [['effetivate'], ['cleareff']], []),
 'unf': new StepStuff([['~nao~']], [['goBack']], [['Ok. Pode reenviar os números das matérias que deseja adicionar.']]),
 'def':['Basta me confirmar com um sim ou não.'],
-'afterRec': {'any': 'Só precisa me dizer sim ou não para confirmar as suas escolhas.'},
+'recomp': {'any': 'Só precisa me dizer sim ou não para confirmar as suas escolhas.'},
 'from':[14],
 'to':[18, 13]},
 
@@ -215,7 +215,7 @@ messages.push(...[{
 'full': new StepStuff([['~sim~'], ['~voltar~']], [['effetivate'], ['cleareff']], []),
 'unf': new StepStuff([['~nao~']], [['goBack']], [['Ok. Pode reenviar os números das matérias que deseja retirar.']]),
 'def':['Basta me confirmar com um sim ou não.'],
-'afterRec': {'any': 'Só precisa me dizer sim ou não para confirmar as suas escolhas.'},
+'recomp': {'any': 'Só precisa me dizer sim ou não para confirmar as suas escolhas.'},
 'from':[15],
 'to':[18, 13]},
 
@@ -224,17 +224,18 @@ messages.push(...[{
 'txt':['OK, suas escolhas foram salvas.', 'Agora, você pode escolher se quer voltar e adicionar/retirar' + 
     ' outras matérias, basta me mandar "voltar".', 'Se você já tiver terminado com suas escolhas, basta' +
     ' me mandar "finalizar".', 'Estas foram suas escolhas até o momento:', '~discesc~'],
-'full': new StepStuff([['~voltar~'], ['~finalizar~']], [], []),
-'unf': new StepStuff([['~nao~']], [['goBack']], [['Ok, me envie o nome correto agora 🤨']]),
-'def':['Você só precisa me mandar um "sim" ou "não" para confirmar.'],
+'full': new StepStuff([['~voltar~'], ['~finalizar~']], [[], ['finalize']], []),
+'unf': {},
+'def':['Você só precisa me mandar "finalizar" ou "voltar" para continuarmos com este processo.'],
+'recomp': {'any': ['Basta me mandar "finalizar" ou "voltar" para continuarmos.']},
 'from':[13],
 'to':[13, 19]},
 
 //Step 19
 {
-'txt':['Pronto! Estamos finalizados com a sua alteração de matrícula.', 'Eu irei te avisar quando o departamento', 
+'txt':['Pronto! Estamos finalizados com a sua alteração de matrícula.', /*'Eu irei te avisar quando o departamento', 
     ' tiver processado seu cadastro.', 'Neste ponto, você também pode requisitar refazer todo o processo', 
-    ' para outra pessoa.'],
+' para outra pessoa.'*/],
 'full': new StepStuff([['~nop~']], [], []),
 'unf': new StepStuff([['~nao~']], [['goBack']], [['Ok, me envie o nome correto agora 🤨']]),
 'def':['Você só precisa me mandar um "sim" ou "não" para confirmar.'],

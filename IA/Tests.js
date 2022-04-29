@@ -14,7 +14,6 @@ async function test(){
     /*for(let i in msg){
         console.log(msg[i] + '\n')
     }*/
-    await tags.actions.managediscs({}, {tagInfo: [1, ['10', '11', '16', '25']]}, '2010', '0')
-    database.effetivate('2010')
+    await tags.actions.finalize({}, {}, '4002')
 }
 test()

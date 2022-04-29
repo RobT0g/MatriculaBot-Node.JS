@@ -201,6 +201,11 @@ class TagAnalyzer{
                 }, `insert into user_${fd.cursos[info.user.curso]} values `).slice(0, -2) + ';'
                 console.log(sql)
                 await database.saveOnEffetivate(num, sql, {ids: fnums})
+            },
+            'finalize'      : async (man, obj, num) => {
+                await (fd.getUser(num).then((user) => {
+                    return db.request(`update registro set finished = '1' where matricula = '${user.matricula}';`)
+                }))
             }
         }
     }
@@ -369,8 +374,8 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
         }
         if(ans[0]){
             let msg = [...chat.recorrent[ans]]
-            if([ans[1], 'any'].some(i => i in this.step.afterRec))
-                msg.push(...this.step.afterRec[(ans[1] in this.step.afterRec)?ans[1]:'any'])
+            if([ans[1], 'any'].some(i => i in this.step.recomp))
+                msg.push(...this.step.recomp[(ans[1] in this.step.recomp)?ans[1]:'any'])
             return this.setDataOntoText(msg)
         }
         return this.step.default
