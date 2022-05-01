@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 28-Abr-2022 às 05:26
+-- Tempo de geração: 01-Maio-2022 às 06:45
 -- Versão do servidor: 10.4.22-MariaDB
 -- versão do PHP: 7.4.27
 
@@ -367,6 +367,18 @@ CREATE TABLE `messages` (
 INSERT INTO `messages` (`id`, `tag`, `text`) VALUES
 (1, '~getmatriz~', 'Matriz curricular de cada curso:\n> Administração (página 14): https://santaines.ifma.edu.br/wp-content/uploads/sites/14/2018/06/PROJETO-ADMINISTRA%C3%87%C3%83O.pdf\n> Engenharia da Computação: https://santaines.ifma.edu.br/wp-content/uploads/sites/14/2019/03/matriz_curricular_enge_comp.pdf\n> Física: https://santaines.ifma.edu.br/wp-content/uploads/sites/14/2019/02/matriz_curricular_fisica.pdf\n> TCE: https://santaines.ifma.edu.br/wp-content/uploads/sites/14/2018/10/MatrizCurEdific.pdf'),
 (2, '~getformremat~', 'https://docs.google.com/forms/d/e/1FAIpQLSfW29Ml1eWBmltoX428vsH1cErALrac0NA8Ma3Mvu9BPSlONg/viewform?edit2=2_ABaOnud33HrxwsaUv_UQmUhruKOGVMUXjwiiRIKf8tbfKBvyD6PoGS5_4PVxwA03qw');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `multuser`
+--
+
+CREATE TABLE `multuser` (
+  `id` int(11) NOT NULL,
+  `numero` varchar(25) NOT NULL,
+  `matricula` varchar(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -841,6 +853,12 @@ ALTER TABLE `messages`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Índices para tabela `multuser`
+--
+ALTER TABLE `multuser`
+  ADD KEY `matricula` (`matricula`);
+
+--
 -- Índices para tabela `registro`
 --
 ALTER TABLE `registro`
@@ -1000,32 +1018,17 @@ ALTER TABLE `user_tce`
 --
 
 --
+-- Limitadores para a tabela `multuser`
+--
+ALTER TABLE `multuser`
+  ADD CONSTRAINT `multuser_ibfk_1` FOREIGN KEY (`matricula`) REFERENCES `registro` (`matricula`);
+
+--
 -- Limitadores para a tabela `user_adm`
 --
 ALTER TABLE `user_adm`
   ADD CONSTRAINT `user_adm_ibfk_1` FOREIGN KEY (`matricula`) REFERENCES `registro` (`matricula`),
   ADD CONSTRAINT `user_adm_ibfk_2` FOREIGN KEY (`discId`) REFERENCES `disc_adm` (`id`);
-
---
--- Limitadores para a tabela `user_ec`
---
-ALTER TABLE `user_ec`
-  ADD CONSTRAINT `user_ec_ibfk_1` FOREIGN KEY (`matricula`) REFERENCES `registro` (`matricula`),
-  ADD CONSTRAINT `user_ec_ibfk_2` FOREIGN KEY (`discId`) REFERENCES `disc_ec` (`id`);
-
---
--- Limitadores para a tabela `user_fis`
---
-ALTER TABLE `user_fis`
-  ADD CONSTRAINT `user_fis_ibfk_1` FOREIGN KEY (`matricula`) REFERENCES `registro` (`matricula`),
-  ADD CONSTRAINT `user_fis_ibfk_2` FOREIGN KEY (`discId`) REFERENCES `disc_fis` (`id`);
-
---
--- Limitadores para a tabela `user_tce`
---
-ALTER TABLE `user_tce`
-  ADD CONSTRAINT `user_tce_ibfk_1` FOREIGN KEY (`matricula`) REFERENCES `registro` (`matricula`),
-  ADD CONSTRAINT `user_tce_ibfk_2` FOREIGN KEY (`discId`) REFERENCES `disc_tce` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
