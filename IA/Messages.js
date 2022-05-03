@@ -65,12 +65,12 @@ messages.push(...[{
 
 {
 'txt':['Vou precisar de alguma informações suas. Primeiramente me informe seu código de matrícula.'],
-'full': new StepStuff([['~matex~'], ['~mat~']], [[], ['prepareUser']], []),
+'full': new StepStuff([['~matex~'], ['~mat~']], [[], ['prepareUser']], []),  //Excessão de matrícula que já existe
 'unf': new StepStuff([['!num!'], ], [], [['Por favor, me mande um código de matrícula válido.'], 
     ['Esse código de matrícula já está registrado.', 'Você já fez seu registro?']]),
 'def':['Preciso que me mande sua matrícula.'],
 'from':[1],
-'to':['qual passo?', 3]},   //Criar passo de repetição de matrícula
+'to':['qual passo?', 3]},
 
 {
 'txt':['Sua matrícula é ~mat~. Você confirma?'],
