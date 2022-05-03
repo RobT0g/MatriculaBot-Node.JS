@@ -86,6 +86,21 @@ class TagAnalyzer{
                     return [false, '']
                 }
             }),
+            '~matex~'       : ((msg) => {
+                let data = this.tagfunc['~mat~'](msg)
+                if(data[0])
+                    return new Promise(async (resolve, reject) => {
+                        try {
+                            let a = await db.request(`select matricula from registro where matricula = '${data[1]}';`)
+                            if(a[0][0])
+                                resolve([true, a[0][0].matricula])
+                            resolve([false, ''])
+                        } catch(err){
+                            reject(err)
+                        }
+                    })
+                return [false, '']
+            }),
             '~email~'       : ((msg) => {
                 try{
                 let data = msg.msgbody.toLowerCase().match(/\S+/g).reduce((acc, i) => {acc = (/[@]/g.test(i)?i:acc); return acc},'');
@@ -213,7 +228,7 @@ class TagAnalyzer{
     getTag(tag, msg){
         try{
             if(/[~]/g.test(tag))
-                return  this.tagfunc[tag](msg)
+                return this.tagfunc[tag](msg)
             if(/[*]/g.test(tag)){
                 let res = this.tagfunc[tag](msg)
                 return  [!res[0], res[1]]
@@ -269,16 +284,31 @@ class TagAnalyzer{
         }
     }
 
-    getStepObject(step, msg, full = true){
+    async getStepObject(step, msg, full = true){
         try{
             let cond = full?'fulfill':'unFulfill'
             let obj = { stepTags: step[cond].getTags() }                        //[[full1Tag1, full1Tag2], [full2Tag1]]
-            obj.tagInfo = obj.stepTags.map((i) =>  i.reduce((acc, j, k) => {    //[[f1Res, Data], [f2Res, Data]]
-                let t =  this.getTag(j, msg);
-                acc[0] = acc[0] || t[0];
-                acc[1] = k==0?t[1]:acc[1]
-                return acc
-            }, [false, '']))
+            obj.tagInfo = await Promise.all(obj.stepTags.map((i) => {
+                return new Promise(async (resolve, reject) => {
+                    let t = await this.getTag(i[0], msg)
+                    let data = t[1]
+                    if(t[0]){
+                        resolve(t)
+                        return
+                    }
+                    if(i.length > 0){
+                        for(let j in i.slice(1)){
+                            t = await this.getTag(i[j], msg)
+                            if(t[0]){
+                                resolve([t[0], data])
+                                return
+                            }
+                        }
+                    }
+                    reject([false, ''])
+                })
+            }))
+            console.log(obj.tagInfo, 'a')
             obj.outcomes = obj.tagInfo.map((i) => i[0])                         //[f1Res, f2Res]
             if(!obj.outcomes.includes(true))    //ISSO PODE DAR MERDA
                 return {}
@@ -317,10 +347,13 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
         }
     }
 
-    newMessage(msg){     //Chamado quando uma mensagem é recebida
+    async newMessage(msg){     //Chamado quando uma mensagem é recebida
         let results, opt, problem = false
         try{
-            results = tags.getStepObject(this.step, msg, true)
+            results = await tags.getStepObject(this.step, msg, true)
+            Object.keys(results).forEach((i) => {
+                console.log(i, results[i])
+            })
             opt = results.outcomes.indexOf(true)
             if(opt != -1){
                 Object.keys(results).forEach((i) => { results[i] = results[i][opt] })
@@ -331,7 +364,7 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
             problem = true
         }
         try{
-            results = tags.getStepObject(this.step, msg, false)
+            results = await tags.getStepObject(this.step, msg, false)
             if((Object.entries(results).length === 0) || results.tagInfo === [])
                 return this.checkRecorrent(msg)
             opt = results.outcomes.indexOf(true)
