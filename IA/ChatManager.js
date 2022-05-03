@@ -178,22 +178,34 @@ class TagAnalyzer{
                     return {user, choices: (await db.request(`select discId, adicionar from user_${fd.cursos[user.curso]} where matricula
                         = '${user.matricula}';`))[0]}
                 }))
-                let nums = obj.tagInfo[1].filter(i => (Number(i) <= Number(db.amount[fd.cursos[info.user.curso]]))).map(i => Number(i))
-                console.log(info.choices, nums)
+                let fnums = obj.tagInfo[1].filter(i => (Number(i) <= Number(db.amount[fd.cursos[info.user.curso]]))).map(i => Number(i))
+                let nums = [...fnums]
                 let changes = info.choices.reduce((acc, i) => {
                     if(nums.includes(i.discId)){
                         if(i.adicionar !== Number(add))
                             acc.del.push(i.discId)
-                        nums.splice(nums.indexOf(i.discId), 1)
+                        else
+                            nums.splice(nums.indexOf(i.discId), 1)
                     }
                     return acc
                 }, {del: []})
                 changes.add = [...nums]
-                let sql = nums.reduce((acc, i) => {
-                    acc += `(default, '${info.matricula}', '${i}', '${add}'), `
+                console.log(changes)
+                let sql = ''
+                if(changes.del.length > 0)
+                    sql = `delete from user_${fd.cursos[info.user.curso]} where matricula = '${info.user.matricula}' 
+                        and discId in (${changes.del.map(i => `'${i}'`)});`
+                sql += changes.add.reduce((acc, i) => {
+                    acc += `(default, '${info.user.matricula}', '${i}', '${add}'), `
                     return acc
-                }, `insert into user_${fd.cursos[info.curso]} values `).slice(0, -2) + ';'
-                await database.saveOnEffetivate(num, sql, {ids: nums})
+                }, `insert into user_${fd.cursos[info.user.curso]} values `).slice(0, -2) + ';'
+                console.log(sql)
+                await database.saveOnEffetivate(num, sql, {ids: fnums})
+            },
+            'finalize'      : async (man, obj, num) => {
+                await (fd.getUser(num).then((user) => {
+                    return db.request(`update registro set finished = '1' where matricula = '${user.matricula}';`)
+                }))
             }
         }
     }
@@ -309,9 +321,6 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
         let results, opt, problem = false
         try{
             results = tags.getStepObject(this.step, msg, true)
-            Object.keys(results).forEach((i) => {
-                console.log(i, results[i])
-            })
             opt = results.outcomes.indexOf(true)
             if(opt != -1){
                 Object.keys(results).forEach((i) => { results[i] = results[i][opt] })
@@ -365,8 +374,8 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
         }
         if(ans[0]){
             let msg = [...chat.recorrent[ans]]
-            if([ans[1], 'any'].some(i => i in this.step.afterRec))
-                msg.push(...this.step.afterRec[(ans[1] in this.step.afterRec)?ans[1]:'any'])
+            if([ans[1], 'any'].some(i => i in this.step.recomp))
+                msg.push(...this.step.recomp[(ans[1] in this.step.recomp)?ans[1]:'any'])
             return this.setDataOntoText(msg)
         }
         return this.step.default
@@ -386,7 +395,6 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
                     }
                 } catch(err){}
             }
-            //console.log(requests)
             return txt
         } catch(err){
             console.log('Erro em setDataOntoText (ChatManager).\n', err)

@@ -5,8 +5,8 @@ import { chat } from "./ChatFlow.js"
 import { StepStuff } from "./Messages.js"
 
 const usersBank = new DataBase()
-let num = '20102010'
-
+let num = '2103'
+/*
 let a = ['abc', 'abd', 'acf']
 console.log(a.filter((i) => /abd/g.test(i)))
 
@@ -16,7 +16,7 @@ let man = {goTo: async (num) => {
 let obj = {actions: ['goTo10', 'goTo17']}
 
 tags.handleAction(man, obj, num)
-
+*/
 
 const fc = async function(message){
     let userOn = await usersBank.userRegister(num)
@@ -29,16 +29,19 @@ const fc = async function(message){
         console.log(['Retomando de onde paramos.', ...txt])
         return
     }
-    console.log(await usersBank.newMessage(message, num))
+    console.log('--------------------------------------\n' + (await usersBank.newMessage(message, num)) + '\n--------------------------------------')
 }
 
 const main = async function(){
     await fc('Opaa')
-    await usersBank.users[num].goTo('13')
-    await fc('Quero adicionar algumas matérias, por favor!')
-    await fc('Então, quero escolher as matérias 10, 11 e 12')
-    await fc('Espera, acho melhor voltar, acho que escolhi errado')
-    await fc('Então, quero escolher as matérias 10 e 14')
-    await fc('Isso! Agora tá certo!')
+    await fc('sim')
+    await fc('matriz curricular')
+    await fc('pronto')
+    await fc('mat123')
+    await fc('rapaz')
+    await fc('matriz curricular')
+    await fc('revisar')
+    await fc('rapaz')
+    await fc('sim')
 }
 main()

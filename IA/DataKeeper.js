@@ -119,8 +119,10 @@ class FormatedData{
                     }, ['', ''])
                     let txt = ''
                     if(res[1].length > 0)
-                        txt += ('\nMatérias para adicionar:' + res[1] + '.')
+                        txt += ('Matérias para adicionar:' + res[1].slice(0, -1) + '.')
                     if(res[0].length > 0)
+                        if(res[1].length > 0)
+                            txt += '\n'
                         txt += ('Matérias para retirar:' + res[0].slice(0, -1) + '.')
                     return txt
                 } catch(err){
@@ -147,7 +149,7 @@ class FormatedData{
                         }, '').slice(0, -2)});`))[0]
                 }))
                 return data.info.reduce((acc, i, k) => {
-                    acc += `\n${i.id} - ${i.nome} (${i.carga} horas).`
+                    acc += (k > 0?'\n':'') + `${i.id} - ${i.nome} (${i.carga} horas).`
                     if(data.reqs[k].length !== 0){
                         acc += ` Requisitos:${data.reqs[k].reduce((acc1, i1) => {
                             acc1 += `\n   > ${i1.id} - ${i1.nome};`; return acc1;
@@ -280,7 +282,7 @@ class DataBaseAccess{
             let sql = `update registro set ${line} where matricula = "${user.matricula}";`
             if(!('matricula' in user))
                 sql = `update inst_cadastro set ${line} where numero = "${num}";`
-            console.log(sql)
+            //console.log(sql)
             if(eff)
                 return await this.saveOnEffetivate(num, sql, obj)
             await db.request(sql.replaceAll(`"`, `'`))
@@ -302,9 +304,14 @@ class DataBaseAccess{
     }
 
     async effetivate(num){
-        let sql = await Promise.all([db.request(`select query from effetivate where numero = '${num}';`),
-            db.request(`delete from effetivate where numero = '${num}';`)])
-        sql = sql[0][0][0].query.split(';').slice(0, -1)
+        let sql = await db.request(`select query from effetivate where numero = '${num}';`).then((data) => {
+            if(data[0][0])
+                db.request(`delete from effetivate where numero = '${num}';`)
+            return data[0][0]
+        }).catch((err) => {
+            throw new Error('Erro ao efetivar os dados.\n', err)
+        })
+        sql = sql.query.split(';').slice(0, -1)
         let querys = []
         for(let i in sql)
             querys.push(db.request(sql[i].replaceAll(`"`, `'`) + ';'))
