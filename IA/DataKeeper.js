@@ -119,8 +119,10 @@ class FormatedData{
                     }, ['', ''])
                     let txt = ''
                     if(res[1].length > 0)
-                        txt += ('\nMatérias para adicionar:' + res[1] + '.')
+                        txt += ('Matérias para adicionar:' + res[1].slice(0, -1) + '.')
                     if(res[0].length > 0)
+                        if(res[1].length > 0)
+                            txt += '\n'
                         txt += ('Matérias para retirar:' + res[0].slice(0, -1) + '.')
                     return txt
                 } catch(err){
@@ -147,7 +149,7 @@ class FormatedData{
                         }, '').slice(0, -2)});`))[0]
                 }))
                 return data.info.reduce((acc, i, k) => {
-                    acc += `\n${i.id} - ${i.nome} (${i.carga} horas).`
+                    acc += (k > 0?'\n':'') + `${i.id} - ${i.nome} (${i.carga} horas).`
                     if(data.reqs[k].length !== 0){
                         acc += ` Requisitos:${data.reqs[k].reduce((acc1, i1) => {
                             acc1 += `\n   > ${i1.id} - ${i1.nome};`; return acc1;
