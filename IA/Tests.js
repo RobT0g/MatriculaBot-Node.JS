@@ -15,7 +15,7 @@ async function test(){
         console.log(msg[i] + '\n')
     }*/
     //tags.actions.managediscs({}, {tagInfo: [1, ['10', '11', '19', '20', '21']]}, '20102010', '1')
-    let a = await tags.getTag('~matex~', msg)
+    let a = await fd.requests['~discesc~']('559892437964@c.us')
     console.log(a)
 }
 test()

@@ -118,12 +118,13 @@ class FormatedData{
                         return acc
                     }, ['', ''])
                     let txt = ''
-                    if(res[1].length > 0)
+                    if(res[1].length > 0 && res[1][0] !== '')
                         txt += ('Matérias para adicionar:' + res[1].slice(0, -1) + '.')
-                    if(res[0].length > 0)
+                    if(res[0].length > 0){
                         if(res[1].length > 0)
                             txt += '\n'
                         txt += ('Matérias para retirar:' + res[0].slice(0, -1) + '.')
+                    }
                     return txt
                 } catch(err){
                     console.log('Erro em ~discesc~.\n', err)
