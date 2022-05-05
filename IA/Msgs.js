@@ -51,9 +51,10 @@ messages.push(...[{
 
 {
 'txt':['Primeiramente me informe seu código de matrícula.'],
-'full': new StepStuff([['~validmat~']], [[], ['prepareUser']], []),  //Excessão de matrícula que já existe
+'full': new StepStuff([['~validmat~']], [[], ['prepareUser']], []),
 'unf': new StepStuff([['~matex~'], ['!num!']], [], [['Estanho, já tenho um registro com essa matrícula.', 'Talvez você digitou a' + 
-    ' matrícula errada? Ou você já fez a rematrícula?', 'Se for o primeiro caso, é só enviar a matrícula correta.', ''], 
+    ' matrícula errada? Ou você já fez a rematrícula?', 'Se for o primeiro caso, é só enviar a matrícula correta, agora se você ainda não' + 
+    ' fez a matrícula e isso tá aparecendo pra você, tente contatar alguém do departamento. Neste caso, basta me enviar "Contatar departamento".'], 
     ['Por favor, me mande um código de matrícula válido.'], 
     ['Esse código de matrícula já está registrado.', 'Você já fez seu registro?']]),
 'def':['Preciso que me mande sua matrícula.'],
