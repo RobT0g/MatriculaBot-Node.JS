@@ -58,8 +58,92 @@ messages.push(...[{
     ['Por favor, me mande um código de matrícula válido.'], 
     ['Esse código de matrícula já está registrado.', 'Você já fez seu registro?']]),
 'def':['Preciso que me mande sua matrícula.'],
-'from':[1],
 'to':[3]},
+
+
+{
+'txt':['Sua matrícula é ~mat~. Você confirma?'],
+'full': new StepStuff([['~sim~']], [['effetivate']], []),
+'unf': new StepStuff([['~nao~']], [['2']], [['Ok, me envie o código de matrícula correto agora 🤨']]),
+'def':['Você só precisa me mandar um "sim" ou "não" para confirmar.'],
+'to':[4]},
+
+{
+'txt':['Agora me informe seu nome completo.'],
+'full': new StepStuff([['~nome~']], [['updateUser']], []),
+'unf': new StepStuff([['~1-wrd~']], [], [['Poderia rever o nome que você enviou?', 'Eu pedi que me enviasse ' + 
+'seu nome completo, mas você só me enviou uma palavra.']]),
+'def':['Por favor, me informe seu nome.'],
+'to':[5]},
+
+{
+'txt':['Seu nome completo é ~nome~. Você confirma?'],
+'full': new StepStuff([['~sim~']], [['effetivate']], []),
+'unf': new StepStuff([['~nao~']], [['4']], [['Ok, me envie o nome correto agora 🤨']]),
+'def':['Você só precisa me mandar um "sim" ou "não" para confirmar.'],
+'to':[6]},
+
+{
+'txt':['Agora me informe seu Email.'],
+'full': new StepStuff([['~email~']], [['updateUser']], []),
+'unf': new StepStuff([['*@']], [], [['Me envie um email válido, por favor.']]),
+'def':['Preciso do seu email.'],
+'to':[7]},
+
+{
+'txt':['Seu email é ~email~. Você confirma?'],
+'full': new StepStuff([['~sim~']], [['effetivate']], []),
+'unf': new StepStuff([['~nao~']], [['6']], [['Ok, me envie o email correto agora 🤨']]),
+'def':['Você só precisa me mandar um "sim" ou "não" para confirmar.'],
+'to':[8]},
+
+{
+'txt':['Agora preciso saber qual é o seu curso.'],
+'full': new StepStuff([['~curso~']], [['updateUser']], []),
+'unf': new StepStuff([['~sim~', '~nao~']], [], [['Só precisa me enviar o nome do seu curso.']]),
+'def':['Por favor, me mande o nome do seu curso.', 'É preciso ser um dos 4 do nosso campus: ' + 
+'Administração, Engenharia da Computação, Física ou Construção de Edifícios.'],
+'to':[9]},
+
+{
+'txt':['Beleza, e qual o ano da sua turma? (ano em que você ingressou na instituição)'],
+'full': new StepStuff([['~turma~']], [['insUpdateUser']], []),
+'unf': new StepStuff([['~sim~', '~nao~']], [], [['Só precisa me enviar o ano da sua turma.']]),
+'def':['Eu preciso do ano da sua turma, ou seja, o ano em que você entrou na instituição.'],
+'to':[10]},
+
+{
+'txt':['Então você é do curso ~curso~ da turma de ~turma~. Você confirma?'],
+'full': new StepStuff([['~sim~']], [['effetivate']], []),
+'unf': new StepStuff([['~nao~']], [['8']], [['Ok, vamos voltar atrás então. Qual é mesmo o seu curso?']]),
+'def':['Você só precisa me mandar um "sim" ou "não" para confirmar.'],
+'to':[11]},
+
+{
+'txt':['Me informe seu CPF.'],
+'full': new StepStuff([['~cpf~']], [['updateUser']], []),
+'unf': new StepStuff([['~num~']], [], [['Por favor, me envie um cpf válido.', 'Ele deve conter exatamente 11 ' + 
+    'dígitos.']]),
+'def':['Por favor, me informe o seu CPF.'],
+'to':[12]},
+
+{
+'txt':['Seu CPF é ~cpf~. Você confirma?'],
+'full': new StepStuff([['~sim~']], [['effetivate']], [[]]),
+'unf': new StepStuff([['~nao~']], [['11']], [['Ok, me envie o CPF correto agora 🤨']]),
+'def':['Você só precisa me mandar um "sim" ou "não" para confirmar.'],
+'to':[13]},
+
+{
+'txt':['Pronto. Já tenho todas as informações necessárias para concluir a sua rematrícula.', 'Se você já quiser finalizar aqui, basta' + 
+    'me mandar um "finalizar" e eu vou mandar seus dados para o departamento da rematrícula, mas se quiser, você ainda pode alterar a sua' + 
+    ' matrícula.', 'A alteração de matrícula é basicamente onde você poderá escolher se quer adicionar ou retirar alguma matéria da sua' + 
+    ' carga horária desse período', 'Estas são as matérias em que você está matrículado para este período:\n~defdisc~', 'Se quiser fazer a' + 
+    ' alteração de matrícula, basta me mandar "alterar matrícula".'],
+'full': new StepStuff([['~finalizar~'], ['alterar']], [[], []], [[]]),
+'unf': new StepStuff([[]], [[]], [[]]),
+'def':['Você só precisa me mandar um "finalizar" ou "alterar" para continuarmos.'],
+'to':[14, 15]},
 ])
 
 const recorrent = {

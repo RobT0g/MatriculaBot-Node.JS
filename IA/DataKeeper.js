@@ -59,7 +59,7 @@ class FormatedData{
         this.cursosName = ['Administração', 'Engenharia da Computação', 'Física', 'Construção de Edifícios']
         this.cursos = db.cursos
         this.requests = {
-            userData        : async (tag, num) => {
+            userData            : async (tag, num) => {
                 let eff = (await db.request(`select data from effetivate where numero = '${num}';`))[0][0]
                 if(eff){
                     eff = JSON.parse(eff.data)
@@ -68,25 +68,38 @@ class FormatedData{
                 }
                 return (await db.request(`select ${tag} from registro where numero = '${num}' and finished = '0';`))[0][0][tag]
             },
-            '~mat~'         : async (num) => {
+            '~mat~'             : async (num) => {
                 return this.requests.userData('matricula', num)
             },
-            '~nome~'        : async (num) => {
+            '~nome~'            : async (num) => {
                 return this.requests.userData('nome', num)
             },
-            '~email~'       : async (num) => {
+            '~email~'           : async (num) => {
                 return this.requests.userData('email', num)    
             },
-            '~curso~'       : async (num) => {
+            '~curso~'           : async (num) => {
                 return this.cursosName[(await this.requests.userData('curso', num))]
             },
-            '~turma~'       : async (num) => {
+            '~turma~'           : async (num) => {
                 return this.requests.userData('turma', num)    
             },
-            '~cpf~'         : async (num) => {
+            '~cpf~'             : async (num) => {
                 return this.requests.userData('cpf', num)
             },
-            '~recdisc~'     : async (num) => {
+            '~defdisc~'         : async (num) => {
+                let {curso, turma} = await this.getUser(num)
+                let maxp = (await db.request(`select max(periodo) from disc_${this.cursos[curso]};`))[0][0]['max(periodo)']
+                let date = new Date()
+                let periodo = (date.getFullYear()-turma)*2 + ((date.getMonth() > 6)?2:1)
+                if(periodo > maxp)
+                    periodo = maxp
+                let mats = await db.request(`select id, nome, carga from disc_${this.cursos[curso]} where parap = ${periodo};`)
+                return mats[0].reduce((acc, i) => {
+                    acc += `${i.id}. ${i.nome} (${i.carga} horas);\n`
+                    return acc
+                }, '').slice(0, -2) + '.'
+            },
+            '~recdisc~'         : async (num) => {
                 let info = await this.getUser(num)
                 let y = new Date().getFullYear() - info.turma
                 let req = db.disciplinasId[this.cursos[info.curso]][(y >= db.disciplinasId[this.cursos[info.curso]].length)?-1:y]
@@ -99,13 +112,13 @@ class FormatedData{
                 })
                 return retn 
             },
-            '~userinfo~'    : async (num) => {
+            '~userinfo~'        : async (num) => {
                 let data = (await db.request(`select * from registro where numero = '${num}' and finished = '0';;`))[0][0]
                 return `\n> Nome: ${data.nome};\n> Matricula: ${data.matricula};\n> Email: ${data.email};\n` + 
                     `> Curso: ${this.cursosName[data.curso]} turma de ${data.turma};\n` + 
                     `> CPF: ${data.cpf}.`
             },
-            '~discesc~'     : async (num) => { 
+            '~discesc~'         : async (num) => { 
                 let info = (await db.request(`select * from registro where numero = '${num}' and finished = '0';`))[0][0]
                 let data = (await db.request(`select u.discId, d.nome, d.carga, u.adicionar from 
                     user_${this.cursos[info.curso]} as u join disc_${this.cursos[info.curso]} as d on 
@@ -131,16 +144,16 @@ class FormatedData{
                     return 'Você ainda não selecionou nenhuma matéria.'
                 }
             },
-            '~getmatriz~'   : async (num) => {
+            '~getmatriz~'       : async (num) => {
                 return (await db.request(`select text from messages where tag = '~getmatriz~';`))[0][0].text
             },
-            '~depart~'      : async (num) => {
+            '~depart~'          : async (num) => {
                 return (await db.request(`select text from messages where tag = '~depart~';`))[0][0].text
             },
-            '~numdepart~'    : async (num) => {
+            '~numdepart~'       : async (num) => {
                 return (await db.request(`select text from messages where tag = '~numdepart~';`))[0][0].text
             },
-            '~instmatseladd~'  : async (num) => {
+            '~instmatseladd~'   : async (num) => {
                 let data = await this.requests['getsubjectsoneff'](num)
                 data.reqs = await Promise.all(data.info.map(async (i) => {
                     let ids = (await db.request(`select reqId from req_${this.cursos[data.user.curso]} where discId = ${i.id};`))[0]
@@ -166,7 +179,7 @@ class FormatedData{
                     return acc
                 }, ``).slice(0, -1) + '.'
             },
-            '~instmatseldel~'  : async (num) => {
+            '~instmatseldel~'   : async (num) => {
                 let {info} = await this.requests['getsubjectsoneff'](num)
                 return info.reduce((acc, i, k) => {
                     acc += `\n> ${i.id} - ${i.nome} (${i.carga} horas);`
@@ -184,7 +197,7 @@ class FormatedData{
                     (${eff.ids.reduce((acc, i) => { acc += `${i}, `; return acc }, '').slice(0, -2)});`))[0]
                 return {info, user}
             },
-            '~finalizar~'         : async (num) => {
+            '~finalizar~'       : async (num) => {
                 let user = await this.getUser(num)
                 if((await db.request(`select * from user_${this.cursos[user.curso]} where matricula = '${user.matricula}';`))[0].length == 0){
                     return ''
