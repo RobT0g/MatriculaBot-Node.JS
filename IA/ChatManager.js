@@ -399,17 +399,19 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
 
     checkRecorrent(msg){
         let ans = [false, '']
+        console.log(this.step)
         for(let i in chat.recorrent){
-            if(tags.getTag(i)[0]){
+            if(tags.getTag(i, msg)[0]){
                 ans = [true, i]
-                break
+                let msg = [...chat.recorrent[ans[1]]]
+                try{
+                    if([ans[1], 'any'].some(i => i in this.step.recomp)){
+                        msg.push(...this.step.recomp[(ans[1] in this.step.recomp)?ans[1]:'any'])
+                        console.log('sim')
+                    }
+                } catch(err){}
+                return this.setDataOntoText(msg)
             }
-        }
-        if(ans[0]){
-            let msg = [...chat.recorrent[ans]]
-            if([ans[1], 'any'].some(i => i in this.step.recomp))
-                msg.push(...this.step.recomp[(ans[1] in this.step.recomp)?ans[1]:'any'])
-            return this.setDataOntoText(msg)
         }
         return this.step.default
     }
