@@ -5,10 +5,10 @@ import { chat } from "./ChatFlow.js"
 import { StepStuff } from "./Messages.js"
 
 let cd = new ChatManager('559892437964@c.us')
-let msg = new Message('minha mtrícula é 10abd')
+let msg = new Message('minha mtrícula é 2020')
+
 
 async function test(){
-    await cd.move.goTo(1)
-    console.log((await cd.checkRecorrent(new Message('Quero revisar a matriz curricular.'))))
+    console.log((await tags.tagfunc['~matex~'](msg)))
 }
 test()

@@ -73,7 +73,6 @@ class TagAnalyzer{
                 }
             }),
             '~mat~'         : ((msg) => {
-                //Alguma formatação aqui????
                 try{
                     let data = msg.msgbody.match(/\S+/g).reduce((acc, i) => {
                         acc = /\d+[a-zA-Z]*\d*/g.test(i)?i:''; return acc}, '')
@@ -86,19 +85,30 @@ class TagAnalyzer{
                     return [false, '']
                 }
             }),
+            'matvalidate'   :(data, valid) => {
+                return new Promise(async (resolve, reject) => {
+                    try{
+                        let a = await db.request(`select matricula from registro where matricula = '${data[1]}';`)
+                        if(valid && !a[0][0])
+                            resolve([true, data[1]])
+                        else if(!valid && a[0][0])
+                            resolve([true, a[0][0].matricula])
+                        resolve([false, ''])
+                    } catch(err){
+                        reject(err)
+                    }
+                })
+            },
+            '~validmat~'    :((msg) => {
+                let data = this.tagfunc['~mat~'](msg)
+                if(data[0])
+                    return this.tagfunc['matvalidate'](data, true)
+                return [false, '']
+            }),
             '~matex~'       : ((msg) => {
                 let data = this.tagfunc['~mat~'](msg)
                 if(data[0])
-                    return new Promise(async (resolve, reject) => {
-                        try {
-                            let a = await db.request(`select matricula from registro where matricula = '${data[1]}';`)
-                            if(a[0][0])
-                                resolve([true, a[0][0].matricula])
-                            resolve([false, ''])
-                        } catch(err){
-                            reject(err)
-                        }
-                    })
+                    return this.tagfunc['matvalidate'](data, false)
                 return [false, '']
             }),
             '~email~'       : ((msg) => {
@@ -141,6 +151,7 @@ class TagAnalyzer{
             '~voltar~'      : ((msg) => {return this.keyword(msg, 'voltar')}),
             '~finalizar~'   : ((msg) => {return this.keyword(msg, 'finalizar')}),
             '~matriz~'      : ((msg) => {return this.keyword(msg, '&matriz&curricular')}),
+            '~depart~'      : ((msg) => {return this.keyword(msg, '&contatar&departamento')}),
             '~revisar~'     : ((msg) => {return this.keyword(msg, 'revisar')}),
             '~def~'         : ((msg) => {return [true, '']}),
             '~nop~'         : ((msg) => {return [false, '']})
@@ -153,7 +164,7 @@ class TagAnalyzer{
             ret[tag in this.altTags?this.altTags[tag]:tag] = obj.tagInfo[1]
             return ret
         }
-        this.actionsReferences = {'goTo': /goTo\d+/g}
+        this.actionsReferences = {'goTo': /\d+/g}
         this.actions = {
             'prepareUser'   : async (man, obj, num) => {
                 let user = await fd.getUser(num)
@@ -164,13 +175,10 @@ class TagAnalyzer{
             },
             'effetivate'    : async (man, obj, num) => {
                 await database.effetivate(num)
-            }, 
-            'goBack'        : async (man, obj, num) => {
-                await man.move.goBack()
             },
             'goTo'          : async (man, obj, num) => {
-                num = obj.actions.filter((i) => /goTo\d+/.test(i))[0].match(/\d+/g)[0]
-                await man.move.goTo(num)
+                num = obj.actions.filter((i) => /\d+/.test(i))[0].match(/\d+/g)[0]
+                await man.move.goTo(Number(num))
             },
             'updateUser'    : async (man, obj, num) => {
                 await database.updateUser(num, this.getUpdateObj(obj))
@@ -336,10 +344,6 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
                 this.talkat = chat.nextStepId(this.talkat, opt)
                 await this.move.refStep()
             },
-            goBack  : async (opt=0) => {       //Retorna para o step anterior
-                this.talkat = chat.lastStepId(this.talkat, opt)
-                await this.move.refStep()
-            },
             goTo    : async (newID) => {          //Vai para um step específico
                 this.talkat = newID
                 await this.move.refStep()
@@ -430,6 +434,8 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
                     }
                 } catch(err){}
             }
+            if(txt.some((i) => /[~]\w+[~]/g.test(i)))
+                return this.setDataOntoText(txt)
             return txt
         } catch(err){
             console.log('Erro em setDataOntoText (ChatManager).\n', err)

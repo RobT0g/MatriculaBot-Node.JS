@@ -134,8 +134,11 @@ class FormatedData{
             '~getmatriz~'   : async (num) => {
                 return (await db.request(`select text from messages where tag = '~getmatriz~';`))[0][0].text
             },
-            '~getformremat~': async (num) => {
-                return (await db.request(`select text from messages where tag = '~getformremat~';`))[0][0].text
+            '~depart~'      : async (num) => {
+                return (await db.request(`select text from messages where tag = '~depart~';`))[0][0].text
+            },
+            '~numdepart~'    : async (num) => {
+                return (await db.request(`select text from messages where tag = '~numdepart~';`))[0][0].text
             },
             '~instmatseladd~'  : async (num) => {
                 let data = await this.requests['getsubjectsoneff'](num)
