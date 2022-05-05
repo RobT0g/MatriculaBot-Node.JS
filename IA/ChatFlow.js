@@ -51,13 +51,12 @@ class ChatFlow{     //Guarda todo o fluxo
 }
 
 class ChatStep{             //Unidade mínima de conversação
-    constructor(msg, fulfill, unFulfill, defaul=[], recomp={}, from, to){
+    constructor(msg, fulfill, unFulfill, defaul=[], recomp={}, to){
         this.msgs = msg
         this.fulfill = fulfill
         this.unFulfill = unFulfill
         this.default = defaul
         this.recomp = recomp?recomp:{}
-        this.comesFrom = typeof(from)==='object'?from:[from]
         this.goesTo = typeof(to)==='object'?to:[to]
     }
 
@@ -71,7 +70,7 @@ class ChatStep{             //Unidade mínima de conversação
 
 let chat = new ChatFlow(recorrent)
 messages.forEach((i) => {
-    chat.newStep = new ChatStep(i['txt'], i['full'], i['unf'], i['def'], i['recomp'], i['from'], i['to'])
+    chat.newStep = new ChatStep(i['txt'], i['full'], i['unf'], i['def'], i['recomp'], i['to'])
 })
 
 export { chat }

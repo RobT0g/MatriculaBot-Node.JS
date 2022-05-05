@@ -41,7 +41,7 @@ messages.push(...[{
 
 {
 'txt': ['Certo. Vamos iniciar o processo para fazer sua rematrícula.', 'De início, só vou precisar de algumas informações suas, como' + 
-    ' seu código de matrícula e CPF. Toda vez que você me enviar alguma informação, eu irei confirmar com você se ela tá certa, então não' + 
+    ' seu código de matrícula e CPF.', 'Toda vez que você me enviar alguma informação, eu irei confirmar com você se ela tá certa, então não' + 
     ' precisa se preocupar se mandar alguma informação errada.', 'Se houver algum problema durante esse processo, basta ler a descrição' + 
     ' deste perfil.', 'Se você estiver pronto para iniciar, basta me mandar um "Tudo pronto".'],
 'full': new StepStuff([['pronto']], [[]], [[]]),
@@ -51,7 +51,7 @@ messages.push(...[{
 
 {
 'txt':['Primeiramente me informe seu código de matrícula.'],
-'full': new StepStuff([['~validmat~']], [[], ['prepareUser']], []),
+'full': new StepStuff([['~mat~']], [['prepareUser']], [[]]),
 'unf': new StepStuff([['~matex~'], ['!num!']], [], [['Estanho, já tenho um registro com essa matrícula.', 'Talvez você digitou a' + 
     ' matrícula errada? Ou você já fez a rematrícula?', 'Se for o primeiro caso, é só enviar a matrícula correta, agora se você ainda não' + 
     ' fez a matrícula e isso tá aparecendo pra você, tente contatar alguém do departamento. Neste caso, basta me enviar "Contatar departamento".'], 

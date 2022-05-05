@@ -72,7 +72,7 @@ class TagAnalyzer{
                     return [false, '']
                 }
             }),
-            '~mat~'         : ((msg) => {
+            '~getmat~'         : ((msg) => {
                 try{
                     let data = msg.msgbody.match(/\S+/g).reduce((acc, i) => {
                         acc = /\d+[a-zA-Z]*\d*/g.test(i)?i:''; return acc}, '')
@@ -85,7 +85,7 @@ class TagAnalyzer{
                     return [false, '']
                 }
             }),
-            'matvalidate'   :(data, valid) => {
+            'matvalidate'   : (data, valid) => {
                 return new Promise(async (resolve, reject) => {
                     try{
                         let a = await db.request(`select matricula from registro where matricula = '${data[1]}';`)
@@ -99,14 +99,14 @@ class TagAnalyzer{
                     }
                 })
             },
-            '~validmat~'    :((msg) => {
-                let data = this.tagfunc['~mat~'](msg)
+            '~mat~'    : ((msg) => {
+                let data = this.tagfunc['~getmat~'](msg)
                 if(data[0])
                     return this.tagfunc['matvalidate'](data, true)
                 return [false, '']
             }),
             '~matex~'       : ((msg) => {
-                let data = this.tagfunc['~mat~'](msg)
+                let data = this.tagfunc['~getmat~'](msg)
                 if(data[0])
                     return this.tagfunc['matvalidate'](data, false)
                 return [false, '']
@@ -313,10 +313,9 @@ class TagAnalyzer{
                             }
                         }
                     }
-                    reject([false, ''])
+                    resolve([false, ''])
                 })
             }))
-            console.log(obj.tagInfo, 'a')
             obj.outcomes = obj.tagInfo.map((i) => i[0])                         //[f1Res, f2Res]
             if(!obj.outcomes.includes(true))    //ISSO PODE DAR MERDA
                 return {}
@@ -386,10 +385,12 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
     }
 
     async fulfillStep(obj){         //Chamada quando um step é fulfill
+        console.log(obj)
         if(obj.actions.length > 0)
             await tags.handleAction(this, obj, this.num)
         await this.move.goNext(obj.opt)
-        return await this.setDataOntoText(this.step.msgs)
+        console.log(this.step)
+        return this.setDataOntoText(this.step.msgs)
     }
 
     async unfulfillStep(obj){       //Chamada quando um step não é fulfill
@@ -434,7 +435,7 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
                     }
                 } catch(err){}
             }
-            if(txt.some((i) => /[~]\w+[~]/g.test(i)))
+            if(txt.some((i) => /[~]\w+[~]/g.test(i)) && txt !== msg)
                 return this.setDataOntoText(txt)
             return txt
         } catch(err){

@@ -294,7 +294,6 @@ class DataBaseAccess{
         }, '').slice(0, -2)
         try{
             let user = await fd.getUser(num)
-            console.log(user)
             let sql = `update registro set ${line} where matricula = "${user.matricula}";`
             if(!('matricula' in user))
                 sql = `update inst_cadastro set ${line} where numero = "${num}";`
