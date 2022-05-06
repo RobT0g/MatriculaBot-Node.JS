@@ -129,7 +129,7 @@ messages.push(...[{
 
 {
 'txt':['Seu CPF é ~cpf~. Você confirma?'],
-'full': new StepStuff([['~sim~']], [['effetivate']], [[]]),
+'full': new StepStuff([['~sim~']], [['effetivate', 'savedefdiscs']], [[]]),
 'unf': new StepStuff([['~nao~']], [['11']], [['Ok, me envie o CPF correto agora 🤨']]),
 'def':['Você só precisa me mandar um "sim" ou "não" para confirmar.'],
 'to':[13]},
@@ -138,12 +138,20 @@ messages.push(...[{
 'txt':['Pronto. Já tenho todas as informações necessárias para concluir a sua rematrícula.', 'Se você já quiser finalizar aqui, basta' + 
     'me mandar um "finalizar" e eu vou mandar seus dados para o departamento da rematrícula, mas se quiser, você ainda pode alterar a sua' + 
     ' matrícula.', 'A alteração de matrícula é basicamente onde você poderá escolher se quer adicionar ou retirar alguma matéria da sua' + 
-    ' carga horária desse período', 'Estas são as matérias em que você está matrículado para este período:\n~defdisc~', 'Se quiser fazer a' + 
-    ' alteração de matrícula, basta me mandar "alterar matrícula".'],
+    ' carga horária desse período', 'Com base no seu curso e turma, adicionei estas matérias por padrão:\n~seldiscs~', 'Se quiser adicionar' + 
+    ' ou retirar alguma matéria, basta me mandar "alterar matrícula".'],
 'full': new StepStuff([['~finalizar~'], ['alterar']], [[], []], [[]]),
 'unf': new StepStuff([[]], [[]], [[]]),
 'def':['Você só precisa me mandar um "finalizar" ou "alterar" para continuarmos.'],
 'to':[14, 15]},
+
+{
+'txt':['Tudo certo então! Já irei avisar o departamento da sua rematrícula e enviar seus dados.'],
+'full': new StepStuff([['~nop~']], [[]], [[]]),
+'unf': new StepStuff([['~voltar~']], [['13']], [[]]),
+'def':['Já concluímos o processo, mas você pode escolher voltar e fazer a alteração de matrícula se quiser.', 'Neste caso, basta' + 
+    ' me mandar "voltar".'],
+'to':[13]},
 ])
 
 const recorrent = {

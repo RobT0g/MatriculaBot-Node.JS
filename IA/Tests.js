@@ -9,10 +9,6 @@ let msg = new Message('minha mtrícula é 2020')
 
 
 async function test(){
-    let a = await cd.setDataOntoText(chat.steps[13].msgs)
-    for(let i in a){
-        console.log(a[i])
-        console.log('---------------')
-    }
+    console.log((await tags.actions['savedefdiscs']({}, {}, '10')))
 }
 test()

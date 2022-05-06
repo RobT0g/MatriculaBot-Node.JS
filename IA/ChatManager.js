@@ -190,6 +190,19 @@ class TagAnalyzer{
                 })
                 await database.updateUser(num, prev)
             },
+            'savedefdiscs'  : async (man, obj, num) => {
+                let {curso, turma, matricula} = await fd.getUser(num)
+                let maxp = (await db.request(`select max(periodo) from disc_${fd.cursos[curso]};`))[0][0]['max(periodo)']
+                let date = new Date()
+                let periodo = (date.getFullYear()-turma)*2 + ((date.getMonth() > 6)?2:1)
+                if(periodo > maxp)
+                    periodo = maxp
+                let mats = (await db.request(`select id from disc_${fd.cursos[curso]} where parap = ${periodo};`))[0]
+                await db.request(`insert into user_${fd.cursos[curso]} values ` + mats.reduce((acc, i) => {
+                    acc += `(default, '${matricula}', '${i.id}', '${1}'), `
+                    return acc
+                }, '').slice(0, -2) + ';')
+            },
             'add_discs'     : async (man, obj, num) => {
                 await this.actions['managediscs'](man, obj, num, '1')
             },
