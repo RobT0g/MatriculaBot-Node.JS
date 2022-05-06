@@ -9,6 +9,8 @@ let msg = new Message('minha mtrícula é 2020')
 
 
 async function test(){
-    console.log((await tags.actions['savedefdiscs']({}, {}, '10')))
+    tags.actions['add_discs']({}, {tagInfo: [1, [1, 2, 3, 4]]})
 }
 test()
+
+

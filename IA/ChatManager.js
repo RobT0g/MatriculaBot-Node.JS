@@ -204,39 +204,34 @@ class TagAnalyzer{
                 }, '').slice(0, -2) + ';')
             },
             'add_discs'     : async (man, obj, num) => {
-                await this.actions['managediscs'](man, obj, num, '1')
+                await this.actions['managediscs'](man, obj, num, false)
             },
             'del_discs'     : async (man, obj, num) => {
-                await this.actions['managediscs'](man, obj, num, '0')
+                await this.actions['managediscs'](man, obj, num, true)
             },
-            'managediscs'   : async (man, obj, num, add) => {
+            'managediscs'   : async (man, obj, num, del) => {
                 let info = await (fd.getUser(num).then(async (user) => {
-                    return {user, choices: (await db.request(`select discId, adicionar from user_${fd.cursos[user.curso]} where matricula
+                    return {user, choices: (await db.request(`select discId from user_${fd.cursos[user.curso]} where matricula
                         = '${user.matricula}';`))[0]}
                 }))
                 let fnums = obj.tagInfo[1].filter(i => (Number(i) <= Number(db.amount[fd.cursos[info.user.curso]]))).map(i => Number(i))
-                let nums = [...fnums]
-                let changes = info.choices.reduce((acc, i) => {
-                    if(nums.includes(i.discId)){
-                        if(i.adicionar !== Number(add))
-                            acc.del.push(i.discId)
-                        else
-                            nums.splice(nums.indexOf(i.discId), 1)
+                let ondb = info.choices.filter((i) => {
+                    if(fnums.includes(i)){
+                        fnums.splice(fnums.indexOf(i), 1)
+                        return true
                     }
-                    return acc
-                }, {del: []})
-                changes.add = [...nums]
-                console.log(changes)
+                    return false
+                })
                 let sql = ''
-                if(changes.del.length > 0)
-                    sql = `delete from user_${fd.cursos[info.user.curso]} where matricula = '${info.user.matricula}' 
-                        and discId in (${changes.del.map(i => `'${i}'`)});`
-                sql += changes.add.reduce((acc, i) => {
-                    acc += `(default, '${info.user.matricula}', '${i}', '${add}'), `
-                    return acc
-                }, `insert into user_${fd.cursos[info.user.curso]} values `).slice(0, -2) + ';'
-                console.log(sql)
-                await database.saveOnEffetivate(num, sql, {ids: fnums})
+                if(del)
+                    sql = `delete from user_${fd.cursos[info.user.curso]} where discId in ${ondb.reduce((acc, i) => {
+                        acc += `'${i}', `
+                        return acc
+                    }, '(').slice(0, -2) + ')'} and matricula = '${info.user.matricula}'; `
+                sql += `insert into user${fd.cursos[info.user.curso]} values ${fnums.reduce((acc, i) => {
+                    acc += `(default, '${info.user.matricula}', '${i}'), `
+                }, '').slice(0, -2)};`
+                await database.saveOnEffetivate(num, sql, {ids: fnums + ondb})
             },
             'finalize'      : async (man, obj, num) => {
                 await (fd.getUser(num).then((user) => {
