@@ -9,7 +9,7 @@ let msg = new Message('minha mtrícula é 2020')
 
 
 async function test(){
-    tags.actions['add_discs']({}, {tagInfo: [1, [1, 2, 3, 4]]})
+    tags.actions['del_discs']({}, {tagInfo: [1, [1, 2, 3, 4, 10]]}, '10')
 }
 test()
 

@@ -215,23 +215,27 @@ class TagAnalyzer{
                         = '${user.matricula}';`))[0]}
                 }))
                 let fnums = obj.tagInfo[1].filter(i => (Number(i) <= Number(db.amount[fd.cursos[info.user.curso]]))).map(i => Number(i))
-                let ondb = info.choices.filter((i) => {
-                    if(fnums.includes(i)){
-                        fnums.splice(fnums.indexOf(i), 1)
-                        return true
+                console.log(info.choices)
+                let ondb = info.choices.reduce((acc, i) => {
+                    if(fnums.includes(i.discId)){
+                        fnums.splice(fnums.indexOf(i.discId), 1)
+                        acc.push(i.discId)
                     }
-                    return false
-                })
+                    return acc
+                }, [])
                 let sql = ''
-                if(del)
+                if(del){
                     sql = `delete from user_${fd.cursos[info.user.curso]} where discId in ${ondb.reduce((acc, i) => {
                         acc += `'${i}', `
                         return acc
                     }, '(').slice(0, -2) + ')'} and matricula = '${info.user.matricula}'; `
-                sql += `insert into user${fd.cursos[info.user.curso]} values ${fnums.reduce((acc, i) => {
-                    acc += `(default, '${info.user.matricula}', '${i}'), `
-                }, '').slice(0, -2)};`
-                await database.saveOnEffetivate(num, sql, {ids: fnums + ondb})
+                }else {
+                    sql += `insert into user_${fd.cursos[info.user.curso]} values ${fnums.reduce((acc, i) => {
+                        acc += `(default, '${info.user.matricula}', '${i}'), `
+                        return acc
+                    }, '').slice(0, -2)};`
+                }
+                await database.saveOnEffetivate(num, sql, {ids: [...fnums, ...ondb]})
             },
             'finalize'      : async (man, obj, num) => {
                 await (fd.getUser(num).then((user) => {
