@@ -4,12 +4,14 @@ import { DataBase, Message } from "./Utils.js"
 import { chat } from "./ChatFlow.js"
 import { StepStuff } from "./Messages.js"
 
-let cd = new ChatManager('559892437964@c.us')
+let cd = new ChatManager('10')
 let msg = new Message('minha mtrícula é 2020')
 
 
 async function test(){
-    tags.actions['del_discs']({}, {tagInfo: [1, [1, 2, 3, 4, 10]]}, '10')
+    let msg = await cd.setDataOntoText(chat.steps[15].msgs)
+    for(let i in msg)
+        console.log('----------------\n' + msg[i] + '\n----------------\n')
 }
 test()
 

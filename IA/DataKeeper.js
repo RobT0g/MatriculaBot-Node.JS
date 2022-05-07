@@ -120,25 +120,15 @@ class FormatedData{
             },
             '~discesc~'         : async (num) => { 
                 let info = (await db.request(`select * from registro where numero = '${num}' and finished = '0';`))[0][0]
-                let data = (await db.request(`select u.discId, d.nome, d.carga, u.adicionar from 
-                    user_${this.cursos[info.curso]} as u join disc_${this.cursos[info.curso]} as d on 
-                    u.discId = d.id where u.matricula = '${info.matricula}' order by u.discId;`))[0]
+                let data = (await db.request(`select u.discId, d.nome, d.carga from user_${this.cursos[info.curso]} as u 
+                    join disc_${this.cursos[info.curso]} as d on u.discId = d.id where u.matricula = '${info.matricula}' order by u.discId;`))[0]
                 if(data.length == 0)
-                    return 'Você ainda não selecionou nenhuma matéria para retirar ou adicionar.'
+                    return 'Você ainda não selecionou nenhuma matéria.'
                 try{
-                    let res = data.reduce((acc, i) => {
-                        acc[Number(i.adicionar)] += `\n> ${i.discId} - ${i.nome} (${i.carga} horas);`
+                    return data.reduce((acc, i) => {
+                        acc += `\n> ${i.discId}. ${i.nome} (${i.carga} horas);`
                         return acc
-                    }, ['', ''])
-                    let txt = ''
-                    if(res[1].length > 0 && res[1][0] !== '')
-                        txt += ('Matérias para adicionar:' + res[1].slice(0, -1) + '.')
-                    if(res[0].length > 0){
-                        if(res[1].length > 0)
-                            txt += '\n'
-                        txt += ('Matérias para retirar:' + res[0].slice(0, -1) + '.')
-                    }
-                    return txt
+                    }, '').slice(0, -1) + '.'
                 } catch(err){
                     console.log('Erro em ~discesc~.\n', err)
                     return 'Você ainda não selecionou nenhuma matéria.'

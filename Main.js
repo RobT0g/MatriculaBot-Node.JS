@@ -2,6 +2,8 @@ import { create, Whatsapp } from './Dependencies/Index.js'
 import { TextSender } from './API_Utils.js'
 import { DataBase } from './IA/Utils.js'
 import { database } from './IA/DataKeeper.js'
+import {chat} from './IA/ChatFlow.js'
+import { ChatManager } from './IA/ChatManager.js'
 
 
 /** TODO
@@ -24,6 +26,9 @@ function start(client) {
         if(TextSender.unvalidNumber(num))
             return
         try{
+            let cd = new ChatManager('10')
+            await TextSender.delivText((await cd.setDataOntoText(chat.steps[15].msgs)), num, client)
+            return
             let userOn = await usersBank.userRegister(num)
             if(userOn == 2){
                 await TextSender.delivText(usersBank.getWelcome(), num, client)
