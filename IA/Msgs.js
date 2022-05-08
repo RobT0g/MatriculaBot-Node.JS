@@ -32,7 +32,8 @@ class StepStuff{
  * {txt, full, unf(estes dois são instancias de StepStuff), def, from, to}
  */
 
-messages.push(...[{
+messages.push(...[
+{
 'txt':['Olá! Sou um bot programado para auxiliar o processo de matrícula do IFMA.', 'Você gostaria de fazer sua rematrícula?'],
 'full': new StepStuff([['~sim~']], [], []),
 'unf': {},
@@ -138,7 +139,7 @@ messages.push(...[{
 'txt':['Pronto. Já tenho todas as informações necessárias para concluir a sua rematrícula.', 'Se você já quiser finalizar aqui, basta' + 
     'me mandar um "finalizar" e eu vou mandar seus dados para o departamento da rematrícula, mas se quiser, você ainda pode alterar a sua' + 
     ' matrícula.', 'A alteração de matrícula é basicamente onde você poderá escolher se quer adicionar ou retirar alguma matéria da sua' + 
-    ' carga horária desse período', 'Com base no seu curso e turma, adicionei estas matérias por padrão:\n~seldiscs~', 'Se quiser adicionar' + 
+    ' carga horária desse período', 'Com base no seu curso e turma, adicionei estas matérias por padrão:~discesc~', 'Se quiser adicionar' + 
     ' ou retirar alguma matéria, basta me mandar "alterar matrícula".'],
 'full': new StepStuff([['~finalizar~'], ['alterar']], [[], []], [[]]),
 'unf': new StepStuff([[]], [[]], [[]]),
@@ -155,7 +156,9 @@ messages.push(...[{
 
 //Step 15
 {
-'txt':['Agora nós começaremos o processo de adicionar/retirar matérias.', 'Estas são as matérias que estão registradas' +
+'txt':['Agora nós começaremos o processo de alteração de matrícula, onde você poderá escolher as matérias que irá cursar neste período.', 
+    'Estas são as matérias que estão registradas para você por enquanto:~discesc~', ''
+    ,'Agora nós começaremos o processo de adicionar/retirar matérias.', 'Estas são as matérias que estão registradas' +
     ' para você por enquanto:~discesc~', 'Se você já quiser parar por aqui e concluir sua rematrícula com a matérias da lista,' + 
     ' basta me mandar um "finalizar".', 'Para alterar as matérias que você irá cursar, você só precisa me mandar "adicionar"' + 
     ' para acrescentar alguma matéria que não está na lista, ou "retirar" para remover alguma delas.', 'Sempre que você' + 
