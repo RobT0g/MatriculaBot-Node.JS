@@ -112,6 +112,14 @@ class FormatedData{
                 })
                 return retn 
             },
+            '~actvdiscs~'       : async (num) => {
+                let user = await this.getUser(num)
+                let [discs] = await db.request(`select id, nome, carga from disc_${this.cursos[user.curso]} where ativa = '1';`)
+                return discs.reduce((acc, i) => {
+                    acc += `\n> ${i.id}. ${i.nome} (${i.carga} horas);`
+                    return acc
+                }, '').slice(0, -1) + '.'
+            },
             '~userinfo~'        : async (num) => {
                 let data = (await db.request(`select * from registro where numero = '${num}' and finished = '0';;`))[0][0]
                 return `\n> Nome: ${data.nome};\n> Matricula: ${data.matricula};\n> Email: ${data.email};\n` + 

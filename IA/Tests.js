@@ -5,14 +5,14 @@ import { chat } from "./ChatFlow.js"
 import { StepStuff } from "./Messages.js"
 
 let cd = new ChatManager('10')
-let msg = new Message('minha mtrícula é 2020')
+let msg = new Message('coloca as matérias 18 e 310')
 
 
 async function test(){
-    let msg = await cd.setDataOntoText(chat.steps[15].msgs)
-    for(let i in msg)
-        console.log('----------------\n' + msg[i] + '\n----------------\n')
+    let a = await fd.requests['~actvdiscs~']('10')
+    console.log(a)
 }
+
 test()
 
 

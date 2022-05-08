@@ -13,12 +13,12 @@ class TagAnalyzer{
     constructor(){
         this.altTags = {'datanas':'nascimento', 'mat':'matricula', 'addmatnums': 'discId'}
         this.tagfunc = {
-            '~sim~'         : ((msg) => {return [(['sim', 'ok', 'certo', 'beleza', 'concordo'].some((x) => msg.wrds.includes(x)) || 
+            '~sim~'         : ((msg, num) => {return [(['sim', 'ok', 'certo', 'beleza', 'concordo'].some((x) => msg.wrds.includes(x)) || 
             msg.wrds.includes('tudo') && msg.wrds.includes('bem')) &&
             !msg.wrds.includes('nao'), '']}),
-            '~nao~'         : ((msg) => {return [(['nao', 'discordo', 'errado'].some((x) => msg.wrds.includes(x))) &&
+            '~nao~'         : ((msg, num) => {return [(['nao', 'discordo', 'errado'].some((x) => msg.wrds.includes(x))) &&
             !msg.wrds.includes('sim'), '']}),
-            '~nome~'        : ((msg) => {
+            '~nome~'        : ((msg, num) => {
                 try{
                     if(msg.wrds.length > 1){
                         return [true, msg.wrds.reduce((acc, i) => {acc += ['do', 'de', 'da'].includes(i)?(
@@ -32,10 +32,10 @@ class TagAnalyzer{
                     return [false, '']
                 }
             }),
-            '~1-wrd~'       : ((msg) => {
+            '~1-wrd~'       : ((msg, num) => {
                 return [msg.wrds.length == 1, '']
             }),
-            '~cpf~'         : ((msg) => {
+            '~cpf~'         : ((msg, num) => {
                 try{
                     let numb = msg.msgbody.match(/\d{11}|(\d{3}[.]\d{3}[.]\d{3}[-]\d{2})/g)
                     //^ Primeira tentativa: 11 números em sequencia ou no formato 123.456.789-10 ^//
@@ -51,7 +51,7 @@ class TagAnalyzer{
                     return [false, '']
                 }
             }),
-            '~datanas~'     : ((msg) => {
+            '~datanas~'     : ((msg, num) => {
                 let data = msg.msgbody.match(/\d+/g)
                 try{
                     if(data.length == 3){
@@ -72,7 +72,7 @@ class TagAnalyzer{
                     return [false, '']
                 }
             }),
-            '~getmat~'         : ((msg) => {
+            '~getmat~'      : ((msg, num) => {
                 try{
                     let data = msg.msgbody.match(/\S+/g).reduce((acc, i) => {
                         acc = /\d+[a-zA-Z]*\d*/g.test(i)?i:''; return acc}, '')
@@ -99,19 +99,19 @@ class TagAnalyzer{
                     }
                 })
             },
-            '~mat~'    : ((msg) => {
+            '~mat~'         : ((msg, num) => {
                 let data = this.tagfunc['~getmat~'](msg)
                 if(data[0])
                     return this.tagfunc['matvalidate'](data, true)
                 return [false, '']
             }),
-            '~matex~'       : ((msg) => {
+            '~matex~'       : ((msg, num) => {
                 let data = this.tagfunc['~getmat~'](msg)
                 if(data[0])
                     return this.tagfunc['matvalidate'](data, false)
                 return [false, '']
             }),
-            '~email~'       : ((msg) => {
+            '~email~'       : ((msg, num) => {
                 try{
                 let data = msg.msgbody.toLowerCase().match(/\S+/g).reduce((acc, i) => {acc = (/[@]/g.test(i)?i:acc); return acc},'');
                 data = (typeof data == 'object')?data[0]:data
@@ -123,38 +123,68 @@ class TagAnalyzer{
                     console.log('Erro na tag ~email~.\n', err)
                 }
             }),
-            '~curso~'       : ((msg) => {
+            '~curso~'       : ((msg, num) => {
                 let cursos = [['adm', 'administracao'], ['engenharia', 'computacao'], ['fis', 'fisica'], ['tce', 'construcao']]
                 let opt = cursos.map((i) => i.some((j) => this.keyword(msg, j)[0]))
                 if(opt.includes(true))
                     return [true, String(opt.indexOf(true))]
                 return [false, '']
             }),
-            '~turma~'       : ((msg) => {
+            '~turma~'       : ((msg, num) => {
                 let ano = msg.msgbody.match(/\d{4}/g)
                 if(ano.length > 0)
                     return [(new Date().getFullYear()-ano[0] <= 10), ano[0]]
                 return [false, '']
             }),
-            '~num~'         : ((msg) => {
-                let num = msg.msgbody.match(/\d+/g)
-                if(num)
-                    return [true, num]
+            '~num~'         : ((msg, num) => {
+                let nums = msg.msgbody.match(/\d+/g)
+                if(nums)
+                    return [true, nums]
                 return [false, '']
             }),
-            '~discnome~'    : ((msg) => {return [false, '']}),
-            '1-wrd'         : ((msg) => {return [msg.wrds.length == 1, '']}),
-            '~matnums~'     : ((msg) => {
-                let nums = msg.msgbody.match(/\d+/g)
-                return nums?[true, nums]:[false, '']
+            '1-wrd'         : ((msg, num) => {return [msg.wrds.length == 1, '']}),
+            'getactivemat'  : ((nums, num) => {
+                return new Promise(async (resolve, reject) => {
+                    try{
+                        let user = await fd.getUser(num)
+                        let [stat] = (await db.request(`select ativa from disc_${fd.cursos[user.curso]} where id in ${nums.reduce((acc, i) => {
+                            acc += `${i}, `
+                            return acc
+                        }, '(').slice(0, -2) + ')'};`))
+                        resolve(stat.some(i => i.ativa === 1))
+                    } catch(err) { resolve(false) }
+                })
             }),
-            '~voltar~'      : ((msg) => {return this.keyword(msg, 'voltar')}),
-            '~finalizar~'   : ((msg) => {return this.keyword(msg, 'finalizar')}),
-            '~matriz~'      : ((msg) => {return this.keyword(msg, '&matriz&curricular')}),
-            '~depart~'      : ((msg) => {return this.keyword(msg, '&contatar&departamento')}),
-            '~revisar~'     : ((msg) => {return this.keyword(msg, 'revisar')}),
-            '~def~'         : ((msg) => {return [true, '']}),
-            '~nop~'         : ((msg) => {return [false, '']})
+            '~matnums~'     : ((msg, num) => {
+                let nums = msg.msgbody.match(/\d+/g)
+                if(!nums)
+                    return [false, '']
+                return new Promise(async (resolve, reject) => {
+                    if((await this.tagfunc['getactivemat'](nums, num)))
+                        resolve(true, nums)
+                    else
+                        resolve([false, ''])
+                })
+            }),
+            '~invalmatn~'   : ((msg, num) => {
+                let nums = msg.msgbody.match(/\d+/g)
+                if(!nums)
+                    return [false, '']
+                return new Promise(async (resolve, reject) => {
+                    if((await this.tagfunc['getactivemat'](nums, num)))
+                        resolve(false, '')
+                    else
+                        resolve([true, ''])
+                })
+            }),
+            '~recomenda~'   : ((msg, num) => {return this.keyword(msg, 'recomendacoes')}),
+            '~voltar~'      : ((msg, num) => {return this.keyword(msg, 'voltar')}),
+            '~finalizar~'   : ((msg, num) => {return this.keyword(msg, 'finalizar')}),
+            '~matriz~'      : ((msg, num) => {return this.keyword(msg, '&matriz&curricular')}),
+            '~depart~'      : ((msg, num) => {return this.keyword(msg, '&contatar&departamento')}),
+            '~revisar~'     : ((msg, num) => {return this.keyword(msg, 'revisar')}),
+            '~def~'         : ((msg, num) => {return [true, '']}),
+            '~nop~'         : ((msg, num) => {return [false, '']})
         }
         this.keyword = ((msg, tag) => {
             return [!tag.split(/[&]/g).some((j) => !(new RegExp(j, 'g').test(msg.filterMsg.toLowerCase()))), '']});
@@ -245,12 +275,12 @@ class TagAnalyzer{
         }
     }
 
-    getTag(tag, msg){
+    getTag(tag, msg, num){
         try{
             if(/[~]/g.test(tag))
-                return this.tagfunc[tag](msg)
+                return this.tagfunc[tag](msg, num)
             if(/[*]/g.test(tag)){
-                let res = this.tagfunc[tag](msg)
+                let res = this.tagfunc[tag](msg, num)
                 return  [!res[0], res[1]]
             }
             if(/[&]|[!]/g.test(tag)){
@@ -304,13 +334,13 @@ class TagAnalyzer{
         }
     }
 
-    async getStepObject(step, msg, full = true){
+    async getStepObject(step, msg, num, full = true){
         try{
             let cond = full?'fulfill':'unFulfill'
             let obj = { stepTags: step[cond].getTags() }                        //[[full1Tag1, full1Tag2], [full2Tag1]]
             obj.tagInfo = await Promise.all(obj.stepTags.map((i) => {
                 return new Promise(async (resolve, reject) => {
-                    let t = await this.getTag(i[0], msg)
+                    let t = await this.getTag(i[0], msg, num)
                     let data = t[1]
                     if(t[0]){
                         resolve(t)
@@ -318,7 +348,7 @@ class TagAnalyzer{
                     }
                     if(i.length > 0){
                         for(let j in i.slice(1)){
-                            t = await this.getTag(i[j], msg)
+                            t = await this.getTag(i[j], msg, num)
                             if(t[0]){
                                 resolve([t[0], data])
                                 return
@@ -365,7 +395,7 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
     async newMessage(msg){     //Chamado quando uma mensagem é recebida
         let results, opt, problem = false
         try{
-            results = await tags.getStepObject(this.step, msg, true)
+            results = await tags.getStepObject(this.step, msg, this.num, true)
             Object.keys(results).forEach((i) => {
                 console.log(i, results[i])
             })
@@ -379,7 +409,7 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
             problem = true
         }
         try{
-            results = await tags.getStepObject(this.step, msg, false)
+            results = await tags.getStepObject(this.step, msg, this.num, false)
             if((Object.entries(results).length === 0) || results.tagInfo === [])
                 return this.checkRecorrent(msg)
             opt = results.outcomes.indexOf(true)
@@ -418,7 +448,7 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
         let ans = [false, '']
         console.log(this.step)
         for(let i in chat.recorrent){
-            if(tags.getTag(i, msg)[0]){
+            if(tags.getTag(i, msg, this.num)[0]){
                 ans = [true, i]
                 let msg = [...chat.recorrent[ans[1]]]
                 try{

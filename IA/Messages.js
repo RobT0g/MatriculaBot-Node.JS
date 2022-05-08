@@ -32,7 +32,8 @@ class StepStuff{
  * {txt, full, unf(estes dois são instancias de StepStuff), def, from, to}
  */
 
-messages.push(...[{
+messages.push(...[
+{
 'txt':['Olá! Sou um bot programado para auxiliar o processo de matrícula do IFMA.',
     'Você gostaria de fazer alterações em sua matrícula?'],
 'full': new StepStuff([['~sim~']], [], []),

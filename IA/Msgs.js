@@ -157,13 +157,9 @@ messages.push(...[
 //Step 15
 {
 'txt':['Agora nós começaremos o processo de alteração de matrícula, onde você poderá escolher as matérias que irá cursar neste período.', 
-    'Estas são as matérias que estão registradas para você por enquanto:~discesc~', ''
-    ,'Agora nós começaremos o processo de adicionar/retirar matérias.', 'Estas são as matérias que estão registradas' +
-    ' para você por enquanto:~discesc~', 'Se você já quiser parar por aqui e concluir sua rematrícula com a matérias da lista,' + 
-    ' basta me mandar um "finalizar".', 'Para alterar as matérias que você irá cursar, você só precisa me mandar "adicionar"' + 
-    ' para acrescentar alguma matéria que não está na lista, ou "retirar" para remover alguma delas.', 'Sempre que você' + 
-    ' fizer uma alteração, você irá voltar para este passo, e portanto pode repetir o processo até que tenha escolhido todas as matérias' + 
-    ' que quiser.'],
+    'Estas são as matérias que estão registradas para você por enquanto:~discesc~', 'Voce pode me mandar "adicionar" para colocar alguma' + 
+    ' matéria a mais na lista, ou "retirar", se quiser remover alguma delas. Agora se essa lista já tiver de boa, pode me mandar um' + 
+    ' "finalizar" para terminarmos este processo.'],
 'full': new StepStuff([['adicionar'], ['retirar'], ['~finalizar~']], [], []),
 'unf': {},
 'def':['Só dizer alguma das opções para continuarmos.'],
@@ -171,18 +167,24 @@ messages.push(...[
 
 //Step 16
 {
-'txt':['Ok, agora você irá selecionar as matérias que você deseja adicionar.', 'Para selecioná-las, basta me' + 
-    ' mandar o id (número) das matérias, pode mandar vários de uma vez. Em seguida eu vou te mostrar' + 
-    ' os requisitos delas, para que você confirme que pode cursar a matéria.', 'Não precisa se preocupar' + 
-    ' em escolher errado neste momento, você poderá voltar se tiver escolhido alguma matéria errada.', 
-    'Caso você não queira escolher as matérias, basta me mandar um "voltar", para voltar pro passo anterior.',
-    'Você também pode me enviar "matriz curricular" ou "formulário" se quiser consultá-los novamente.',
-    'Baseado no seu perfil, você provavelmente possui todos os requisitos para qualquer uma das matérias que' +
-    ' estão nessa lista: ~recdisc~', 'Não precisa escolher dessa lista necessariamente, é só pra lhe dar' + 
-    ' algumas ideias de matérias que você pode escolher.',],
+'txt':['Ok, então vamos começar o processo para adicionar matérias.', 'Para selecioná-las, basta que você me mande o id (número) das' + 
+    ' matérias, pode mandar vários de uma vez. Depois disso, eu vou te mostrar as suas escolhas e os requisitos de cada, para que você' + 
+    ' possa se certificar de que pode cursar as matérias que escolheu.', 'Não precisa se preocupar em escolher errado neste momento,' +
+    ' você poderá voltar se tiver escolhido alguma matéria errada.', 'Se quiser, posso te mandar a matriz curricular do seu curso para' + 
+    ' ajudar na escolha. Também posso gerar uma lista de matérias que você pode escolher, com base nos seus dados, basta me mandar "ver' + 
+    ' recomendações" neste caso.'],
 'full': new StepStuff([['~matnums~'], ['~voltar~']], [['add_discs']], []),
-'unf': {},
-'def':['Basta me enviar os índices das matérias para continuarmos!'],
+'unf': new StepStuff([['~recomenda~'], ['~invalmatn~']], [[]], [['Com base nos seus dados, acredito que você pode ter todos os requisitos para' + 
+    ' cursar qualquer matéria desta lista:~recdisc~', 'Se você tiver alguma reprovação, é bem provável que não tenha todos os requisitos' + 
+    ' para algumas destas matérias. Neste caso, você pode só escolher as matérias que quiser e ver os requisitos quando eu' + 
+    ' for verificar suas escolhas.', 'Não tem problema colocar alguma matéria para a qual você não possui todos os requisitos, o' + 
+    ' departamento responsável simplesmente não vai adicioná-la, neste caso.'], ['Então... Eu verifiquei aqui e nehuma das matérias que' + 
+    ' você escolheu estão disponíveis.', 'Você pode ter digitado errado ou se enganou, mas de qualquer forma te darei uma ajuda.', 
+    'Esta é a lista de todas as matérias que serão lecionadas neste período, para o seu curso:~actvdiscs~', 'Pode me mandar os ids de' + 
+    ' quaisquer dessas matérias, mas lembre-se de que também precisa ter todos os requisitos para cursar uma matéria.', 'Portanto, por' + 
+    ' favor, certifique-se de ver os requisitos quando eu os mandar!']]),
+'def':['Basta me enviar os índices das matérias para continuarmos!', 'Mas se você tiver escolhido essa opção por engano, também pode me' + 
+    ' mandar "voltar" para voltar pro passo anterior.'],
 'from':[13],
 'to':[16, 13]},
 
