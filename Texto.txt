@@ -1,0 +1,2 @@
+Step 1: Quais possíveis perguntas eu coloco o bot pra responder?
+Step 15: Devo explicar que o usuário pode repetir o processo e adicionar/retirar mais matérias?

@@ -126,12 +126,15 @@ class FormatedData{
                     `> Curso: ${this.cursosName[data.curso]} turma de ${data.turma};\n` + 
                     `> CPF: ${data.cpf}.`
             },
-            '~discesc~'         : async (num) => { 
+            'getdiscs'          : async (num) => {
                 let info = (await db.request(`select * from registro where numero = '${num}' and finished = '0';`))[0][0]
-                let data = (await db.request(`select u.discId, d.nome, d.carga from user_${this.cursos[info.curso]} as u 
+                return (await db.request(`select u.discId, d.nome, d.carga from user_${this.cursos[info.curso]} as u 
                     join disc_${this.cursos[info.curso]} as d on u.discId = d.id where u.matricula = '${info.matricula}' order by u.discId;`))[0]
+            },
+            '~discesc~'         : async (num) => { 
+                let data = await this.requests['getdiscs'](num)
                 if(data.length == 0)
-                    return 'Você ainda não selecionou nenhuma matéria.'
+                    return '\nVocê ainda não selecionou nenhuma matéria.'
                 try{
                     return data.reduce((acc, i) => {
                         acc += `\n> ${i.discId}. ${i.nome} (${i.carga} horas);`
@@ -141,6 +144,10 @@ class FormatedData{
                     console.log('Erro em ~discesc~.\n', err)
                     return 'Você ainda não selecionou nenhuma matéria.'
                 }
+            },
+            '~discesctxt~'      : async (num) => {
+                let data = await this.requests['getdiscs'](num)
+                return 'Estas são as matérias que estão registradas para você até então:' + (await this.requests['~discesc~'](num))
             },
             '~getmatriz~'       : async (num) => {
                 return (await db.request(`select text from messages where tag = '~getmatriz~';`))[0][0].text

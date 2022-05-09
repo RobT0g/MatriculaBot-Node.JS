@@ -157,11 +157,11 @@ messages.push(...[
 //Step 15
 {
 'txt':['Agora nós começaremos o processo de alteração de matrícula, onde você poderá escolher as matérias que irá cursar neste período.', 
-    'Estas são as matérias que estão registradas para você por enquanto:~discesc~', 'Voce pode me mandar "adicionar" para colocar alguma' + 
+    '~discesctxt~', 'Voce pode me mandar "adicionar" para colocar alguma' + 
     ' matéria a mais na lista, ou "retirar", se quiser remover alguma delas. Agora se essa lista já tiver de boa, pode me mandar um' + 
     ' "finalizar" para terminarmos este processo.'],
-'full': new StepStuff([['adicionar'], ['retirar'], ['~finalizar~']], [], []),
-'unf': {},
+'full': new StepStuff([['~adicionar~'], ['~retirar~'], ['~finalizar~']], [], []),
+'unf': new StepStuff([['~noreti~']], [[]], [['Então... Você não tem matéria nenhuma escolhida e portanto não pode retirar nenhuma.']]),
 'def':['Só dizer alguma das opções para continuarmos.'],
 'to':[16, 17, 13]},
 
@@ -185,68 +185,55 @@ messages.push(...[
     ' favor, certifique-se de ver os requisitos quando eu os mandar!']]),
 'def':['Basta me enviar os índices das matérias para continuarmos!', 'Mas se você tiver escolhido essa opção por engano, também pode me' + 
     ' mandar "voltar" para voltar pro passo anterior.'],
-'from':[13],
-'to':[16, 13]},
+'to':[18, 13]},
 
 //Step 17
 {
-'txt':['Certo, agora você irá selecionar as matérias que deseja retirar.', 'Para selecioná-las, basta me' + 
-    ' mandar o id (número) das matérias, pode mandar vários de uma vez. Em seguida eu vou confirmar as' + 
-    ' suas escolhas com você, então não precisa se preocupar em escolher errado agora, você poderá voltar' + 
-    ' se tiver escolhido alguma matéria errada.',
-    'Caso você não queira escolher as matérias, basta me mandar um "voltar", para voltar pro passo anterior.',
-    'Você também pode me enviar "matriz curricular" ou "formulário" se quiser consultá-los novamente.'],
-'full': new StepStuff([['~matnums~'], ['~voltar~']], [['del_discs']], []),
-'unf': {},
-'def':['Basta me enviar os índices das matérias para continuarmos!'],
-'from':[13],
-'to':[17, 13]},
+'txt':['Certo, agora você irá selecionar as matérias que deseja retirar.', '~discesctxt~', 'Basta escolher uma ou mais das matérias da' + 
+    ' lista que eu vou tirar elas.'],
+'full': new StepStuff([['~delmatnums~'], ['~voltar~']], [['del_discs']], []),
+'unf': new StepStuff([['~invalidmatd~']], [[]], [['Você tem que escolher alguma matéria que está na sua lista!']]),
+'def':['Basta me enviar os índices das matérias para continuarmos!', 'Mas se você tiver escolhido essa opção por engano, também pode me' + 
+' mandar "voltar" para voltar pro passo anterior.'],
+'to':[19, 13]},
 
 //Step 18
 {
-'txt':['Agora vamos confirmar se você escolheu tudo certinho.',
-    'Estas são as matérias e seus requisitos:', '~instmatseladd~', 
+'txt':['Agora vamos confirmar se você escolheu tudo certinho. Estas são as matérias e seus requisitos:', '~instmatseladd~', 
     'Basta me dizer "sim" ou "não" para confirmar as escolhas agora!'],
 'full': new StepStuff([['~sim~'], ['~voltar~']], [['effetivate'], ['cleareff']], []),
-'unf': new StepStuff([['~nao~']], [['goBack']], [['Ok. Pode reenviar os números das matérias que deseja adicionar.']]),
+'unf': new StepStuff([['~nao~']], [['16']], [['Ok. Pode reenviar os números das matérias que deseja adicionar.']]),
 'def':['Basta me confirmar com um sim ou não.'],
 'recomp': {'any': 'Só precisa me dizer sim ou não para confirmar as suas escolhas.'},
-'from':[14],
-'to':[18, 13]},
+'to':[20, 16]},
 
 //Step 19
 {
-'txt':['Você selecionou essas matérias: ~instmatseldel~', 
-    'Basta me dizer "sim" ou "não" para confirmar as escolhas agora!'],
+'txt':['Você selecionou essas matérias pra retirar: ~instmatseldel~', 'Basta me dizer "sim" ou "não" para confirmar as escolhas agora!'],
 'full': new StepStuff([['~sim~'], ['~voltar~']], [['effetivate'], ['cleareff']], []),
-'unf': new StepStuff([['~nao~']], [['goBack']], [['Ok. Pode reenviar os números das matérias que deseja retirar.']]),
+'unf': new StepStuff([['~nao~']], [['17']], [['Ok. Pode reenviar os números das matérias que deseja retirar.']]),
 'def':['Basta me confirmar com um sim ou não.'],
 'recomp': {'any': 'Só precisa me dizer sim ou não para confirmar as suas escolhas.'},
 'from':[15],
-'to':[18, 13]},
+'to':[20, 17]},
 
 //Step 20
 {
-'txt':['OK, suas escolhas foram salvas.', 'Agora, você pode escolher se quer voltar e adicionar/retirar' + 
-    ' outras matérias, basta me mandar "voltar".', 'Se você já tiver terminado com suas escolhas, basta' +
-    ' me mandar "finalizar".', 'Estas foram suas escolhas até o momento:', '~discesc~'],
+'txt':['OK, suas escolhas foram salvas.', '~discesctxt~', 'Se você já tiver terminado com suas escolhas, basta me mandar "finalizar",' + 
+    ' senão, é só dizer "voltar" para que você possa novamente escolher adicionar ou retirar mais matérias.'],
 'full': new StepStuff([['~voltar~'], ['~finalizar~']], [[], ['finalize']], []),
 'unf': {},
 'def':['Você só precisa me mandar "finalizar" ou "voltar" para continuarmos com este processo.'],
 'recomp': {'any': ['Basta me mandar "finalizar" ou "voltar" para continuarmos.']},
-'from':[13],
-'to':[13, 19]},
+'to':[15, 21]},
 
 //Step 21
 {
-'txt':['Pronto! Estamos finalizados com a sua alteração de matrícula.', /*'Eu irei te avisar quando o departamento', 
-    ' tiver processado seu cadastro.', 'Neste ponto, você também pode requisitar refazer todo o processo', 
-' para outra pessoa.'*/],
+'txt':['Pronto! Estamos finalizados com a sua rematrícula.', 'Vou mandar seus dados para o departamento agora!'],
 'full': new StepStuff([['~nop~']], [], []),
-'unf': new StepStuff([['~nao~']], [['goBack']], [['Ok, me envie o nome correto agora 🤨']]),
-'def':['Você só precisa me mandar um "sim" ou "não" para confirmar.'],
-'from':[13],
-'to':[14]},
+'unf': new StepStuff([['~voltar~']], [['15']], [['Tá certo... É só me dizer "adicionar" ou "retirar" igual anteriormente.', '~discesctxt~']]),
+'def': ['Já concluímos o processo, mas você pode escolher voltar e fazer a alteração de matrícula se quiser.', 'Neste caso, basta me mandar "voltar".'],
+'to':[15]},
 ])
 
 const recorrent = {

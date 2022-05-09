@@ -1,3 +1,5 @@
+import { resolve } from 'path'
+import { DefaultSerializer } from 'v8'
 import {chat} from './ChatFlow.js'
 import { db, fd, database } from './DataKeeper.js'
 
@@ -177,12 +179,59 @@ class TagAnalyzer{
                         resolve([true, ''])
                 })
             }),
+            '~delmatnums~'  : ((msg, num) => {
+                let nums = msg.msgbody.match(/\d+/g)
+                if(!nums)
+                    return [false, '']
+                return new Promise(async (resolve, reject) => {
+                    try{
+                        let user = await fd.getUser(num)
+                        let discs = (await db.request(`select discId from user_${fd.cursos[user.curso]} where matricula = '${user.matricula}';`))[0].map(i => i.discId)
+                        if(nums.some(i => discs.includes(Number(i))))
+                            resolve([true, nums])
+                        resolve([false, ''])
+                    } catch(err) {resolve([false, ''])}
+                })
+            }),
+            '~invalmatd~'   : ((msg, num) => {
+                let nums = msg.msgbody.match(/\d+/g)
+                if(!nums)
+                    return [false, '']
+                return new Promise(async (resolve, reject) => {
+                    try{
+                        resolve([!(await this.tagfunc['~delmatnums~'](msg, num))[0], ''])
+                    } catch(err) {resolve([false, ''])}
+                })                
+            }),
             '~recomenda~'   : ((msg, num) => {return this.keyword(msg, 'recomendacoes')}),
             '~voltar~'      : ((msg, num) => {return this.keyword(msg, 'voltar')}),
             '~finalizar~'   : ((msg, num) => {return this.keyword(msg, 'finalizar')}),
             '~matriz~'      : ((msg, num) => {return this.keyword(msg, '&matriz&curricular')}),
             '~depart~'      : ((msg, num) => {return this.keyword(msg, '&contatar&departamento')}),
             '~revisar~'     : ((msg, num) => {return this.keyword(msg, 'revisar')}),
+            '~adicionar~'   : ((msg, num) => {return this.keyword(msg, 'adicionar')}),
+            '~retirar~'     : ((msg, num) => {
+                if(this.keyword(msg, 'retirar')[0])
+                    return new Promise(async (resolve, reject) => {
+                        try{
+                            let user = await fd.getUser(num)
+                            let discs = (await db.request(`select discId from user_${fd.cursos[user.curso]} where matricula = '${user.matricula}';`))[0]
+                            if(discs.length > 0)
+                                resolve([true, ''])
+                            resolve([false, ''])
+                        }catch {resolve([false, ''])}
+                    })
+                return [false, '']
+            }),
+            '~noreti~'      : ((msg, num) => {
+                return new Promise(async (resolve, reject) => {
+                    try{
+                        if(this.keyword(msg, 'retirar')[0] && !(await this.tagfunc['~retirar~'](msg, num))[0])
+                            resolve([true, ''])
+                        resolve([false, ''])
+                    } catch(err) {resolve([false, ''])}
+                })
+            }),
             '~def~'         : ((msg, num) => {return [true, '']}),
             '~nop~'         : ((msg, num) => {return [false, '']})
         }
