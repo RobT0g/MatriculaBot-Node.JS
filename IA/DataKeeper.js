@@ -147,7 +147,9 @@ class FormatedData{
             },
             '~discesctxt~'      : async (num) => {
                 let data = await this.requests['getdiscs'](num)
-                return 'Estas são as matérias que estão registradas para você até então:' + (await this.requests['~discesc~'](num))
+                if(data.length > 0)
+                    return 'Estas são as matérias que estão registradas para você até então:' + (await this.requests['~discesc~'](num))
+                return 'Você ainda não escolheu nenhuma matéria.'
             },
             '~getmatriz~'       : async (num) => {
                 return (await db.request(`select text from messages where tag = '~getmatriz~';`))[0][0].text
@@ -213,7 +215,7 @@ class FormatedData{
     }
 
     async getUser(num){
-        let user = (await db.request(`select * from registro where finished = '0' and numero = '${num}';`))[0]
+        let user = (await db.request(`select * from registro where numero = '${num}';`))[0]
         if(user.length > 0)
             return user[0]
         return (await db.request(`select * from inst_cadastro where numero = '${num}';`))[0][0]

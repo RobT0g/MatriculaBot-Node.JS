@@ -164,7 +164,7 @@ class TagAnalyzer{
                     return [false, '']
                 return new Promise(async (resolve, reject) => {
                     if((await this.tagfunc['getactivemat'](nums, num)))
-                        resolve(true, nums)
+                        resolve([true, nums])
                     else
                         resolve([false, ''])
                 })

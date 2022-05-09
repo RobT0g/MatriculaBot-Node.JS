@@ -5,7 +5,9 @@ const messages = []
 
 //--------TODO--------//
 /**
- * 
+ * Recomp do step 16
+ * Mensagem 2 do unfulfill de recomendações no step 16 tá meio ruim
+ * Rever a recorrência entre os steps 20 e 15, tá meio robótico demais
  */ 
 
 class StepStuff{
@@ -142,14 +144,14 @@ messages.push(...[
     ' carga horária desse período.', 'Com base no seu curso e turma, adicionei estas matérias por padrão:~discesc~', 'Se quiser adicionar' + 
     ' ou retirar alguma matéria, basta me mandar "alterar matrícula".'],
 'full': new StepStuff([['~finalizar~'], ['alterar']], [['finalize'], ['unfinalize']], [[]]),
-'unf': new StepStuff([['~sim~']], [[]], [['😉']]),
+'unf': new StepStuff([[]], [[]], [[]]),
 'def':['Você só precisa me mandar um "finalizar" ou "alterar" para continuarmos.'],
 'to':[14, 15]},
 
 {
 'txt':['Tudo certo então! Já irei avisar o departamento da sua rematrícula e enviar seus dados.'],
-'full': new StepStuff([['~nop~']], [[]], [[]]),
-'unf': new StepStuff([['~voltar~']], [['13']], [[]]),
+'full': new StepStuff([['~voltar~']], [[]], [[]]),
+'unf': new StepStuff([['~sim~']], [[]], [['😉']]),
 'def':['Já concluímos o processo, mas você pode escolher voltar e fazer a alteração de matrícula se quiser.', 'Neste caso, basta' + 
     ' me mandar "voltar".'],
 'to':[13]},
@@ -185,17 +187,17 @@ messages.push(...[
     ' favor, certifique-se de ver os requisitos quando eu os mandar!']]),
 'def':['Basta me enviar os índices das matérias para continuarmos!', 'Mas se você tiver escolhido essa opção por engano, também pode me' + 
     ' mandar "voltar" para voltar pro passo anterior.'],
-'to':[18, 13]},
+'to':[18, 15]},
 
 //Step 17
 {
 'txt':['Certo, agora você irá selecionar as matérias que deseja retirar.', '~discesctxt~', 'Basta escolher uma ou mais das matérias da' + 
     ' lista que eu vou tirar elas.'],
 'full': new StepStuff([['~delmatnums~'], ['~voltar~']], [['del_discs']], []),
-'unf': new StepStuff([['~invalidmatd~']], [[]], [['Você tem que escolher alguma matéria que está na sua lista!']]),
+'unf': new StepStuff([['~invalmatd~']], [[]], [['Você tem que escolher alguma matéria que está na sua lista!']]),
 'def':['Basta me enviar os índices das matérias para continuarmos!', 'Mas se você tiver escolhido essa opção por engano, também pode me' + 
 ' mandar "voltar" para voltar pro passo anterior.'],
-'to':[19, 13]},
+'to':[19, 15]},
 
 //Step 18
 {
@@ -231,7 +233,8 @@ messages.push(...[
 {
 'txt':['Pronto! Estamos finalizados com a sua rematrícula.', 'Vou mandar seus dados para o departamento agora!'],
 'full': new StepStuff([['~nop~']], [], []),
-'unf': new StepStuff([['~voltar~']], [['15']], [['Tá certo... É só me dizer "adicionar" ou "retirar" igual anteriormente.', '~discesctxt~']]),
+'unf': new StepStuff([['~voltar~'], ['~sim~']], [['15'], []], [['Tá certo... É só me dizer "adicionar" ou "retirar" igual anteriormente.', 
+    '~discesctxt~'], ['😉']]),
 'def': ['Já concluímos o processo, mas você pode escolher voltar e fazer a alteração de matrícula se quiser.', 'Neste caso, basta me mandar "voltar".'],
 'to':[15]},
 ])
