@@ -5,7 +5,7 @@ import { chat } from "./ChatFlow.js"
 import { StepStuff } from "./Messages.js"
 
 const usersBank = new DataBase()
-let num = '2103'
+let num = '559892437964@c.us'
 /*
 let a = ['abc', 'abd', 'acf']
 console.log(a.filter((i) => /abd/g.test(i)))
@@ -32,16 +32,16 @@ const fc = async function(message){
     console.log('--------------------------------------\n' + (await usersBank.newMessage(message, num)) + '\n--------------------------------------')
 }
 
-const main = async function(){
+const main = async() => {
     await fc('Opaa')
-    await fc('sim')
-    await fc('matriz curricular')
+    await fc('voltar')
+    await fc('ok')/*
     await fc('pronto')
     await fc('mat123')
     await fc('rapaz')
     await fc('matriz curricular')
     await fc('revisar')
     await fc('rapaz')
-    await fc('sim')
+    await fc('sim')*/
 }
 main()

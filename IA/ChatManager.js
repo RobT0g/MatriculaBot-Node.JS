@@ -318,14 +318,12 @@ class TagAnalyzer{
                 await database.saveOnEffetivate(num, sql, {ids: [...fnums, ...ondb]})
             },
             'finalize'      : async (man, obj, num) => {
-                await (fd.getUser(num).then((user) => {
-                    return db.request(`update registro set finished = '1' where matricula = '${user.matricula}';`)
-                }))
+                let user = await fd.getUser(num)
+                await db.request(`update registro set finished = '1' where matricula = '${user.matricula}';`)
             },
             'unfinalize'      : async (man, obj, num) => {
-                await (fd.getUser(num).then((user) => {
-                    return db.request(`update registro set finished = '0' where matricula = '${user.matricula}';`)
-                }))
+                let user = await fd.getUser(num)
+                await db.request(`update registro set finished = '0' where matricula = '${user.matricula}';`)
             }
         }
     }
@@ -479,12 +477,14 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
     }
 
     async fulfillStep(obj){         //Chamada quando um step é fulfill
-        console.log(obj)
+        let st = this.step
         if(obj.actions.length > 0)
             await tags.handleAction(this, obj, this.num)
         await this.move.goNext(obj.opt)
         console.log('Tamo no -> ' + this.step.id)
-        return this.setDataOntoText(this.step.msgs)
+        if(st.fulfill[obj.stepTags[0]].msg.length == 0)
+            return this.setDataOntoText(this.step.msgs)
+        return this.setDataOntoText(st.fulfill[obj.stepTags[0]].msg)
     }
 
     async unfulfillStep(obj){       //Chamada quando um step não é fulfill

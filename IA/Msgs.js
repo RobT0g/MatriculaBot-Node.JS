@@ -232,11 +232,11 @@ messages.push(...[
 //Step 21
 {
 'txt':['Pronto! Estamos finalizados com a sua rematrícula.', 'Vou mandar seus dados para o departamento agora!'],
-'full': new StepStuff([['~nop~']], [], []),
-'unf': new StepStuff([['~voltar~'], ['~sim~']], [['15'], []], [['Tá certo... É só me dizer "adicionar" ou "retirar" igual anteriormente.', 
-    '~discesctxt~'], ['😉']]),
+'full': new StepStuff([['~voltar~']], [['unfinalize']], [['Certo, antes eu tinha confirmado essas escolhas de matérias pra você:~discesc~', 'Se você' + 
+    ' quiser mesmo alterar suas escolhas novamente, só me mandar um "voltar".', 'Ou pode só me mandar um "finalizar" pra deixar como está.']]),
+'unf': new StepStuff([['~sim~']], [[]], [['😉']]),
 'def': ['Já concluímos o processo, mas você pode escolher voltar e fazer a alteração de matrícula se quiser.', 'Neste caso, basta me mandar "voltar".'],
-'to':[15]},
+'to':[20]},
 ])
 
 const recorrent = {
