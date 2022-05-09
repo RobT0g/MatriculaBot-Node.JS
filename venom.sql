@@ -388,7 +388,6 @@ CREATE TABLE `registro` (
   `curso` enum('0','1','2','3') DEFAULT NULL,
   `turma` year(4) DEFAULT NULL,
   `cpf` char(11) DEFAULT NULL,
-  `mat` tinyint(1) NOT NULL DEFAULT 0,
   `finished` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

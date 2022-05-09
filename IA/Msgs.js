@@ -137,12 +137,12 @@ messages.push(...[
 
 {
 'txt':['Pronto. Já tenho todas as informações necessárias para concluir a sua rematrícula.', 'Se você já quiser finalizar aqui, basta' + 
-    'me mandar um "finalizar" e eu vou mandar seus dados para o departamento da rematrícula, mas se quiser, você ainda pode alterar a sua' + 
+    ' me mandar um "finalizar" e eu vou mandar seus dados para o departamento da rematrícula, mas se quiser, você ainda pode alterar a sua' + 
     ' matrícula.', 'A alteração de matrícula é basicamente onde você poderá escolher se quer adicionar ou retirar alguma matéria da sua' + 
-    ' carga horária desse período', 'Com base no seu curso e turma, adicionei estas matérias por padrão:~discesc~', 'Se quiser adicionar' + 
+    ' carga horária desse período.', 'Com base no seu curso e turma, adicionei estas matérias por padrão:~discesc~', 'Se quiser adicionar' + 
     ' ou retirar alguma matéria, basta me mandar "alterar matrícula".'],
-'full': new StepStuff([['~finalizar~'], ['alterar']], [[], []], [[]]),
-'unf': new StepStuff([[]], [[]], [[]]),
+'full': new StepStuff([['~finalizar~'], ['alterar']], [['finalize'], ['unfinalize']], [[]]),
+'unf': new StepStuff([['~sim~']], [[]], [['😉']]),
 'def':['Você só precisa me mandar um "finalizar" ou "alterar" para continuarmos.'],
 'to':[14, 15]},
 

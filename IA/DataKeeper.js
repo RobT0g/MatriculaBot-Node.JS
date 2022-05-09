@@ -311,9 +311,6 @@ class DataBaseAccess{
     }
 
     async saveOnEffetivate(num, sql, data){
-        console.log(sql)
-        console.log(data)
-        return
         let query = sql.replaceAll(`'`, `"`)
         let prev = (await db.request(`select * from effetivate where numero = '${num}';`))[0]
         if(prev.length === 0)

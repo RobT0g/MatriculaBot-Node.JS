@@ -9,6 +9,7 @@ import { db, fd, database } from './DataKeeper.js'
  * Validação de email
  * Respostas recorrentes está substituindo o ~def~
  * Revisar a parte de retirar ou adicionar matérias já escolhidas anteriormente
+ * Rever o sistema de tag reversa com o *
  */ 
 
 class TagAnalyzer{
@@ -41,7 +42,7 @@ class TagAnalyzer{
                 try{
                     let numb = msg.msgbody.match(/\d{11}|(\d{3}[.]\d{3}[.]\d{3}[-]\d{2})/g)
                     //^ Primeira tentativa: 11 números em sequencia ou no formato 123.456.789-10 ^//
-                    if(numb != [])
+                    if(numb)
                         return [true, numb[0].replaceAll(/[.]|[-]/g, '')]
                     numb = (msg.msgbody.match(/\d/g)).reduce((acc, i)=>{acc+=i;return acc},'') 
                     //^ segunda tentativa: pega todos os números independentemente e os junta ^//
@@ -278,7 +279,7 @@ class TagAnalyzer{
                     periodo = maxp
                 let mats = (await db.request(`select id from disc_${fd.cursos[curso]} where parap = ${periodo};`))[0]
                 await db.request(`insert into user_${fd.cursos[curso]} values ` + mats.reduce((acc, i) => {
-                    acc += `(default, '${matricula}', '${i.id}', '${1}'), `
+                    acc += `(default, '${matricula}', '${i.id}'), `
                     return acc
                 }, '').slice(0, -2) + ';')
             },
@@ -319,6 +320,11 @@ class TagAnalyzer{
             'finalize'      : async (man, obj, num) => {
                 await (fd.getUser(num).then((user) => {
                     return db.request(`update registro set finished = '1' where matricula = '${user.matricula}';`)
+                }))
+            },
+            'unfinalize'      : async (man, obj, num) => {
+                await (fd.getUser(num).then((user) => {
+                    return db.request(`update registro set finished = '0' where matricula = '${user.matricula}';`)
                 }))
             }
         }
@@ -445,9 +451,6 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
         let results, opt, problem = false
         try{
             results = await tags.getStepObject(this.step, msg, this.num, true)
-            Object.keys(results).forEach((i) => {
-                console.log(i, results[i])
-            })
             opt = results.outcomes.indexOf(true)
             if(opt != -1){
                 Object.keys(results).forEach((i) => { results[i] = results[i][opt] })
@@ -480,7 +483,7 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
         if(obj.actions.length > 0)
             await tags.handleAction(this, obj, this.num)
         await this.move.goNext(obj.opt)
-        console.log(this.step)
+        console.log('Tamo no -> ' + this.step.id)
         return this.setDataOntoText(this.step.msgs)
     }
 
