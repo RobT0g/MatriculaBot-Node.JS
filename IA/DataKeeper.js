@@ -122,12 +122,12 @@ class FormatedData{
             },
             '~userinfo~'        : async (num) => {
                 let data = (await db.request(`select * from registro where numero = '${num}' and finished = '0';;`))[0][0]
-                return `\n> Nome: ${data.nome};\n> Matricula: ${data.matricula};\n> Email: ${data.email};\n` + 
-                    `> Curso: ${this.cursosName[data.curso]} turma de ${data.turma};\n` + 
+                return `\n> Matricula: ${data.matricula};\n> Nome: ${data.nome};\n> Email: ${data.email};\n` + 
+                    `> Curso: ${this.cursosName[data.curso]}, da turma de ${data.turma};\n` + 
                     `> CPF: ${data.cpf}.`
             },
             'getdiscs'          : async (num) => {
-                let info = (await db.request(`select * from registro where numero = '${num}' and finished = '0';`))[0][0]
+                let info = await this.getUser(num)
                 return (await db.request(`select u.discId, d.nome, d.carga from user_${this.cursos[info.curso]} as u 
                     join disc_${this.cursos[info.curso]} as d on u.discId = d.id where u.matricula = '${info.matricula}' order by u.discId;`))[0]
             },

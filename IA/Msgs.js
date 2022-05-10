@@ -178,7 +178,7 @@ messages.push(...[
 'full': new StepStuff([['~matnums~'], ['~voltar~']], [['add_discs']], []),
 'unf': new StepStuff([['~recomenda~'], ['~invalmatn~']], [[]], [['Com base nos seus dados, acredito que você pode ter todos os requisitos para' + 
     ' cursar qualquer matéria desta lista:~recdisc~', 'Se você tiver alguma reprovação, é bem provável que não tenha todos os requisitos' + 
-    ' para algumas destas matérias. Neste caso, você pode só escolher as matérias que quiser e ver os requisitos quando eu' + 
+    ' para algumas destas matérias. Neste caso, é só escolher as matérias que quiser e ver os requisitos quando eu' + 
     ' for verificar suas escolhas.', 'Não tem problema colocar alguma matéria para a qual você não possui todos os requisitos, o' + 
     ' departamento responsável simplesmente não vai adicioná-la, neste caso.'], ['Então... Eu verifiquei aqui e nehuma das matérias que' + 
     ' você escolheu estão disponíveis.', 'Você pode ter digitado errado ou se enganou, mas de qualquer forma te darei uma ajuda.', 
@@ -241,7 +241,7 @@ messages.push(...[
 
 const recorrent = {
     '~matriz~'      : ['~getmatriz~'],
-    '~revisar~'     : ['Seus dados: ~userinfo~', '~discesc~'],
+    '~revisar~'     : ['Seus dados: ~userinfo~', '~discesctxt~'],
     '~depart~'      : ['~depart~']
 }
 
