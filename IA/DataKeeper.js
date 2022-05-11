@@ -162,11 +162,10 @@ class FormatedData{
             },
             '~instmatseladd~'   : async (num) => {
                 let {user, info} = await this.requests['getsubjectsoneff'](num)
-                //console.log(info)
+                console.log(info)
                 let reqs = (await Promise.all(info.ativ.map(i => new Promise(async (resolve, reject) => {
                     try{
                         let ids = (await db.request(`select reqId from req_${this.cursos[user.curso]} where discId = '${i.id}';`))[0]
-                        //console.log(ids)
                         if(ids.length == 1 && ids[0].reqId == 0)
                             resolve([])
                         else
@@ -192,11 +191,29 @@ class FormatedData{
                 }, '')
                 if((info.inval.length === 0) && (info.inat.length === 0))
                     return text
-                
-                return text + `.//Aliás, você também fez essas outras escolhas que são inválidas. Existem ${db.amount[this.cursos[user.curso]]}` + 
-                `na matriz curricular do seu curso, portanto ${info.inval.reduce((acc, i) => {
-                    acc += `${i}`
-                }, 'As matérias com estes números: ')}`
+                let len = [info.inval.length > 1, info.inat.length > 1]
+                text += `.//Quanto às suas outras escolhas, eu as desconsiderei porque elas são inválidas.`
+                if(info.inval.length > 0)
+                    text += `.//Na matriz curricular do curso de ${this.cursosName[user.curso]} só tem ${db.amount[this.cursos[user.curso]]}` + 
+                    ` disciplinas, então não existe${len[0]?'m':''} essa${len[0]?'s':''} matéria${len[0]?'s':''} de número `
+                    if(len[0])
+                        text += info.inval.reduce((acc, i, k) => {
+                            if(k !== info.inval.length-1)
+                                acc += `${i}, `
+                            return acc
+                        }, '').slice(0, -2) + ` e `
+                    text += `${info.inval[info.inval.length-1]}.`
+                if(info.inat.length > 0)
+                    text += `.//Essa${len[1]?'s':''} matéria${len[1]?'s':''} de número `
+                    if(len[1])
+                        text += info.inat.reduce((acc, i, k) => {
+                            if(k !== info.inat.length-1)
+                                acc += `${i.id}, `
+                            return acc
+                        }, '').slice(0, -2) + ` e `
+                    text += `${info.inat[info.inat.length-1].id} até que existe${len[1]?'m':''}, mas ela${len[1]?'s':''} não est${len[1]?'ão':'á'}` + 
+                    ` disponíve${len[1]?'is':'l'} para este período.`
+                return text
             },
             '~instmatseldel~'   : async (num) => {
                 let {info} = await this.requests['getsubjectsoneff'](num)
