@@ -258,6 +258,7 @@ class TagAnalyzer{
             },
             'goTo'          : async (man, obj, num) => {
                 num = obj.actions.filter((i) => /\d+/.test(i))[0].match(/\d+/g)[0]
+                console.log('Atualizando... Tamo indo pro -> ' + num)
                 await man.move.goTo(Number(num))
             },
             'updateUser'    : async (man, obj, num) => {
@@ -284,6 +285,7 @@ class TagAnalyzer{
                 }, '').slice(0, -2) + ';')
             },
             'add_discs'     : async (man, obj, num) => {
+                console.log('Adicionando...')
                 await this.actions['managediscs'](man, obj, num, false)
             },
             'del_discs'     : async (man, obj, num) => {
@@ -294,8 +296,7 @@ class TagAnalyzer{
                     return {user, choices: (await db.request(`select discId from user_${fd.cursos[user.curso]} where matricula
                         = '${user.matricula}';`))[0]}
                 }))
-                let fnums = obj.tagInfo[1].filter(i => (Number(i) <= Number(db.amount[fd.cursos[info.user.curso]]))).map(i => Number(i))
-                console.log(info.choices)
+                let fnums = [...obj.tagInfo[1]]
                 let ondb = info.choices.reduce((acc, i) => {
                     if(fnums.includes(i.discId)){
                         fnums.splice(fnums.indexOf(i.discId), 1)
@@ -432,6 +433,7 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
         this.move = {
             refStep : async() => {          //Atualiza o step atual de acordo com o id
                 this.step = chat.currentStep(this.talkat)
+                console.log('tamo no -> ' + this.talkat)
                 await database.updateUser(this.num, {talkat: this.talkat}, false)
             },
             goNext  : async (opt=0) => {        //Avança para o próximo step
@@ -481,7 +483,6 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
         if(obj.actions.length > 0)
             await tags.handleAction(this, obj, this.num)
         await this.move.goNext(obj.opt)
-        console.log('Tamo no -> ' + this.step.id)
         if(st.fulfill[obj.stepTags[0]].msg.length == 0)
             return this.setDataOntoText(this.step.msgs)
         return this.setDataOntoText(st.fulfill[obj.stepTags[0]].msg)
