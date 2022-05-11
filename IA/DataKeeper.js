@@ -161,30 +161,42 @@ class FormatedData{
                 return (await db.request(`select text from messages where tag = '~numdepart~';`))[0][0].text
             },
             '~instmatseladd~'   : async (num) => {
-                let data = await this.requests['getsubjectsoneff'](num)
-                data.reqs = await Promise.all(data.info.map(async (i) => {
-                    let ids = (await db.request(`select reqId from req_${this.cursos[data.user.curso]} where discId = ${i.id};`))[0]
-                    if(ids.length == 1 && ids[0].reqId == 0)
-                        return []
-                    return (await db.request(`select id, nome from disc_${this.cursos[data.user.curso]} where id in 
-                        (${ids.reduce((acc, i) => {
-                            acc += i.reqId==0?'':`'${i.reqId}', `
-                            return acc
-                        }, '').slice(0, -2)});`))[0]
-                }))
-                return data.info.reduce((acc, i, k) => {
-                    acc += (k > 0?'\n':'') + `${i.id} - ${i.nome} (${i.carga} horas).`
-                    if(data.reqs[k].length !== 0){
-                        acc += ` Requisitos:${data.reqs[k].reduce((acc1, i1) => {
-                            acc1 += `\n   > ${i1.id} - ${i1.nome};`; return acc1;
-                        }, ``).slice(0, -1) + ';'}`
-                    } else {
-                        acc += ' Sem requisitos;'
-                    }
-                    if(k !== data.info.length-1)
-                        acc += '\n----------------------------------------'
+                let {user, info} = await this.requests['getsubjectsoneff'](num)
+                //console.log(info)
+                let reqs = (await Promise.all(info.ativ.map(i => new Promise(async (resolve, reject) => {
+                    try{
+                        let ids = (await db.request(`select reqId from req_${this.cursos[user.curso]} where discId = '${i.id}';`))[0]
+                        //console.log(ids)
+                        if(ids.length == 1 && ids[0].reqId == 0)
+                            resolve([])
+                        else
+                            resolve((await db.request(`select id, nome from disc_${this.cursos[user.curso]} where id in 
+                                (${ids.reduce((acc, j) => {
+                                    acc += j.reqId==0?'':`'${j.reqId}', `
+                                    return acc
+                                }, '').slice(0, -2)});`))[0])
+                    } catch(err) { reject(err) }
+                }))))
+                let text = info.ativ.reduce((acc, i, k) => {
+                    acc += `${i.id} - ${i.nome} (${i.carga} horas).`
+                    if(reqs[k].length > 0)
+                        acc += ` Requisitos:${reqs[k].reduce((acd, j) => {
+                            acd += `\n> ${j.id} - ${j.nome};`
+                            return acd
+                        }, '')}`
+                    else
+                        acc += `\nSem Requisitos.`
+                    if(k !== info.ativ.length-1)
+                        acc += '\n----------------------------------------\n'
                     return acc
-                }, ``).slice(0, -1) + '.'
+                }, '')
+                if((info.inval.length === 0) && (info.inat.length === 0))
+                    return text
+                
+                return text + `.//Aliás, você também fez essas outras escolhas que são inválidas. Existem ${db.amount[this.cursos[user.curso]]}` + 
+                `na matriz curricular do seu curso, portanto ${info.inval.reduce((acc, i) => {
+                    acc += `${i}`
+                }, 'As matérias com estes números: ')}`
             },
             '~instmatseldel~'   : async (num) => {
                 let {info} = await this.requests['getsubjectsoneff'](num)
@@ -200,8 +212,16 @@ class FormatedData{
                     console.log(err)
                     return 'Error, data not found.'
                 }), this.getUser(num)])
-                let info = (await db.request(`select * from disc_${this.cursos[user.curso]} where id in
-                    (${eff.ids.reduce((acc, i) => { acc += `${i}, `; return acc }, '').slice(0, -2)});`))[0]
+                //eff = {ids: [1, 2, 3]}
+                let info = {'inval': eff.ids.filter(i => (i > db.amount[this.cursos[user.curso]])), 'inat': [], 'ativ': []}
+                let discs = (await db.request(`select id, nome, carga, ativa from disc_${this.cursos[user.curso]} where id in
+                    (${eff.ids.reduce((acc, i) => { 
+                        if(!info.inval.includes(i))
+                            acc += `${i}, `; 
+                        return acc }, '').slice(0, -2)});`))[0]
+                discs.forEach(i => {
+                    info[(i.ativa === 0)?'inat':'ativ'].push(i)
+                })
                 return {info, user}
             },
             '~finalizar~'       : async (num) => {
