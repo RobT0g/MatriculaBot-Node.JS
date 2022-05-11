@@ -216,11 +216,31 @@ class FormatedData{
                 return text
             },
             '~instmatseldel~'   : async (num) => {
-                let {info} = await this.requests['getsubjectsoneff'](num)
-                return info.reduce((acc, i, k) => {
-                    acc += `\n> ${i.id} - ${i.nome} (${i.carga} horas);`
+                let {info, user} = await this.requests['getsubjectsoneff'](num)
+                info = [...info.inval.map(i => {return {id: Number(i)}}), ...info.ativ, ...info.inat]
+                let discs = (await db.request(`select u.discId, d.nome from user_${this.cursos[user.curso]} as u join 
+                    disc_${this.cursos[user.curso]} as d on u.discId = d.id where matricula = '${user.matricula}';`))[0]
+                let ids = discs.map(i => i.discId)
+                let data = {val: [], inval: []}
+                info.forEach(i => {
+                    if(ids.includes(i.id))
+                        data.val.push(discs[ids.indexOf(i.id)])
+                    else
+                        data.inval.push(i)
+                })
+                let txt = `${data.val.reduce((acc, i) => {
+                    acc += `\n> ${i.discId} - ${i.nome};`
                     return acc
-                }, ``).slice(0, -1) + '.'
+                }, '').slice(0, -1) + '.'}`
+                if(data.inval.length === 0)
+                    return txt
+                let cond = data.inval.length > 1
+                return txt + `.//Você também tinha mandado o${cond?'s':''} número${cond?'s':''}` + 
+                    ` ${data.inval.reduce((acc, i, k) => {
+                        if(k !== data.inval.length-1)
+                            acc += `${i.id}, `
+                        return acc
+                    }, '').slice(0, -2) + ` e ${data.inval[data.inval.length-1].id}.`} Só que ele${cond?'s':''} nem est${cond?'ão':'á'} na sua lista, então eu só os ignorei.`
             },
             'getsubjectsoneff'  : async (num) => {
                 let [eff, user] = await Promise.all([db.request(`select data from effetivate where numero = '${num}';`).then((info) => {
@@ -229,7 +249,6 @@ class FormatedData{
                     console.log(err)
                     return 'Error, data not found.'
                 }), this.getUser(num)])
-                //eff = {ids: [1, 2, 3]}
                 let info = {'inval': eff.ids.filter(i => (i > db.amount[this.cursos[user.curso]])), 'inat': [], 'ativ': []}
                 let discs = (await db.request(`select id, nome, carga, ativa from disc_${this.cursos[user.curso]} where id in
                     (${eff.ids.reduce((acc, i) => { 
