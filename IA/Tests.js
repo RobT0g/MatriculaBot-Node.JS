@@ -1,22 +1,63 @@
-import { db, fd, database} from "./DataKeeper.js"
+/*import { db, fd, database} from "./DataKeeper.js"
 import { ChatManager, tags } from "./ChatManager.js"
 import { DataBase, Message } from "./Utils.js"
 import { chat } from "./ChatFlow.js"
 import { StepStuff } from "./Messages.js"
+import { AutoQueue } from "../ExecutionQueue.js"
+*/
 
-let cd = new ChatManager('12')
-let msg = new Message('44')
+class Queue {
+    constructor() { this._items = []; }
+    enqueue(item) { this._items.push(item); }
+    dequeue() { return this._items.shift(); }
+    get size() { return this._items.length; }
+}
+
+class AutoQueue extends Queue {
+    constructor() {
+        super();
+        this._pendingPromise = false;
+    }
+
+    enqueue(action) {
+        return new Promise((resolve, reject) => {
+            super.enqueue({ action, resolve, reject });
+            this.dequeue();
+        });
+    }
+
+    async dequeue() {
+        if (this._pendingPromise) return false;
+        let item = super.dequeue();
+        if (!item) return false;
+        try {
+            this._pendingPromise = true;
+            let payload = await item.action;
+            this._pendingPromise = false;
+            item.resolve(payload);
+        } catch (e) {
+            this._pendingPromise = false;
+            item.reject(e);
+        } finally {
+            this.dequeue();
+        }
+        return true;
+    }
+}
+
+const q = new AutoQueue()
+//let cd = new ChatManager('12')
+//let msg = new Message('44')
 
 
 async function test(){
-    //await database.saveOnEffetivate('11', `insert into disc_fis values (default, "ENG2021", "10"), (default, "ENG2021", "11"),
-    //    (default, "ENG2021", "2"), (default, "ENG2021", "3"), (default, "ENG2021", "80");`, {ids: ['10', '11', '2', '3', '80']})
-    let a = (await fd.requests['~instmatseladd~']('559892437964@c.us')).split('.//')
-    a.forEach(i => {
-        console.log(i)
-    })
-    //console.log(a)
+    q.enqueue(new Promise((resolve, reject) => {
+        setTimeout(() => {
+            console.log('pronto')
+            resolve(false)
+        }, 2000)
+    }))
 }
-test()
-
-
+test().then((data) => {console.log(data)})
+test().then((data) => {console.log(data)})
+test().then((data) => {console.log(data)})

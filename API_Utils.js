@@ -25,15 +25,18 @@ class TextSender{
         }
     }
 
-    static async answerUser(texts, num, client){
-        processes[num] = this.delivText(texts, num, client)
+    static async newExec(num, pr){
+        processes[num] = pr
     }
 
     static async resolveMessages(num){
-        if(num in processes){
+        console.log(processes)
+        if((await processes[num])){
             await processes[num]
+            console.log(processes)
             delete processes[num]
         }
+        console.log(processes)
     }
 
     static async notText(message, num, client){   //Tratamento no caso de uma mensagem recebida não ser texto
