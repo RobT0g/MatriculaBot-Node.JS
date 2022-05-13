@@ -33,7 +33,7 @@ class AutoQueue extends Queue {
         if (!item) return false;
         try {
             this._pendingPromise[num] = true;
-            let payload = await item.action(this);
+            let payload = await item.action();
             this._pendingPromise[num] = false;
             item.resolve(payload);
         } catch (e) {

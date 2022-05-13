@@ -32,7 +32,7 @@ class AutoQueue extends Queue {
         if (!item) return false;
         try {
             this._pendingPromise = true;
-            let payload = await item.action;
+            let payload = await item.action();
             this._pendingPromise = false;
             item.resolve(payload);
         } catch (e) {
@@ -51,13 +51,10 @@ const q = new AutoQueue()
 
 
 async function test(){
-    q.enqueue(new Promise((resolve, reject) => {
+    q.enqueue(() => new Promise((resolve, reject) => {
         setTimeout(() => {
             console.log('pronto')
             resolve(false)
         }, 2000)
     }))
 }
-test().then((data) => {console.log(data)})
-test().then((data) => {console.log(data)})
-test().then((data) => {console.log(data)})

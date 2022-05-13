@@ -1,9 +1,7 @@
 import { create, Whatsapp } from './Dependencies/Index.js'
 import { TextSender } from './API_Utils.js'
 import { DataBase } from './IA/Utils.js'
-import { database } from './IA/DataKeeper.js'
-import {chat} from './IA/ChatFlow.js'
-import { ChatManager } from './IA/ChatManager.js'
+import { AutoQueue } from './ExecutionQueue.js'
 
 
 /** TODO
@@ -11,6 +9,7 @@ import { ChatManager } from './IA/ChatManager.js'
  */
 
 const usersBank = new DataBase()
+const queue = new AutoQueue()
 
 create({
     session: 'Bot-Matrícula', 
@@ -25,7 +24,7 @@ function start(client) {
         await TextSender.resolveMessages(num)
         if(TextSender.unvalidNumber(num))
             return
-        TextSender.newExec(num, new Promise(async (resolve, reject) => {
+        queue.enqueue(() => new Promise(async (resolve, reject) => {
             try{
                 let userOn = await usersBank.userRegister(num)
                 if(userOn == 2){
@@ -49,6 +48,6 @@ function start(client) {
                 console.log(err)
                 reject(err)
             }
-        }))
+        }), num)
     });
 }
