@@ -1,5 +1,3 @@
-const processes = {}
-
 class TextSender{
     static sendMsg(msg, num, client){
         return new Promise(function(resolve, reject){
@@ -25,19 +23,6 @@ class TextSender{
         }
     }
 
-    static async newExec(num, pr){
-        processes[num] = pr
-    }
-
-    static async resolveMessages(num){
-        console.log(processes)
-        if((await processes[num])){
-            await processes[num]
-            console.log(processes)
-            delete processes[num]
-        }
-        console.log(processes)
-    }
 
     static async notText(message, num, client){   //Tratamento no caso de uma mensagem recebida não ser texto
         if ((message.type != 'chat')){      //Depois vai receber docs tambem

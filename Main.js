@@ -21,7 +21,6 @@ create({
 function start(client) {
     client.onMessage(async (message) => {
         let num = message.from
-        await TextSender.resolveMessages(num)
         if(TextSender.unvalidNumber(num))
             return
         queue.enqueue(() => new Promise(async (resolve, reject) => {

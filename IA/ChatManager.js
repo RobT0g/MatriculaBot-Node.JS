@@ -257,9 +257,9 @@ class TagAnalyzer{
                 await database.effetivate(num)
             },
             'goTo'          : async (man, obj, num) => {
-                num = obj.actions.filter((i) => /\d+/.test(i))[0].match(/\d+/g)[0]
-                console.log('Atualizando... Tamo indo pro -> ' + num)
-                await man.move.goTo(Number(num))
+                let nums = obj.actions.filter((i) => /\d+/.test(i))[0].match(/\d+/g)[0]
+                console.log('Atualizando... Tamo indo pro -> ' + nums)
+                await man.move.goTo(Number(nums))
             },
             'updateUser'    : async (man, obj, num) => {
                 await database.updateUser(num, this.getUpdateObj(obj))
@@ -372,6 +372,7 @@ class TagAnalyzer{
     }
 
     async handleAction(manager, obj, num){
+        console.log(`actions -> ${obj.actions}`)
         try{
             for(let i in obj.actions)
                 if (obj.actions[i] in this.actions){
@@ -379,8 +380,10 @@ class TagAnalyzer{
                 } else {
                     let actionsList = Object.keys(this.actionsReferences)
                     for(let j in actionsList){
-                        if(this.actionsReferences[actionsList[j]].test(obj.actions[i]))
+                        if(this.actionsReferences[actionsList[j]].test(obj.actions[i])){
                             await this.actions[actionsList[j]](manager, obj, num)
+                            console.log(`O manager tá no -> ${man.talkat}`)
+                        }
                     }
                 }
         } catch(err){
@@ -483,6 +486,10 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
         if(obj.actions.length > 0)
             await tags.handleAction(this, obj, this.num)
         await this.move.goNext(obj.opt)
+        console.log('\n----------------------------------')
+        console.log(`Step ${this.talkat};`)
+        console.log(this.step)
+        console.log('----------------------------------\n')
         if(st.fulfill[obj.stepTags[0]].msg.length == 0)
             return this.setDataOntoText(this.step.msgs)
         return this.setDataOntoText(st.fulfill[obj.stepTags[0]].msg)
@@ -492,6 +499,10 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
         let st = this.step
         if(obj.actions.length > 0)
             await tags.handleAction(this, obj, this.num)
+        console.log('\n----------------------------------')
+        console.log(`Step ${this.talkat};`)
+        console.log(this.step)
+        console.log('----------------------------------\n')
         if(st.unFulfill[obj.stepTags[0]].msg.length > 0)
             return await this.setDataOntoText(st.unFulfill[obj.stepTags[0]].msg, this.num)
         return await this.setDataOntoText(this.step.msgs, this.num)
@@ -499,7 +510,6 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
 
     checkRecorrent(msg){
         let ans = [false, '']
-        console.log(this.step)
         for(let i in chat.recorrent){
             if(tags.getTag(i, msg, this.num)[0]){
                 ans = [true, i]
@@ -507,7 +517,6 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
                 try{
                     if([ans[1], 'any'].some(i => i in this.step.recomp)){
                         msg.push(...this.step.recomp[(ans[1] in this.step.recomp)?ans[1]:'any'])
-                        console.log('sim')
                     }
                 } catch(err){}
                 return this.setDataOntoText(msg)

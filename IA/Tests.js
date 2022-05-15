@@ -51,10 +51,7 @@ const q = new AutoQueue()
 
 
 async function test(){
-    q.enqueue(() => new Promise((resolve, reject) => {
-        setTimeout(() => {
-            console.log('pronto')
-            resolve(false)
-        }, 2000)
-    }))
+    await new Promise(resolve => {setTimeout(() => (resolve(true)), 5000)})
+    console.log('pronto')
 }
+test()
