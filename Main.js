@@ -24,6 +24,10 @@ function start(client) {
         if(TextSender.unvalidNumber(num))
             return
         queue.enqueue(() => new Promise(async (resolve, reject) => {
+            if((await TextSender.getRelatorio(message.body, num, client))){
+                resolve(false)
+                return
+            }
             try{
                 let userOn = await usersBank.userRegister(num)
                 if(userOn == 2){

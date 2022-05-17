@@ -1,3 +1,7 @@
+import {fd, database} from './IA/DataKeeper.js'
+
+const adm = ['559892437964@c.us']
+
 class TextSender{
     static sendMsg(msg, num, client){
         return new Promise(function(resolve, reject){
@@ -23,6 +27,13 @@ class TextSender{
         }
     }
 
+    static async getRelatorio(message, num, client){
+        if(adm.includes(num) && /relatorio/g.test(msg.filterMsg.toLowerCase())){
+            await this.delivText((await fd.requests['relatorio'](num)), num, client)
+            return true
+        }
+        return false
+    }
 
     static async notText(message, num, client){   //Tratamento no caso de uma mensagem recebida não ser texto
         if ((message.type != 'chat')){      //Depois vai receber docs tambem

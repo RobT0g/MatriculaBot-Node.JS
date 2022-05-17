@@ -16,7 +16,7 @@ class Message{              //Guarda utilidades da mensagem recebida
     }
 }
 
-class DataBase{                 //Guarda todos os usuários
+class DataBase{             //Guarda todos os usuários
     constructor(){
         this.users = {}
     }
@@ -46,7 +46,7 @@ class DataBase{                 //Guarda todos os usuários
     }
 }
 
-class User{     //Guarda atributos sobre o usuário
+class User{                 //Guarda atributos sobre o usuário
     constructor(num){
         this.num = num
         this.chat = new ChatManager(num)

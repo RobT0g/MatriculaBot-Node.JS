@@ -7,7 +7,6 @@ import { mysql } from '../Dependencies/Index.js'
  class DataBaseCon{
     constructor(){
         this.loaded = false
-        this.cursos = ['adm', 'ec', 'fis', 'tce']
     }
 
     async connect(){
@@ -29,11 +28,18 @@ import { mysql } from '../Dependencies/Index.js'
     }
 
     async load() {
+        this.cursos = [], this.cursosName = []
         this.disciplinasId = {}, this.amount = {}
         let conn = await this.connect()
+        (await db.request(`select * from cursos;`))[0].forEach((v) => {
+            this.cursos.push(v.abrev)
+            this.cursosName.push(v.nome)
+        })
+        console.log(this.cursos)
+        console.log(this.cursosName)
         for(let i in this.cursos){
             this.disciplinasId[this.cursos[i]] = (((await conn.query(`select id from disc_${this.cursos[i]} 
-            group by periodo;`))[0]).map((j) => j.id))
+                group by periodo;`))[0]).map((j) => j.id))
             this.amount[this.cursos[i]] = (await conn.query(`select max(id) from disc_${this.cursos[i]};`))[0][0]['max(id)']
         }
         this.loaded = true
@@ -56,8 +62,8 @@ const db = new DataBaseCon()
 
 class FormatedData{
     constructor(){
-        this.cursosName = ['Administração', 'Engenharia da Computação', 'Física', 'Construção de Edifícios']
         this.cursos = db.cursos
+        this.cursosName = db.cursosName
         this.requests = {
             userData            : async (tag, num) => {
                 let eff = (await db.request(`select data from effetivate where numero = '${num}';`))[0][0]
@@ -260,6 +266,11 @@ class FormatedData{
                     info[(i.ativa === 0)?'inat':'ativ'].push(i)
                 })
                 return {info, user}
+            },
+            'relatorio'         : async (num) => {
+                let users = (await db.request(`select * from registro;`))[0].reduce((acc, i) => {
+
+                }, {})
             },
             '~finalizar~'       : async (num) => {
                 let user = await this.getUser(num)
