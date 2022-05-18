@@ -28,6 +28,8 @@ import { mysql } from '../Dependencies/Index.js'
     }
 
     async load() {
+        if(this.loaded)
+            return
         this.cursos = [], this.cursosName = []
         this.disciplinasId = {}, this.amount = {}
         let conn = await this.connect()
@@ -61,8 +63,6 @@ const db = new DataBaseCon()
 
 class FormatedData{
     constructor(){
-        this.cursos = db.cursos
-        this.cursosName = db.cursosName
         this.requests = {
             userData            : async (tag, num) => {
                 let eff = (await db.request(`select data from effetivate where numero = '${num}';`))[0][0]
@@ -83,7 +83,7 @@ class FormatedData{
                 return this.requests.userData('email', num)    
             },
             '~curso~'           : async (num) => {
-                return this.cursosName[(await this.requests.userData('curso', num))]
+                return db.cursosName[(await this.requests.userData('curso', num))]
             },
             '~turma~'           : async (num) => {
                 return this.requests.userData('turma', num)    
@@ -93,12 +93,12 @@ class FormatedData{
             },
             '~defdisc~'         : async (num) => {
                 let {curso, turma} = await this.getUser(num)
-                let maxp = (await db.request(`select max(periodo) from disc_${this.cursos[curso]};`))[0][0]['max(periodo)']
+                let maxp = (await db.request(`select max(periodo) from disc_${db.cursos[curso]};`))[0][0]['max(periodo)']
                 let date = new Date()
                 let periodo = (date.getFullYear()-turma)*2 + ((date.getMonth() > 6)?2:1)
                 if(periodo > maxp)
                     periodo = maxp
-                let mats = await db.request(`select id, nome, carga from disc_${this.cursos[curso]} where parap = ${periodo};`)
+                let mats = await db.request(`select id, nome, carga from disc_${db.cursos[curso]} where parap = ${periodo};`)
                 return mats[0].reduce((acc, i) => {
                     acc += `${i.id}. ${i.nome} (${i.carga} horas);\n`
                     return acc
@@ -107,9 +107,9 @@ class FormatedData{
             '~recdisc~'         : async (num) => {
                 let info = await this.getUser(num)
                 let y = new Date().getFullYear() - info.turma
-                let req = db.disciplinasId[this.cursos[info.curso]][(y >= db.disciplinasId[this.cursos[info.curso]].length)?-1:y]
-                let data = (await db.request(`select id, nome, carga from disc_${this.cursos[info.curso]} 
-                    where id not in (select discId from req_${this.cursos[info.curso]} where 
+                let req = db.disciplinasId[db.cursos[info.curso]][(y >= db.disciplinasId[db.cursos[info.curso]].length)?-1:y]
+                let data = (await db.request(`select id, nome, carga from disc_${db.cursos[info.curso]} 
+                    where id not in (select discId from req_${db.cursos[info.curso]} where 
                     reqId >= '${req}') and ativa = '1';`))[0]
                 let retn = ''
                 data.forEach((i, k) => {
@@ -119,7 +119,7 @@ class FormatedData{
             },
             '~actvdiscs~'       : async (num) => {
                 let user = await this.getUser(num)
-                let [discs] = await db.request(`select id, nome, carga from disc_${this.cursos[user.curso]} where ativa = '1';`)
+                let [discs] = await db.request(`select id, nome, carga from disc_${db.cursos[user.curso]} where ativa = '1';`)
                 return discs.reduce((acc, i) => {
                     acc += `\n> ${i.id}. ${i.nome} (${i.carga} horas);`
                     return acc
@@ -128,13 +128,13 @@ class FormatedData{
             '~userinfo~'        : async (num) => {
                 let data = (await db.request(`select * from registro where numero = '${num}' and finished = '0';;`))[0][0]
                 return `\n> Matricula: ${data.matricula};\n> Nome: ${data.nome};\n> Email: ${data.email};\n` + 
-                    `> Curso: ${this.cursosName[data.curso]}, da turma de ${data.turma};\n` + 
+                    `> Curso: ${db.cursosName[data.curso]}, da turma de ${data.turma};\n` + 
                     `> CPF: ${data.cpf}.`
             },
             'getdiscs'          : async (num) => {
                 let info = await this.getUser(num)
-                return (await db.request(`select u.discId, d.nome, d.carga from user_${this.cursos[info.curso]} as u 
-                    join disc_${this.cursos[info.curso]} as d on u.discId = d.id where u.matricula = '${info.matricula}' order by u.discId;`))[0]
+                return (await db.request(`select u.discId, d.nome, d.carga from user_${db.cursos[info.curso]} as u 
+                    join disc_${db.cursos[info.curso]} as d on u.discId = d.id where u.matricula = '${info.matricula}' order by u.discId;`))[0]
             },
             '~discesc~'         : async (num) => { 
                 let data = await this.requests['getdiscs'](num)
@@ -169,11 +169,11 @@ class FormatedData{
                 let {user, info} = await this.requests['getsubjectsoneff'](num)
                 let reqs = (await Promise.all(info.ativ.map(i => new Promise(async (resolve, reject) => {
                     try{
-                        let ids = (await db.request(`select reqId from req_${this.cursos[user.curso]} where discId = '${i.id}';`))[0]
+                        let ids = (await db.request(`select reqId from req_${db.cursos[user.curso]} where discId = '${i.id}';`))[0]
                         if(ids.length == 1 && ids[0].reqId == 0)
                             resolve([])
                         else
-                            resolve((await db.request(`select id, nome from disc_${this.cursos[user.curso]} where id in 
+                            resolve((await db.request(`select id, nome from disc_${db.cursos[user.curso]} where id in 
                                 (${ids.reduce((acc, j) => {
                                     acc += j.reqId==0?'':`'${j.reqId}', `
                                     return acc
@@ -198,7 +198,7 @@ class FormatedData{
                 let len = [info.inval.length > 1, info.inat.length > 1]
                 text += `.//Quanto às suas outras escolhas, eu as desconsiderei porque elas são inválidas.`
                 if(info.inval.length > 0){
-                    text += `.//Na matriz curricular do curso de ${this.cursosName[user.curso]} só tem ${db.amount[this.cursos[user.curso]]}` + 
+                    text += `.//Na matriz curricular do curso de ${db.cursosName[user.curso]} só tem ${db.amount[db.cursos[user.curso]]}` + 
                     ` disciplinas, então não existe${len[0]?'m':''} essa${len[0]?'s':''} matéria${len[0]?'s':''} de número `
                     if(len[0])
                         text += info.inval.reduce((acc, i, k) => {
@@ -224,8 +224,8 @@ class FormatedData{
             '~instmatseldel~'   : async (num) => {
                 let {info, user} = await this.requests['getsubjectsoneff'](num)
                 info = [...info.inval.map(i => {return {id: Number(i)}}), ...info.ativ, ...info.inat]
-                let discs = (await db.request(`select u.discId, d.nome from user_${this.cursos[user.curso]} as u join 
-                    disc_${this.cursos[user.curso]} as d on u.discId = d.id where matricula = '${user.matricula}';`))[0]
+                let discs = (await db.request(`select u.discId, d.nome from user_${db.cursos[user.curso]} as u join 
+                    disc_${db.cursos[user.curso]} as d on u.discId = d.id where matricula = '${user.matricula}';`))[0]
                 let ids = discs.map(i => i.discId)
                 let data = {val: [], inval: []}
                 info.forEach(i => {
@@ -255,8 +255,8 @@ class FormatedData{
                     console.log(err)
                     return 'Error, data not found.'
                 }), this.getUser(num)])
-                let info = {'inval': eff.ids.filter(i => (i > db.amount[this.cursos[user.curso]])), 'inat': [], 'ativ': []}
-                let discs = (await db.request(`select id, nome, carga, ativa from disc_${this.cursos[user.curso]} where id in
+                let info = {'inval': eff.ids.filter(i => (i > db.amount[db.cursos[user.curso]])), 'inat': [], 'ativ': []}
+                let discs = (await db.request(`select id, nome, carga, ativa from disc_${db.cursos[user.curso]} where id in
                     (${eff.ids.reduce((acc, i) => { 
                         if(!info.inval.includes(i))
                             acc += `${i}, `; 
@@ -273,7 +273,7 @@ class FormatedData{
             },
             '~finalizar~'       : async (num) => {
                 let user = await this.getUser(num)
-                if((await db.request(`select * from user_${this.cursos[user.curso]} where matricula = '${user.matricula}';`))[0].length == 0){
+                if((await db.request(`select * from user_${db.cursos[user.curso]} where matricula = '${user.matricula}';`))[0].length == 0){
                     return ''
                 }
                 return 'Como você já selecionou algumas matérias, você pode finalizar aqui se quiser. Basta me mandar um "finalizar".'
@@ -336,7 +336,7 @@ class FormatedData{
         try{
             let date = new Date()
             let periodo = ((date.getFullYear()-obj.turma)*2) + (date.getMonth()>=6?1:0)
-            let cursoIds = ids[this.cursos[obj.curso]]
+            let cursoIds = ids[db.cursos[obj.curso]]
             obj.maxreq = cursoIds[periodo>=cursoIds.length?-1:periodo]
             return obj
         } catch(err){

@@ -2,6 +2,7 @@ import { create, Whatsapp } from './Dependencies/Index.js'
 import { TextSender } from './API_Utils.js'
 import { DataBase } from './IA/Utils.js'
 import { AutoQueue } from './ExecutionQueue.js'
+import { db } from './IA/DataKeeper.js'
 
 
 /** TODO
@@ -23,6 +24,7 @@ function start(client) {
         let num = message.from
         if(TextSender.unvalidNumber(num))
             return
+        await db.load()
         queue.enqueue(() => new Promise(async (resolve, reject) => {
             if((await TextSender.getRelatorio(message.body, num, client))){
                 resolve(false)

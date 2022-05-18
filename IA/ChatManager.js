@@ -1,7 +1,6 @@
-import { resolve } from 'path'
-import { DefaultSerializer } from 'v8'
 import {chat} from './ChatFlow.js'
 import { db, fd, database } from './DataKeeper.js'
+import {Message} from './Utils.js'
 
 //--------TODO--------//
 /**
@@ -127,7 +126,15 @@ class TagAnalyzer{
                 }
             }),
             '~curso~'       : ((msg, num) => {
-                let cursos = [['adm', 'administracao'], ['engenharia', 'computacao'], ['fis', 'fisica'], ['tce', 'construcao']]
+                console.log(db.cursos)
+                let cursos = db.cursos.reduce((acc, i, k) => {
+                    acc.push([i, db.cursosName[k].split(' ').filter(i => !['de', 'do', 'da'].includes(i)).reduce((acc1, i1) => {
+                        acc1 += `&${new Message(i1).filterMsg.toLowerCase()}`
+                        return acc1
+                    }, '')])
+                    return acc
+                }, [])
+                console.log(cursos)
                 let opt = cursos.map((i) => i.some((j) => this.keyword(msg, j)[0]))
                 if(opt.includes(true))
                     return [true, String(opt.indexOf(true))]
@@ -150,7 +157,7 @@ class TagAnalyzer{
                 return new Promise(async (resolve, reject) => {
                     try{
                         let user = await fd.getUser(num)
-                        let [stat] = (await db.request(`select ativa from disc_${fd.cursos[user.curso]} where id in ${nums.reduce((acc, i) => {
+                        let [stat] = (await db.request(`select ativa from disc_${db.cursos[user.curso]} where id in ${nums.reduce((acc, i) => {
                             acc += `${i}, `
                             return acc
                         }, '(').slice(0, -2) + ')'};`))
@@ -187,7 +194,7 @@ class TagAnalyzer{
                 return new Promise(async (resolve, reject) => {
                     try{
                         let user = await fd.getUser(num)
-                        let discs = (await db.request(`select discId from user_${fd.cursos[user.curso]} where matricula = '${user.matricula}';`))[0].map(i => i.discId)
+                        let discs = (await db.request(`select discId from user_${db.cursos[user.curso]} where matricula = '${user.matricula}';`))[0].map(i => i.discId)
                         if(nums.some(i => discs.includes(Number(i))))
                             resolve([true, nums])
                         resolve([false, ''])
@@ -216,7 +223,7 @@ class TagAnalyzer{
                     return new Promise(async (resolve, reject) => {
                         try{
                             let user = await fd.getUser(num)
-                            let discs = (await db.request(`select discId from user_${fd.cursos[user.curso]} where matricula = '${user.matricula}';`))[0]
+                            let discs = (await db.request(`select discId from user_${db.cursos[user.curso]} where matricula = '${user.matricula}';`))[0]
                             if(discs.length > 0)
                                 resolve([true, ''])
                             resolve([false, ''])
@@ -273,13 +280,13 @@ class TagAnalyzer{
             },
             'savedefdiscs'  : async (man, obj, num) => {
                 let {curso, turma, matricula} = await fd.getUser(num)
-                let maxp = (await db.request(`select max(periodo) from disc_${fd.cursos[curso]};`))[0][0]['max(periodo)']
+                let maxp = (await db.request(`select max(periodo) from disc_${db.cursos[curso]};`))[0][0]['max(periodo)']
                 let date = new Date()
                 let periodo = (date.getFullYear()-turma)*2 + ((date.getMonth() > 6)?2:1)
                 if(periodo > maxp)
                     periodo = maxp
-                let mats = (await db.request(`select id from disc_${fd.cursos[curso]} where parap = ${periodo};`))[0]
-                await db.request(`insert into user_${fd.cursos[curso]} values ` + mats.reduce((acc, i) => {
+                let mats = (await db.request(`select id from disc_${db.cursos[curso]} where parap = ${periodo};`))[0]
+                await db.request(`insert into user_${db.cursos[curso]} values ` + mats.reduce((acc, i) => {
                     acc += `(default, '${matricula}', '${i.id}'), `
                     return acc
                 }, '').slice(0, -2) + ';')
@@ -293,7 +300,7 @@ class TagAnalyzer{
             },
             'managediscs'   : async (man, obj, num, del) => {
                 let info = await (fd.getUser(num).then(async (user) => {
-                    return {user, choices: (await db.request(`select discId from user_${fd.cursos[user.curso]} where matricula
+                    return {user, choices: (await db.request(`select discId from user_${db.cursos[user.curso]} where matricula
                         = '${user.matricula}';`))[0]}
                 }))
                 let fnums = [...obj.tagInfo[1]]
@@ -306,12 +313,12 @@ class TagAnalyzer{
                 }, [])
                 let sql = ''
                 if(del){
-                    sql = `delete from user_${fd.cursos[info.user.curso]} where discId in ${ondb.reduce((acc, i) => {
+                    sql = `delete from user_${db.cursos[info.user.curso]} where discId in ${ondb.reduce((acc, i) => {
                         acc += `'${i}', `
                         return acc
                     }, '(').slice(0, -2) + ')'} and matricula = '${info.user.matricula}'; `
                 }else {
-                    sql += `insert into user_${fd.cursos[info.user.curso]} values ${fnums.reduce((acc, i) => {
+                    sql += `insert into user_${db.cursos[info.user.curso]} values ${fnums.reduce((acc, i) => {
                         acc += `(default, '${info.user.matricula}', '${i}'), `
                         return acc
                     }, '').slice(0, -2)};`
