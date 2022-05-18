@@ -26,6 +26,26 @@ USE `venom`;
 -- --------------------------------------------------------
 
 --
+-- Estrutura da tabela `cursos`
+--
+
+CREATE TABLE `cursos` (
+  `id` int(11) NOT NULL,
+  `abrev` varchar(3) NOT NULL,
+  `nome` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Extraindo dados da tabela `cursos`
+--
+
+INSERT INTO `cursos` (`id`, `abrev`, `nome`) VALUES
+	(DEFAULT, 'adm', 'Administração'),
+	(DEFAULT, 'ec', 'Engenharia da Computação'),
+	(DEFAULT, 'fis', 'Física'),
+	(DEFAULT, 'tce', 'Construção de Edifícios');
+
+--
 -- Estrutura da tabela `disc_adm`
 --
 
@@ -385,7 +405,7 @@ CREATE TABLE `registro` (
   `talkat` int(10) UNSIGNED NOT NULL,
   `nome` varchar(75) DEFAULT NULL,
   `email` varchar(75) DEFAULT NULL,
-  `curso` enum('0','1','2','3') DEFAULT NULL,
+  `curso` tinyint(1) UNSIGNED DEFAULT NULL,
   `turma` year(4) DEFAULT NULL,
   `cpf` char(11) DEFAULT NULL,
   `finished` tinyint(1) NOT NULL DEFAULT 0
@@ -803,6 +823,14 @@ CREATE TABLE `user_tce` (
 --
 
 --
+-- Índices para tabela `cursos`
+--
+ALTER TABLE `cursos`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY (`abrev`),
+  ADD UNIQUE KEY `nome` (`nome`);
+
+--
 -- Índices para tabela `disc_adm`
 --
 ALTER TABLE `disc_adm`
@@ -919,6 +947,12 @@ ALTER TABLE `user_tce`
 --
 -- AUTO_INCREMENT de tabelas despejadas
 --
+
+--
+-- AUTO_INCREMENT de tabela `cursos`
+--
+ALTER TABLE `cursos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `disc_adm`

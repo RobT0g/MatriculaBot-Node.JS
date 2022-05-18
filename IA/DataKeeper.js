@@ -31,12 +31,11 @@ import { mysql } from '../Dependencies/Index.js'
         this.cursos = [], this.cursosName = []
         this.disciplinasId = {}, this.amount = {}
         let conn = await this.connect()
-        (await db.request(`select * from cursos;`))[0].forEach((v) => {
+        let info = (await conn.query(`select * from cursos;`))[0]
+        info.forEach((v) => {
             this.cursos.push(v.abrev)
             this.cursosName.push(v.nome)
         })
-        console.log(this.cursos)
-        console.log(this.cursosName)
         for(let i in this.cursos){
             this.disciplinasId[this.cursos[i]] = (((await conn.query(`select id from disc_${this.cursos[i]} 
                 group by periodo;`))[0]).map((j) => j.id))

@@ -5,6 +5,6 @@ import { chat } from "./ChatFlow.js"
 import { StepStuff } from "./Msgs.js"
 
 async function test(){
-    console.log((await db.request(`select * from cursos;`)))
+    console.log((await db.request(`select * from cursos;`))[0])
 }
 test()
