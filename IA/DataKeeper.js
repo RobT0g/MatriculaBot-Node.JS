@@ -266,10 +266,38 @@ class FormatedData{
                 })
                 return {info, user}
             },
-            'relatorio'         : async (num) => {
-                let users = (await db.request(`select * from registro;`))[0].reduce((acc, i) => {
-
+            '~relatorio~'         : async (num) => {
+                let users = (await db.request(`select * from registro where finished = '1';`))[0].reduce((acc, i) => {
+                    if(!(db.cursos[i.curso] in acc))
+                        acc[db.cursos[i.curso]] = []
+                    acc[db.cursos[i.curso]].push(i)
+                    return acc
                 }, {})
+                let txt = ''
+                for(let i in users){
+                    let info = (await db.request(`select u.*, d.nome from user_${i} as u join disc_${i} as d on u.discId = d.id where matricula in (${users[i].reduce((acc, j) => {
+                        acc += `'${j.matricula}', `
+                        return acc
+                    }, '').slice(0, -2)}) order by u.discId;`))[0].reduce((acc, j) => {
+                        if(!(j.matricula in acc))
+                            acc[j.matricula] = []
+                        acc[j.matricula].push(j)
+                        return acc
+                    }, {})
+                    for(let j in users[i]){
+                        try{
+                            txt += `Usuário de matricula ${users[i][j].matricula}. Demais informações:\n> Nome: ${users[i][j].nome};\n> Email: ${users[i][j].email};\n` + 
+                            `> Curso: ${db.cursosName[users[i][j].curso]}, da turma de ${users[i][j].turma};\n` + 
+                            `> CPF: ${users[i][j].cpf}.\n-------------------------\nMatéria registradas:${info[users[i][j].matricula].reduce((acc, k) => {
+                                acc += `\n> ${k.discId}. ${k.nome};`
+                                return acc
+                            }, '').slice(0, -1) + '..//'}`
+                        } catch(err){
+                            console.log(err)
+                        }
+                    }
+                }
+                return txt
             },
             '~finalizar~'       : async (num) => {
                 let user = await this.getUser(num)

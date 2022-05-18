@@ -6,6 +6,6 @@ import { StepStuff } from "./Msgs.js"
 
 async function test(){
     await db.request(`select * from cursos;`)
-    console.log((await tags.getTag('~curso~', new Message('Engenharia da Cmputação'), '559892437964@c.us')))
+    console.log((await fd.requests['~relatorio~']('559892437964@c.us')))
 }
 test()

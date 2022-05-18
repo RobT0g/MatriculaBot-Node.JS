@@ -240,6 +240,12 @@ class TagAnalyzer{
                     } catch(err) {resolve([false, ''])}
                 })
             }),
+            '~relatorio~'   : ((msg, num) => {
+                console.log(num)
+                if(!['559892437964@c.us', '559888976814@c.us'].includes(num))
+                    return [false, '']
+                return this.keyword(msg, 'relatorio')
+            }),
             '~def~'         : ((msg, num) => {return [true, '']}),
             '~nop~'         : ((msg, num) => {return [false, '']})
         }

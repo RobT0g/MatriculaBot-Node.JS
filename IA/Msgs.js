@@ -242,7 +242,8 @@ messages.push(...[
 const recorrent = {
     '~matriz~'      : ['~getmatriz~'],
     '~revisar~'     : ['Seus dados: ~userinfo~', '~discesctxt~'],
-    '~depart~'      : ['~depart~']
+    '~depart~'      : ['~depart~'],
+    '~relatorio~'    : ['~relatorio~']
 }
 
 export {textkeep, defaultans, defdef, messages, recorrent, StepStuff}
