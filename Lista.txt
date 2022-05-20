@@ -1,0 +1,27 @@
+Dados dos usuários
+- Acessar os dados dos usuários cadastrados;
+- Filtros de usuários (cadastro concluído/incompleto e rematrícula 
+concluída);
+- Modificar os dados se preciso;
+- Alertar o usuário de quando a rematrícula foi concluída;
+- Especificar como a rematrícula foi feita (Mostrar os casos em que 
+alguma disciplina não foi colocada por conta da falta de requisitos);
+
+Dados dos cursos 
+- Acessar as disciplinas e requisitos;
+- Adicionar novas disciplinas;
+- Adicionar um novo curso;
+
+Trilha de ativamento (Processo feito a cada fase de rematrícula)
+- Guia passo-a-passo (Sessão informativa);
+- Escolha das matérias disponíveis para cada curso;
+- Atualização do contato do departamento;
+- Atualização da matriz curricular (opicional);
+
+Controle do Bot
+- Ativar e desativar;
+- Gerador do QR code;
+- Monitoramento de usuários (Quantos usuários se comunicaram desde
+que o bot foi acionado);
+- Mostrador de erros;
+- Terminal de execução (Talvez não seja preciso);
