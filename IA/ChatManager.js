@@ -126,18 +126,27 @@ class TagAnalyzer{
                 }
             }),
             '~curso~'       : ((msg, num) => {
-                console.log(db.cursos)
-                let cursos = db.cursos.reduce((acc, i, k) => {
-                    acc.push([i, db.cursosName[k].split(' ').filter(i => !['de', 'do', 'da'].includes(i)).reduce((acc1, i1) => {
-                        acc1 += `&${new Message(i1).filterMsg.toLowerCase()}`
-                        return acc1
-                    }, '')])
-                    return acc
-                }, [])
-                console.log(cursos)
-                let opt = cursos.map((i) => i.some((j) => this.keyword(msg, j)[0]))
-                if(opt.includes(true))
-                    return [true, String(opt.indexOf(true))]
+                for(let i in db.cursos){
+                    let words = [new Message(db.cursosName[i]).filterMsg.toLowerCase().split(' ').filter(j => !['de', 'do', 'da']
+                        .includes(j)).reduce((acc, j) => {
+                            acc += `&${j}`
+                            return acc
+                        }, '')]
+                    if(words.some(j => this.keyword(msg, j)[0]))
+                        return [true, i]
+                }/*
+                db.cursos.forEach((i, k) => {
+                    let words = [i, new Message(db.cursosName[k]).filterMsg.toLowerCase().split(' ').filter(j => !['de', 'do', 'da']
+                        .includes(j)).reduce((acc, j) => {
+                            acc += `&${j}`
+                            return acc
+                        }, '')]
+                    console.log(words)
+                    if(words.some(j => this.keyword(msg, j)[0]))
+                        return [true, k]
+                })
+                if(a)
+                    return a*/
                 return [false, '']
             }),
             '~turma~'       : ((msg, num) => {
@@ -249,6 +258,7 @@ class TagAnalyzer{
             '~nop~'         : ((msg, num) => {return [false, '']})
         }
         this.keyword = ((msg, tag) => {
+            //console.log(msg, tag)
             return [!tag.split(/[&]/g).some((j) => !(new RegExp(j, 'g').test(msg.filterMsg.toLowerCase()))), '']});
         this.getUpdateObj = (obj) => {
             let ret = {}
@@ -269,9 +279,7 @@ class TagAnalyzer{
                 await database.effetivate(num)
             },
             'goTo'          : async (man, obj, num) => {
-                console.log('goTo foi chamado')
                 let nums = obj.actions.filter((i) => /\d+/.test(i))[0].match(/\d+/g)[0]
-                console.log('Atualizando... Tamo indo pro -> ' + nums)
                 await man.move.goTo(Number(nums))
             },
             'updateUser'    : async (man, obj, num) => {
@@ -386,10 +394,6 @@ class TagAnalyzer{
     }
 
     async handleAction(manager, obj, num){
-        console.log(`actions : [${obj.actions.reduce((acc, i) => {
-            acc += `${i}, `
-            return acc
-        }, '')}]`)
         try{
             obj.actions.forEach(async i => {
                 if(i in this.actions)
@@ -401,23 +405,7 @@ class TagAnalyzer{
             })
         } catch(err){
             console.log('ERRO NO HANDLEACTION.\n', err)
-        }/*
-        try{
-            for(let i in obj.actions)
-                if (obj.actions[i] in this.actions){
-                    await this.actions[obj.actions[i]](manager, obj, num)
-                } else {
-                    let actionsList = Object.keys(this.actionsReferences)
-                    for(let j in actionsList){
-                        if(this.actionsReferences[actionsList[j]].test(obj.actions[i])){
-                            await this.actions[actionsList[j]](manager, obj, num)
-                            console.log(`O manager tá no -> ${manager.talkat}`)
-                        }
-                    }
-                }
-        } catch(err){
-            console.log(err)
-        }*/
+        }
     }
 
     async getStepObject(step, msg, num, full = true){
@@ -523,14 +511,8 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
 
     async unfulfillStep(obj){       //Chamada quando um step não é fulfill
         let st = this.step
-        if(obj.actions.length > 0){
-            console.log(obj.actions)
-            obj.actions.forEach(i => {
-                console.log(typeof(i))
-            })
+        if(obj.actions.length > 0)
             await tags.handleAction(this, obj, this.num)
-        }
-        console.log(`Step ${this.talkat};`)
         if(st.unFulfill[obj.stepTags[0]].msg.length > 0)
             return await this.setDataOntoText(st.unFulfill[obj.stepTags[0]].msg, this.num)
         return await this.setDataOntoText(this.step.msgs, this.num)

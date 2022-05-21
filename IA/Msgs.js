@@ -63,7 +63,6 @@ messages.push(...[
 'def':['Preciso que me mande sua matrícula.'],
 'to':[3]},
 
-
 {
 'txt':['Sua matrícula é ~mat~. Você confirma?'],
 'full': new StepStuff([['~sim~']], [['effetivate']], []),
@@ -89,7 +88,7 @@ messages.push(...[
 {
 'txt':['Agora me informe seu Email.'],
 'full': new StepStuff([['~email~']], [['updateUser']], []),
-'unf': new StepStuff([['*@']], [], [['Me envie um email válido, por favor.']]),
+'unf': new StepStuff([['!@']], [], [['Me envie um email válido, por favor.']]),
 'def':['Preciso do seu email.'],
 'to':[7]},
 

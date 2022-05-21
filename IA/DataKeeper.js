@@ -1,7 +1,7 @@
 import { mysql } from '../Dependencies/Index.js'
 
 /** TODO
- * Implementar testes para o uso de promises, o código não precisa esperar que o dado seja armazenado.
+ * Implementar a leitura da tabela cursowrds
  */
 
  class DataBaseCon{
