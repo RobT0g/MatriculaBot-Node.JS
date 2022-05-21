@@ -4,13 +4,26 @@ import { DataBase, Message } from "./Utils.js"
 import { chat } from "./ChatFlow.js"
 import { StepStuff } from "./Msgs.js"
 
-async function test(){
-    await db.request(`select * from cursos;`)
-    let a = (await fd.requests['~relatorio~']('559892437964@c.us'))
-    a.split('.//').forEach(i => {
-        console.log('================================')
-        console.log(i)
-        console.log('================================')
-    })
+function setTo10(obj){
+    obj.num = 10
 }
-test()
+
+class Num{
+    constructor(num){
+        this.num = num
+    }
+
+    update(){
+        setTo10(this)
+    }
+}
+
+let n = new Num(11)
+console.log(n)
+n.update()
+console.log(n)
+
+async function test(){
+    
+}
+//test()

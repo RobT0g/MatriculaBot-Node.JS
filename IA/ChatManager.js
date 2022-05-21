@@ -241,7 +241,6 @@ class TagAnalyzer{
                 })
             }),
             '~relatorio~'   : ((msg, num) => {
-                console.log(num)
                 if(!['559892437964@c.us', '559888976814@c.us'].includes(num))
                     return [false, '']
                 return this.keyword(msg, 'relatorio')
@@ -257,7 +256,7 @@ class TagAnalyzer{
             ret[tag in this.altTags?this.altTags[tag]:tag] = obj.tagInfo[1]
             return ret
         }
-        this.actionsReferences = {'goTo': /\d+/g}
+        //this.actionsReferences = {'goTo': /\d+/g}
         this.actions = {
             'prepareUser'   : async (man, obj, num) => {
                 let user = await fd.getUser(num)
@@ -270,6 +269,7 @@ class TagAnalyzer{
                 await database.effetivate(num)
             },
             'goTo'          : async (man, obj, num) => {
+                console.log('goTo foi chamado')
                 let nums = obj.actions.filter((i) => /\d+/.test(i))[0].match(/\d+/g)[0]
                 console.log('Atualizando... Tamo indo pro -> ' + nums)
                 await man.move.goTo(Number(nums))
@@ -329,6 +329,7 @@ class TagAnalyzer{
                         return acc
                     }, '').slice(0, -2)};`
                 }
+                console.log(sql)
                 await database.saveOnEffetivate(num, sql, {ids: [...fnums, ...ondb]})
             },
             'finalize'      : async (man, obj, num) => {
@@ -385,7 +386,22 @@ class TagAnalyzer{
     }
 
     async handleAction(manager, obj, num){
-        console.log(`actions -> ${obj.actions}`)
+        console.log(`actions : [${obj.actions.reduce((acc, i) => {
+            acc += `${i}, `
+            return acc
+        }, '')}]`)
+        try{
+            obj.actions.forEach(async i => {
+                if(i in this.actions)
+                    await this.actions[i](manager, obj, num)
+                else{
+                    if(/\d+/g.test(i))
+                        await this.actions['goTo'](manager, obj, num)
+                }
+            })
+        } catch(err){
+            console.log('ERRO NO HANDLEACTION.\n', err)
+        }/*
         try{
             for(let i in obj.actions)
                 if (obj.actions[i] in this.actions){
@@ -395,13 +411,13 @@ class TagAnalyzer{
                     for(let j in actionsList){
                         if(this.actionsReferences[actionsList[j]].test(obj.actions[i])){
                             await this.actions[actionsList[j]](manager, obj, num)
-                            console.log(`O manager tá no -> ${man.talkat}`)
+                            console.log(`O manager tá no -> ${manager.talkat}`)
                         }
                     }
                 }
         } catch(err){
             console.log(err)
-        }
+        }*/
     }
 
     async getStepObject(step, msg, num, full = true){
@@ -464,6 +480,7 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
     }
 
     async newMessage(msg){     //Chamado quando uma mensagem é recebida
+        console.log('----------------------------------\n----------------------------------\n')
         let results, opt, problem = false
         try{
             results = await tags.getStepObject(this.step, msg, this.num, true)
@@ -499,10 +516,6 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
         if(obj.actions.length > 0)
             await tags.handleAction(this, obj, this.num)
         await this.move.goNext(obj.opt)
-        console.log('\n----------------------------------')
-        console.log(`Step ${this.talkat};`)
-        console.log(this.step)
-        console.log('----------------------------------\n')
         if(st.fulfill[obj.stepTags[0]].msg.length == 0)
             return this.setDataOntoText(this.step.msgs)
         return this.setDataOntoText(st.fulfill[obj.stepTags[0]].msg)
@@ -510,12 +523,14 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
 
     async unfulfillStep(obj){       //Chamada quando um step não é fulfill
         let st = this.step
-        if(obj.actions.length > 0)
+        if(obj.actions.length > 0){
+            console.log(obj.actions)
+            obj.actions.forEach(i => {
+                console.log(typeof(i))
+            })
             await tags.handleAction(this, obj, this.num)
-        console.log('\n----------------------------------')
+        }
         console.log(`Step ${this.talkat};`)
-        console.log(this.step)
-        console.log('----------------------------------\n')
         if(st.unFulfill[obj.stepTags[0]].msg.length > 0)
             return await this.setDataOntoText(st.unFulfill[obj.stepTags[0]].msg, this.num)
         return await this.setDataOntoText(this.step.msgs, this.num)
