@@ -300,37 +300,41 @@ class TagAnalyzer{
                 await this.actions['managediscs'](man, obj, num, true)
             },
             'managediscs'   : async (man, obj, num, del) => {
-                let info = {user: (await fd.getUser(num))}
-                info.choices = (await db.request(`select discId from user_${db.cursos[info.user.curso]} where matricula 
-                    = '${info.user.matricula}';`))[0].map(i => i.discId)
-                info.fnums = [...obj.tagInfo[1]]
-                console.log(info)
+                let info = await (fd.getUser(num).then(async (user) => {
+                    return {user, choices: (await db.request(`select discId from user_${db.cursos[user.curso]} where matricula
+                        = '${user.matricula}';`))[0]}
+                }))
+                let fnums = obj.tagInfo[1].map(i => Number(i))
+                let ondb = info.choices.reduce((acc, i) => {
+                    if(fnums.includes(i.discId)){
+                        fnums.splice(fnums.indexOf(i.discId), 1)
+                        acc.push(i.discId)
+                    }
+                    return acc
+                }, [])
+                let sql = ''
                 if(del){
-                    let sql = `delete from user_${db.cursos[info.user.curso]} where discId in (${info.fnums.reduce((acc, i) => {
-                        if(info.choices.includes(Number(i)))
-                            acc += `'${i}', `
+                    sql = `delete from user_${db.cursos[info.user.curso]} where discId in (${ondb.reduce((acc, i) => {
+                        acc += `'${i}', `
+                        return acc
+                    }, '').slice(0, -2)}) and matricula = '${info.user.matricula}'; `
+                }else {
+                    let discs = (await db.request(`select id, ativa from disc_${db.cursos[info.user.curso]} where id in (${fnums.reduce((acc, i) => {
+                        acc += `'${i}', `
+                        return acc
+                    }, '').slice(0, -2)});`))[0].reduce((acc, i) => {
+                        if(!(i.id in acc))
+                            acc[i.id] = i.ativa === 1
+                        return acc
+                    }, {})
+                    sql += `insert into user_${db.cursos[info.user.curso]} values ${fnums.reduce((acc, i) => {
+                        if(!i in discs)
+                            return acc
+                        if(discs[i])
+                            acc += `(default, '${info.user.matricula}', '${i}'), `
                         return acc
                     }, '').slice(0, -2)});`
-                    console.log(sql)
-                    await database.saveOnEffetivate(num, sql, {ids: info.fnums})
-                    return
                 }
-                let discs = (await db.request(`select id, ativa from disc_${db.cursos[info.user.curso]} where 
-                    id in (${info.fnums.reduce((acc, i) => {
-                    acc += `'${i}', `
-                    return acc
-                }, '').slice(0, -2)});`))[0].reduce((acc, i) => {
-                    acc[i.id] = i.ativa === 1
-                    return acc
-                }, {})
-                let sql = `insert into user_${db.cursos[info.user.curso]} values ${info.fnums.reduce((acc, i) => {
-                    if(!(i in discs))
-                        return acc
-                    if(discs[i] && !info.choices.includes(i))
-                        acc += `(default, '${info.user.matricula}', '${i}'), `
-                    return acc
-                }, '').slice(0, -2)};`
-                console.log(sql)
                 await database.saveOnEffetivate(num, sql, {ids: info.fnums})
             },
             'finalize'      : async (man, obj, num) => {
@@ -388,14 +392,14 @@ class TagAnalyzer{
 
     async handleAction(manager, obj, num){
         try{
-            obj.actions.forEach(async i => {
-                if(i in this.actions)
-                    await this.actions[i](manager, obj, num)
+            for(let i in obj.actions){
+                if(obj.actions[i] in this.actions)
+                    await this.actions[obj.actions[i]](manager, obj, num)
                 else{
-                    if(/\d+/g.test(i))
+                    if(/\d+/g.test(obj.actions[i]))
                         await this.actions['goTo'](manager, obj, num)
                 }
-            })
+            }
         } catch(err){
             console.log('ERRO NO HANDLEACTION.\n', err)
         }
@@ -469,7 +473,7 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
             if(opt != -1){
                 Object.keys(results).forEach((i) => { results[i] = results[i][opt] })
                 results.opt = opt
-                return this.fulfillStep(results)
+                return await this.fulfillStep(results)
             }
         } catch(err){
             problem = true
@@ -498,8 +502,8 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
             await tags.handleAction(this, obj, this.num)
         await this.move.goNext(obj.opt)
         if(st.fulfill[obj.stepTags[0]].msg.length == 0)
-            return this.setDataOntoText(this.step.msgs)
-        return this.setDataOntoText(st.fulfill[obj.stepTags[0]].msg)
+            return await this.setDataOntoText(this.step.msgs)
+        return await this.setDataOntoText(st.fulfill[obj.stepTags[0]].msg)
     }
 
     async unfulfillStep(obj){       //Chamada quando um step não é fulfill
@@ -542,7 +546,7 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
                     }
                 } catch(err){}
             }
-            if(txt.some((i) => /[~]\w+[~]/g.test(i)) && txt !== msg)
+            if(txt.some((i) => /[~]\w+[~]/g.test(i)))
                 return this.setDataOntoText(txt)
             return txt
         } catch(err){

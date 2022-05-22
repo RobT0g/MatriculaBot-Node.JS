@@ -1,6 +1,5 @@
 import {fd, database} from './IA/DataKeeper.js'
 
-const adm = ['559892437964@c.us']
 
 class TextSender{
     static sendMsg(msg, num, client){

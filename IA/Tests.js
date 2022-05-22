@@ -5,8 +5,9 @@ import { chat } from "./ChatFlow.js"
 import { StepStuff } from "./Msgs.js"
 
 async function test(){
-    tags.actions['add_discs']({}, {tagInfo: ['', [1, 2, 6]]}, '002')
-    
+    await db.load()
+    await tags.actions['add_discs']({}, {tagInfo: ['', ['2', '7', '5']]}, '001')
+    //await database.effetivate('001')
 }
 
 test()

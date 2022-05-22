@@ -318,12 +318,12 @@ class FormatedData{
         return (await db.request(`select * from inst_cadastro where numero = '${num}';`))[0][0]
     }
 
-    getTextInfo(tag, num){
+    async getTextInfo(tag, num){
         try{
-            return this.requests[tag](num)
+            return await this.requests[tag](num)
         } catch(err){
             console.log('Erro ao retornar a informação.\n', err)
-            return('ERROR, data not found.')
+            return tag.slice(1, -1)
         }
     }
 
@@ -422,16 +422,15 @@ class DataBaseAccess{
     }
 
     async effetivate(num){
-        try{
-            let sql = (await db.request(`select query from effetivate where numero = '${num}';`))[0][0]
-            sql = sql.query.split(';').slice(0, -1)
+        let sql = await db.request(`select query from effetivate where numero = '${num}';`)
+        if(sql[0][0]){
+            await db.request(`delete from effetivate where numero = '${num}';`)
+            sql = sql[0][0].query.split(';').slice(0, -1)
             let querys = []
             for(let i in sql)
                 querys.push(db.request(sql[i].replaceAll(`"`, `'`) + ';'))
             await Promise.all(querys)
             await db.request(`delete from effetivate where numero = '${num}';`)
-        } catch(err){
-            console.log('Erro no effetivate.\n', err)
         }
     }
 
