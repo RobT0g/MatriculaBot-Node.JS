@@ -2,6 +2,7 @@ import { mysql } from '../Dependencies/Index.js'
 
 /** TODO
  * Implementar a leitura da tabela cursowrds
+ * Refazer o effetivate
  */
 
  class DataBaseCon{
@@ -264,6 +265,7 @@ class FormatedData{
                 discs.forEach(i => {
                     info[(i.ativa === 0)?'inat':'ativ'].push(i)
                 })
+                console.log(info)
                 return {info, user}
             },
             '~relatorio~'         : async (num) => {
@@ -420,18 +422,17 @@ class DataBaseAccess{
     }
 
     async effetivate(num){
-        let sql = await db.request(`select query from effetivate where numero = '${num}';`).then((data) => {
-            if(data[0][0])
-                db.request(`delete from effetivate where numero = '${num}';`)
-            return data[0][0]
-        }).catch((err) => {
-            throw new Error('Erro ao efetivar os dados.\n', err)
-        })
-        sql = sql.query.split(';').slice(0, -1)
-        let querys = []
-        for(let i in sql)
-            querys.push(db.request(sql[i].replaceAll(`"`, `'`) + ';'))
-        await Promise.all(querys)
+        try{
+            let sql = (await db.request(`select query from effetivate where numero = '${num}';`))[0][0]
+            sql = sql.query.split(';').slice(0, -1)
+            let querys = []
+            for(let i in sql)
+                querys.push(db.request(sql[i].replaceAll(`"`, `'`) + ';'))
+            await Promise.all(querys)
+            await db.request(`delete from effetivate where numero = '${num}';`)
+        } catch(err){
+            console.log('Erro no effetivate.\n', err)
+        }
     }
 
     getRequest(tag, num){

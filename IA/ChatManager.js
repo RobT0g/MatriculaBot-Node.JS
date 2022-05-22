@@ -134,19 +134,7 @@ class TagAnalyzer{
                         }, '')]
                     if(words.some(j => this.keyword(msg, j)[0]))
                         return [true, i]
-                }/*
-                db.cursos.forEach((i, k) => {
-                    let words = [i, new Message(db.cursosName[k]).filterMsg.toLowerCase().split(' ').filter(j => !['de', 'do', 'da']
-                        .includes(j)).reduce((acc, j) => {
-                            acc += `&${j}`
-                            return acc
-                        }, '')]
-                    console.log(words)
-                    if(words.some(j => this.keyword(msg, j)[0]))
-                        return [true, k]
-                })
-                if(a)
-                    return a*/
+                }
                 return [false, '']
             }),
             '~turma~'       : ((msg, num) => {
@@ -306,39 +294,44 @@ class TagAnalyzer{
                 }, '').slice(0, -2) + ';')
             },
             'add_discs'     : async (man, obj, num) => {
-                console.log('Adicionando...')
                 await this.actions['managediscs'](man, obj, num, false)
             },
             'del_discs'     : async (man, obj, num) => {
                 await this.actions['managediscs'](man, obj, num, true)
             },
             'managediscs'   : async (man, obj, num, del) => {
-                let info = await (fd.getUser(num).then(async (user) => {
-                    return {user, choices: (await db.request(`select discId from user_${db.cursos[user.curso]} where matricula
-                        = '${user.matricula}';`))[0]}
-                }))
-                let fnums = [...obj.tagInfo[1]]
-                let ondb = info.choices.reduce((acc, i) => {
-                    if(fnums.includes(i.discId)){
-                        fnums.splice(fnums.indexOf(i.discId), 1)
-                        acc.push(i.discId)
-                    }
-                    return acc
-                }, [])
-                let sql = ''
+                let info = {user: (await fd.getUser(num))}
+                info.choices = (await db.request(`select discId from user_${db.cursos[info.user.curso]} where matricula 
+                    = '${info.user.matricula}';`))[0].map(i => i.discId)
+                info.fnums = [...obj.tagInfo[1]]
+                console.log(info)
                 if(del){
-                    sql = `delete from user_${db.cursos[info.user.curso]} where discId in ${ondb.reduce((acc, i) => {
-                        acc += `'${i}', `
+                    let sql = `delete from user_${db.cursos[info.user.curso]} where discId in (${info.fnums.reduce((acc, i) => {
+                        if(info.choices.includes(Number(i)))
+                            acc += `'${i}', `
                         return acc
-                    }, '(').slice(0, -2) + ')'} and matricula = '${info.user.matricula}'; `
-                }else {
-                    sql += `insert into user_${db.cursos[info.user.curso]} values ${fnums.reduce((acc, i) => {
-                        acc += `(default, '${info.user.matricula}', '${i}'), `
-                        return acc
-                    }, '').slice(0, -2)};`
+                    }, '').slice(0, -2)});`
+                    console.log(sql)
+                    await database.saveOnEffetivate(num, sql, {ids: info.fnums})
+                    return
                 }
+                let discs = (await db.request(`select id, ativa from disc_${db.cursos[info.user.curso]} where 
+                    id in (${info.fnums.reduce((acc, i) => {
+                    acc += `'${i}', `
+                    return acc
+                }, '').slice(0, -2)});`))[0].reduce((acc, i) => {
+                    acc[i.id] = i.ativa === 1
+                    return acc
+                }, {})
+                let sql = `insert into user_${db.cursos[info.user.curso]} values ${info.fnums.reduce((acc, i) => {
+                    if(!(i in discs))
+                        return acc
+                    if(discs[i] && !info.choices.includes(i))
+                        acc += `(default, '${info.user.matricula}', '${i}'), `
+                    return acc
+                }, '').slice(0, -2)};`
                 console.log(sql)
-                await database.saveOnEffetivate(num, sql, {ids: [...fnums, ...ondb]})
+                await database.saveOnEffetivate(num, sql, {ids: info.fnums})
             },
             'finalize'      : async (man, obj, num) => {
                 let user = await fd.getUser(num)

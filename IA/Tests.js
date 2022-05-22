@@ -5,8 +5,7 @@ import { chat } from "./ChatFlow.js"
 import { StepStuff } from "./Msgs.js"
 
 async function test(){
-    await db.load()
-    console.log((await tags.getTag('~curso~', new Message('Tecnologia da construção de edifícios'), '001')))
+    tags.actions['add_discs']({}, {tagInfo: ['', [1, 2, 6]]}, '002')
     
 }
 
