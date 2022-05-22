@@ -250,12 +250,8 @@ class FormatedData{
                     }, '').slice(0, -2) + ` e ${data.inval[data.inval.length-1].id}.`} Só que ele${cond?'s':''} nem est${cond?'ão':'á'} na sua lista, então eu só os ignorei.`
             },
             'getsubjectsoneff'  : async (num) => {
-                let [eff, user] = await Promise.all([db.request(`select data from effetivate where numero = '${num}';`).then((info) => {
-                    return JSON.parse(info[0][0].data)
-                }).catch((err) => {
-                    console.log(err)
-                    return 'Error, data not found.'
-                }), this.getUser(num)])
+                let [eff, user] = await Promise.all([JSON.parse((await db.request(`select data from effetivate 
+                    where numero = '${num}';`))[0][0]), this.getUser(num)])
                 let info = {'inval': eff.ids.filter(i => (i > db.amount[db.cursos[user.curso]])), 'inat': [], 'ativ': []}
                 let discs = (await db.request(`select id, nome, carga, ativa from disc_${db.cursos[user.curso]} where id in
                     (${eff.ids.reduce((acc, i) => { 
