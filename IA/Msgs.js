@@ -164,7 +164,7 @@ messages.push(...[
 'full': new StepStuff([['~adicionar~'], ['~retirar~'], ['~finalizar~']], [], []),
 'unf': new StepStuff([['~noreti~']], [[]], [['Então... Você não tem matéria nenhuma escolhida e portanto não pode retirar nenhuma.']]),
 'def':['Só dizer alguma das opções para continuarmos.'],
-'to':[16, 17, 13]},
+'to':[16, 17, 20]},
 
 //Step 16
 {

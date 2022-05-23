@@ -23,10 +23,8 @@ class TagAnalyzer{
             '~nome~'        : ((msg, num) => {
                 try{
                     if(msg.wrds.length > 1){
-                        return [true, msg.wrds.reduce((acc, i) => {acc += ['do', 'de', 'da'].includes(i)?(
-                        i + ' '):(i.charAt(0).toUpperCase() + i.slice(1) + ' '); return acc}, '').trim()]
-                        //^ Junta as palavras pra formar um nome. Se elas não forem ['do', 'de', 'da'] , elas serão
-                        //capitalizadas.
+                        return [true, msg.msgbody.trim().split(' ').reduce((acc, i) => {acc += ['do', 'de', 'da'].includes(i)?(
+                            i + ' '):(i.charAt(0).toUpperCase() + i.slice(1) + ' '); return acc}, '').trim()]
                     }
                     return [false, '']
                 } catch(err){
@@ -335,7 +333,7 @@ class TagAnalyzer{
                         return acc
                     }, '').slice(0, -2)});`
                 }
-                await database.saveOnEffetivate(num, sql, {ids: info.fnums})
+                await database.saveOnEffetivate(num, sql, {ids: [...fnums, ...ondb]})
             },
             'finalize'      : async (man, obj, num) => {
                 let user = await fd.getUser(num)
