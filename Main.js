@@ -25,6 +25,7 @@ function start(client) {
         if(TextSender.unvalidNumber(num))
             return
         await db.load()
+        queue.warnUser(num, client)
         queue.enqueue(() => new Promise(async (resolve, reject) => {
             try{
                 let userOn = await usersBank.userRegister(num)

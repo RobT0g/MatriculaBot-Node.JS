@@ -46,7 +46,9 @@ messages.push(...[
 'txt': ['Certo. Vamos iniciar o processo para fazer sua rematrícula.', 'De início, só vou precisar de algumas informações suas, como' + 
     ' seu código de matrícula e CPF.', 'Toda vez que você me enviar alguma informação, eu irei confirmar com você se ela tá certa, então não' + 
     ' precisa se preocupar se mandar alguma informação errada.', 'Se houver algum problema durante esse processo, basta ler a descrição' + 
-    ' deste perfil.', 'Se você estiver pronto para iniciar, basta me mandar um "Tudo pronto".'],
+    ' deste perfil.', 'Em alguns casos, por conta da quantidade de usuários que estão me contatando, eu possivelmente irei demorar' + 
+    ' para responder. Peço que você aguarde alguns segundos caso eu não responda sua mensagem de imediato em algum ponto do processo.', 
+    'Se você estiver pronto para iniciar, basta me mandar um "Tudo pronto".'],
 'full': new StepStuff([['pronto']], [[]], [[]]),
 'unf': new StepStuff([[]], [[]], [[]]),  //Perguntas????
 'def': ['Basta me confirmar com um "Tudo pronto".'],

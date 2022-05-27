@@ -1,6 +1,9 @@
+import { TextSender } from './API_Utils.js'
+
 class Queue {
     constructor() {
         this._items = {}
+        this._warned = {}
     }
 
     enqueue(item, num) { 
@@ -43,6 +46,19 @@ class AutoQueue extends Queue {
             this.dequeue(num);
         }
         return true;
+    }
+
+    async warnUser(num, client){
+        if(this.getSize >= 4 && !(num in this._warned)){
+            this.enqueue(() => new Promise(async(resolve, reject) => {
+                await TextSender.delivText(['Peço perdão, tem várias pessoas me contatando agora, então talvez eu irei demorar um pouco.'], num, client)
+                this._warned[num] = true
+            }))
+        }
+    }
+
+    getSize(){
+        return (Object.keys(this._items)).filter(i => i.length > 0).length
     }
 }
 
