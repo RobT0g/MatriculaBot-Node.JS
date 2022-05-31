@@ -1,13 +1,14 @@
 -- phpMyAdmin SQL Dump
--- version 5.1.1
+-- version 4.9.7
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Tempo de geração: 06-Maio-2022 às 22:18
--- Versão do servidor: 10.4.22-MariaDB
--- versão do PHP: 7.4.27
+-- Host: 127.0.0.1:3306
+-- Tempo de geração: 31-Maio-2022 às 16:45
+-- Versão do servidor: 5.7.36
+-- versão do PHP: 7.4.26
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -29,34 +30,43 @@ USE `venom`;
 -- Estrutura da tabela `cursos`
 --
 
-CREATE TABLE `cursos` (
-  `id` int(11) NOT NULL,
+DROP TABLE IF EXISTS `cursos`;
+CREATE TABLE IF NOT EXISTS `cursos` (
+  `id` tinyint(3) UNSIGNED NOT NULL AUTO_INCREMENT,
   `abrev` varchar(3) NOT NULL,
-  `nome` varchar(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `cursonome` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `abrev` (`abrev`),
+  UNIQUE KEY `nome` (`cursonome`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 --
 -- Extraindo dados da tabela `cursos`
 --
 
-INSERT INTO `cursos` (`id`, `abrev`, `nome`) VALUES
-	(DEFAULT, 'adm', 'Administração'),
-	(DEFAULT, 'ec', 'Engenharia da Computação'),
-	(DEFAULT, 'fis', 'Física'),
-	(DEFAULT, 'tce', 'Construção de Edifícios');
+INSERT INTO `cursos` (`id`, `abrev`, `cursonome`) VALUES
+(0, 'adm', 'Administração'),
+(1, 'ec', 'Engenharia da Computação'),
+(2, 'fis', 'Física'),
+(3, 'tce', 'Construção de Edifícios');
+
+-- --------------------------------------------------------
 
 --
 -- Estrutura da tabela `disc_adm`
 --
 
-CREATE TABLE `disc_adm` (
-  `id` int(11) NOT NULL,
+DROP TABLE IF EXISTS `disc_adm`;
+CREATE TABLE IF NOT EXISTS `disc_adm` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `nome` varchar(50) NOT NULL,
   `periodo` tinyint(3) UNSIGNED NOT NULL,
   `carga` int(10) UNSIGNED NOT NULL,
-  `ativa` tinyint(1) NOT NULL DEFAULT 0,
-  `parap` int(10) UNSIGNED NOT NULL DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `ativa` tinyint(1) NOT NULL DEFAULT '0',
+  `parap` int(10) UNSIGNED NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `nome` (`nome`)
+) ENGINE=InnoDB AUTO_INCREMENT=59 DEFAULT CHARSET=utf8;
 
 --
 -- Extraindo dados da tabela `disc_adm`
@@ -128,14 +138,17 @@ INSERT INTO `disc_adm` (`id`, `nome`, `periodo`, `carga`, `ativa`, `parap`) VALU
 -- Estrutura da tabela `disc_ec`
 --
 
-CREATE TABLE `disc_ec` (
-  `id` int(11) NOT NULL,
+DROP TABLE IF EXISTS `disc_ec`;
+CREATE TABLE IF NOT EXISTS `disc_ec` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `nome` varchar(50) NOT NULL,
   `periodo` tinyint(3) UNSIGNED NOT NULL,
   `carga` int(10) UNSIGNED NOT NULL,
-  `ativa` tinyint(1) NOT NULL DEFAULT 0,
-  `parap` int(10) UNSIGNED NOT NULL DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `ativa` tinyint(1) NOT NULL DEFAULT '0',
+  `parap` int(10) UNSIGNED NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `nome` (`nome`)
+) ENGINE=InnoDB AUTO_INCREMENT=64 DEFAULT CHARSET=utf8;
 
 --
 -- Extraindo dados da tabela `disc_ec`
@@ -212,14 +225,17 @@ INSERT INTO `disc_ec` (`id`, `nome`, `periodo`, `carga`, `ativa`, `parap`) VALUE
 -- Estrutura da tabela `disc_fis`
 --
 
-CREATE TABLE `disc_fis` (
-  `id` int(11) NOT NULL,
+DROP TABLE IF EXISTS `disc_fis`;
+CREATE TABLE IF NOT EXISTS `disc_fis` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `nome` varchar(50) NOT NULL,
   `periodo` tinyint(3) UNSIGNED NOT NULL,
   `carga` int(10) UNSIGNED NOT NULL,
-  `ativa` tinyint(1) NOT NULL DEFAULT 0,
-  `parap` int(10) UNSIGNED NOT NULL DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `ativa` tinyint(1) NOT NULL DEFAULT '0',
+  `parap` int(10) UNSIGNED NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `nome` (`nome`)
+) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8;
 
 --
 -- Extraindo dados da tabela `disc_fis`
@@ -285,14 +301,17 @@ INSERT INTO `disc_fis` (`id`, `nome`, `periodo`, `carga`, `ativa`, `parap`) VALU
 -- Estrutura da tabela `disc_tce`
 --
 
-CREATE TABLE `disc_tce` (
-  `id` int(11) NOT NULL,
+DROP TABLE IF EXISTS `disc_tce`;
+CREATE TABLE IF NOT EXISTS `disc_tce` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `nome` varchar(50) NOT NULL,
   `periodo` tinyint(3) UNSIGNED NOT NULL,
   `carga` int(10) UNSIGNED NOT NULL,
-  `ativa` tinyint(1) NOT NULL DEFAULT 0,
-  `parap` int(10) UNSIGNED NOT NULL DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `ativa` tinyint(1) NOT NULL DEFAULT '0',
+  `parap` int(10) UNSIGNED NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `nome` (`nome`)
+) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8;
 
 --
 -- Extraindo dados da tabela `disc_tce`
@@ -354,10 +373,12 @@ INSERT INTO `disc_tce` (`id`, `nome`, `periodo`, `carga`, `ativa`, `parap`) VALU
 -- Estrutura da tabela `effetivate`
 --
 
-CREATE TABLE `effetivate` (
+DROP TABLE IF EXISTS `effetivate`;
+CREATE TABLE IF NOT EXISTS `effetivate` (
   `numero` varchar(25) NOT NULL,
   `query` text NOT NULL,
-  `data` text DEFAULT NULL
+  `data` text,
+  PRIMARY KEY (`numero`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -366,11 +387,14 @@ CREATE TABLE `effetivate` (
 -- Estrutura da tabela `inst_cadastro`
 --
 
-CREATE TABLE `inst_cadastro` (
-  `id` int(10) UNSIGNED NOT NULL,
+DROP TABLE IF EXISTS `inst_cadastro`;
+CREATE TABLE IF NOT EXISTS `inst_cadastro` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `numero` varchar(25) DEFAULT NULL,
-  `talkat` int(10) UNSIGNED DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `talkat` int(10) UNSIGNED DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `numero` (`numero`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -378,11 +402,13 @@ CREATE TABLE `inst_cadastro` (
 -- Estrutura da tabela `messages`
 --
 
-CREATE TABLE `messages` (
-  `id` int(10) UNSIGNED NOT NULL,
+DROP TABLE IF EXISTS `messages`;
+CREATE TABLE IF NOT EXISTS `messages` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `tag` varchar(20) NOT NULL,
-  `text` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `text` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 --
 -- Extraindo dados da tabela `messages`
@@ -399,7 +425,8 @@ INSERT INTO `messages` (`id`, `tag`, `text`) VALUES
 -- Estrutura da tabela `registro`
 --
 
-CREATE TABLE `registro` (
+DROP TABLE IF EXISTS `registro`;
+CREATE TABLE IF NOT EXISTS `registro` (
   `matricula` varchar(20) NOT NULL,
   `numero` varchar(25) NOT NULL,
   `talkat` int(10) UNSIGNED NOT NULL,
@@ -408,7 +435,10 @@ CREATE TABLE `registro` (
   `curso` tinyint(1) UNSIGNED DEFAULT NULL,
   `turma` year(4) DEFAULT NULL,
   `cpf` char(11) DEFAULT NULL,
-  `finished` tinyint(1) NOT NULL DEFAULT 0
+  `finished` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`matricula`),
+  UNIQUE KEY `matricula` (`matricula`),
+  KEY `curso` (`curso`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -417,11 +447,14 @@ CREATE TABLE `registro` (
 -- Estrutura da tabela `req_adm`
 --
 
-CREATE TABLE `req_adm` (
-  `id` int(11) NOT NULL,
+DROP TABLE IF EXISTS `req_adm`;
+CREATE TABLE IF NOT EXISTS `req_adm` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `discId` int(11) NOT NULL,
-  `reqId` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `reqId` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `discId` (`discId`)
+) ENGINE=InnoDB AUTO_INCREMENT=68 DEFAULT CHARSET=utf8;
 
 --
 -- Extraindo dados da tabela `req_adm`
@@ -502,11 +535,14 @@ INSERT INTO `req_adm` (`id`, `discId`, `reqId`) VALUES
 -- Estrutura da tabela `req_ec`
 --
 
-CREATE TABLE `req_ec` (
-  `id` int(11) NOT NULL,
+DROP TABLE IF EXISTS `req_ec`;
+CREATE TABLE IF NOT EXISTS `req_ec` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `discId` int(10) UNSIGNED NOT NULL,
-  `reqId` int(10) UNSIGNED NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `reqId` int(10) UNSIGNED NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `discId` (`discId`)
+) ENGINE=InnoDB AUTO_INCREMENT=82 DEFAULT CHARSET=utf8;
 
 --
 -- Extraindo dados da tabela `req_ec`
@@ -600,11 +636,14 @@ INSERT INTO `req_ec` (`id`, `discId`, `reqId`) VALUES
 -- Estrutura da tabela `req_fis`
 --
 
-CREATE TABLE `req_fis` (
-  `id` int(11) NOT NULL,
+DROP TABLE IF EXISTS `req_fis`;
+CREATE TABLE IF NOT EXISTS `req_fis` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `discId` int(10) UNSIGNED NOT NULL,
-  `reqId` int(10) UNSIGNED NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `reqId` int(10) UNSIGNED NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `discId` (`discId`)
+) ENGINE=InnoDB AUTO_INCREMENT=75 DEFAULT CHARSET=utf8;
 
 --
 -- Extraindo dados da tabela `req_fis`
@@ -691,11 +730,14 @@ INSERT INTO `req_fis` (`id`, `discId`, `reqId`) VALUES
 -- Estrutura da tabela `req_tce`
 --
 
-CREATE TABLE `req_tce` (
-  `id` int(11) NOT NULL,
+DROP TABLE IF EXISTS `req_tce`;
+CREATE TABLE IF NOT EXISTS `req_tce` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `discId` int(11) NOT NULL,
-  `reqId` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `reqId` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `discId` (`discId`)
+) ENGINE=InnoDB AUTO_INCREMENT=60 DEFAULT CHARSET=utf8;
 
 --
 -- Extraindo dados da tabela `req_tce`
@@ -768,11 +810,15 @@ INSERT INTO `req_tce` (`id`, `discId`, `reqId`) VALUES
 -- Estrutura da tabela `user_adm`
 --
 
-CREATE TABLE `user_adm` (
-  `id` int(11) NOT NULL,
+DROP TABLE IF EXISTS `user_adm`;
+CREATE TABLE IF NOT EXISTS `user_adm` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `matricula` varchar(20) DEFAULT NULL,
-  `discId` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `discId` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `matricula` (`matricula`),
+  KEY `discId` (`discId`)
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -780,19 +826,15 @@ CREATE TABLE `user_adm` (
 -- Estrutura da tabela `user_ec`
 --
 
-CREATE TABLE `user_ec` (
-  `id` int(11) NOT NULL,
+DROP TABLE IF EXISTS `user_ec`;
+CREATE TABLE IF NOT EXISTS `user_ec` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `matricula` varchar(20) DEFAULT NULL,
-  `discId` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Extraindo dados da tabela `user_ec`
---
-
-INSERT INTO `user_ec` (`id`, `matricula`, `discId`) VALUES
-(15, '20201ENG', 9),
-(16, '20201ENG', 10);
+  `discId` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `matricula` (`matricula`),
+  KEY `discId` (`discId`)
+) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -800,11 +842,15 @@ INSERT INTO `user_ec` (`id`, `matricula`, `discId`) VALUES
 -- Estrutura da tabela `user_fis`
 --
 
-CREATE TABLE `user_fis` (
-  `id` int(11) NOT NULL,
+DROP TABLE IF EXISTS `user_fis`;
+CREATE TABLE IF NOT EXISTS `user_fis` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `matricula` varchar(20) DEFAULT NULL,
-  `discId` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `discId` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `matricula` (`matricula`),
+  KEY `discId` (`discId`)
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -812,235 +858,25 @@ CREATE TABLE `user_fis` (
 -- Estrutura da tabela `user_tce`
 --
 
-CREATE TABLE `user_tce` (
-  `id` int(11) NOT NULL,
+DROP TABLE IF EXISTS `user_tce`;
+CREATE TABLE IF NOT EXISTS `user_tce` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `matricula` varchar(20) DEFAULT NULL,
-  `discId` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Índices para tabelas despejadas
---
-
---
--- Índices para tabela `cursos`
---
-ALTER TABLE `cursos`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY (`abrev`),
-  ADD UNIQUE KEY `nome` (`nome`);
-
---
--- Índices para tabela `disc_adm`
---
-ALTER TABLE `disc_adm`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `nome` (`nome`);
-
---
--- Índices para tabela `disc_ec`
---
-ALTER TABLE `disc_ec`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `nome` (`nome`);
-
---
--- Índices para tabela `disc_fis`
---
-ALTER TABLE `disc_fis`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `nome` (`nome`);
-
---
--- Índices para tabela `disc_tce`
---
-ALTER TABLE `disc_tce`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `nome` (`nome`);
-
---
--- Índices para tabela `effetivate`
---
-ALTER TABLE `effetivate`
-  ADD PRIMARY KEY (`numero`);
-
---
--- Índices para tabela `inst_cadastro`
---
-ALTER TABLE `inst_cadastro`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `numero` (`numero`);
-
---
--- Índices para tabela `messages`
---
-ALTER TABLE `messages`
-  ADD PRIMARY KEY (`id`);
-
---
--- Índices para tabela `registro`
---
-ALTER TABLE `registro`
-  ADD PRIMARY KEY (`matricula`),
-  ADD UNIQUE KEY `matricula` (`matricula`);
-
---
--- Índices para tabela `req_adm`
---
-ALTER TABLE `req_adm`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `discId` (`discId`);
-
---
--- Índices para tabela `req_ec`
---
-ALTER TABLE `req_ec`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `discId` (`discId`);
-
---
--- Índices para tabela `req_fis`
---
-ALTER TABLE `req_fis`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `discId` (`discId`);
-
---
--- Índices para tabela `req_tce`
---
-ALTER TABLE `req_tce`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `discId` (`discId`);
-
---
--- Índices para tabela `user_adm`
---
-ALTER TABLE `user_adm`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `matricula` (`matricula`),
-  ADD KEY `discId` (`discId`);
-
---
--- Índices para tabela `user_ec`
---
-ALTER TABLE `user_ec`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `matricula` (`matricula`),
-  ADD KEY `discId` (`discId`);
-
---
--- Índices para tabela `user_fis`
---
-ALTER TABLE `user_fis`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `matricula` (`matricula`),
-  ADD KEY `discId` (`discId`);
-
---
--- Índices para tabela `user_tce`
---
-ALTER TABLE `user_tce`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `matricula` (`matricula`),
-  ADD KEY `discId` (`discId`);
-
---
--- AUTO_INCREMENT de tabelas despejadas
---
-
---
--- AUTO_INCREMENT de tabela `cursos`
---
-ALTER TABLE `cursos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de tabela `disc_adm`
---
-ALTER TABLE `disc_adm`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=59;
-
---
--- AUTO_INCREMENT de tabela `disc_ec`
---
-ALTER TABLE `disc_ec`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=64;
-
---
--- AUTO_INCREMENT de tabela `disc_fis`
---
-ALTER TABLE `disc_fis`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
-
---
--- AUTO_INCREMENT de tabela `disc_tce`
---
-ALTER TABLE `disc_tce`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
-
---
--- AUTO_INCREMENT de tabela `inst_cadastro`
---
-ALTER TABLE `inst_cadastro`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de tabela `messages`
---
-ALTER TABLE `messages`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
--- AUTO_INCREMENT de tabela `req_adm`
---
-ALTER TABLE `req_adm`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=69;
-
---
--- AUTO_INCREMENT de tabela `req_ec`
---
-ALTER TABLE `req_ec`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=82;
-
---
--- AUTO_INCREMENT de tabela `req_fis`
---
-ALTER TABLE `req_fis`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=75;
-
---
--- AUTO_INCREMENT de tabela `req_tce`
---
-ALTER TABLE `req_tce`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
-
---
--- AUTO_INCREMENT de tabela `user_adm`
---
-ALTER TABLE `user_adm`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de tabela `user_ec`
---
-ALTER TABLE `user_ec`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
-
---
--- AUTO_INCREMENT de tabela `user_fis`
---
-ALTER TABLE `user_fis`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de tabela `user_tce`
---
-ALTER TABLE `user_tce`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  `discId` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `matricula` (`matricula`),
+  KEY `discId` (`discId`)
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8;
 
 --
 -- Restrições para despejos de tabelas
 --
+
+--
+-- Limitadores para a tabela `registro`
+--
+ALTER TABLE `registro`
+  ADD CONSTRAINT `registro_ibfk_1` FOREIGN KEY (`curso`) REFERENCES `cursos` (`id`);
 
 --
 -- Limitadores para a tabela `user_adm`
