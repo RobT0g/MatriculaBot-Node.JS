@@ -1,4 +1,4 @@
-import { create, Whatsapp } from './Dependencies/Index.js'
+import { create, Whatsapp, fs } from './Dependencies/Index.js'
 import { TextSender } from './API_Utils.js'
 import { DataBase } from './IA/Utils.js'
 import { AutoQueue } from './ExecutionQueue.js'
@@ -53,23 +53,22 @@ function start(client) {
 class Bot{
     constructor(){
         this.running = false
+        this.qr = new Promise()
     }
 
     async activate(){
         if(!this.running){
-            this.client = await create({
-                session: 'Bot-Matrícula', 
-                multidevice: false 
-            })
+            this.client = await create('Matricula-bot', (base64Qr, asciiQR, attempts, urlCode) => {
+                this.qr = asciiQR
+            }, undefined, { logQR: false })
             this.running = true
             start(this.client)
-
         }
     }
 
-    async messageCorno(){
+    async alertAdm(){
         if(this.running)
-            TextSender.delivText(['Ae corno'], '559892437964@c.us', this.client)
+            TextSender.delivText(['Estou Online!'], '559892437964@c.us', this.client)
     }
 }
 
