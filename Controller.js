@@ -55,7 +55,7 @@ class Bot{
         this.running = false
     }
 
-    async activate(contact, message){
+    async activate(message){
         if(!this.running){
             this.client = await create('Matricula-bot', (base64Qr, asciiQR, attempts, urlCode) => {
                 var matches = base64Qr.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/),
@@ -77,6 +77,8 @@ class Bot{
                     description: 'A description of the file'
                   }]})
             }, undefined, { logQR: false })
+            message.channel.send('Pronto! O bot está online!')
+            this.alertAdm()
             this.running = true
         }
     }
