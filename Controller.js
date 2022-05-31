@@ -53,10 +53,16 @@ function start(client) {
 class Bot{
     constructor(){
         this.running = false
+        this.logged = false
     }
 
     async activate(message){
-        if(!this.running){
+        await message.channel.send('Ok! Vou ativar o bot!')
+        if(this.logged && this.runing){
+            message.channel.send('O bot já está online!')
+            return
+        }
+        if(!this.logged){
             this.client = await create('Matricula-bot', (base64Qr, asciiQR, attempts, urlCode) => {
                 var matches = base64Qr.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/),
                 response = {};
@@ -77,15 +83,26 @@ class Bot{
                     description: 'A description of the file'
                   }]})
             }, undefined, { logQR: false })
-            message.channel.send('Pronto! O bot está online!')
-            this.alertAdm()
+            this.logged = true
             this.running = true
+        } else {
+            await this.client.restartService()
         }
+        message.channel.send('Pronto! O bot está online!')
+        this.alertAdm()
     }
 
     async alertAdm(){
         if(this.running)
             TextSender.delivText(['Estou Online!'], '559892437964@c.us', this.client)
+    }
+
+    async finish(message){
+        if(!this.logged){
+            message.channel('O bot já está desativado!')
+        }
+        await this.client.logout()
+        message.channel.send('Pronto! Bot desativado!')
     }
 }
 

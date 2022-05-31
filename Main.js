@@ -23,9 +23,8 @@ client.on("messageCreate", async (message) => {
     if (message.author.bot) return false; 
     if(message.content === "ativar"){
         bot.activate(message)
-        TextSender.delivText(['Beleza, vou ativar.'], message)
     } else if(message.content === "desativar"){
-
+        bot.finish(message)
     }
 });
 
