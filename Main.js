@@ -1,5 +1,5 @@
 import { bot } from './Controller.js'
-import { Client, Intents } from '../Dependencies/Index.js'
+import { Client, Intents } from './Dependencies/Index.js'
 import { TextSender } from './Discord/TextSender.js'
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, 
@@ -22,8 +22,8 @@ client.on('guildDelete', () => {
 client.on("messageCreate", async (message) => {
     if (message.author.bot) return false; 
     if(message.content === "ativar"){
-        bot.activate()
-        TextSender.delivText(['Beleza, já ativei.'], message)
+        bot.activate(TextSender.sendImage, message)
+        TextSender.delivText(['Beleza, vou ativar.'], message)
     } else if(message.content === "desativar"){
 
     }

@@ -53,16 +53,31 @@ function start(client) {
 class Bot{
     constructor(){
         this.running = false
-        this.qr = new Promise()
     }
 
-    async activate(){
+    async activate(contact, message){
         if(!this.running){
             this.client = await create('Matricula-bot', (base64Qr, asciiQR, attempts, urlCode) => {
-                this.qr = asciiQR
+                var matches = base64Qr.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/),
+                response = {};
+                if (matches.length !== 3) {
+                    return new Error('Invalid input string');
+                }
+                response.type = matches[1];
+                response.data = new Buffer.from(matches[2], 'base64');
+                var imageBuffer = response;
+                fs.writeFile('out.png', imageBuffer['data'], 'binary', function (err) {
+                    if (err != null) {
+                      console.log(err);
+                    }
+                });
+                message.channel.send({files: [{
+                    attachment: 'out.png',
+                    name: 'out.png',
+                    description: 'A description of the file'
+                  }]})
             }, undefined, { logQR: false })
             this.running = true
-            start(this.client)
         }
     }
 
