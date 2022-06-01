@@ -13,7 +13,7 @@
     "discord.js": "^13.7.0",
     "fs": "^0.0.1-security",
     "mysql2": "^2.3.3",
-    "npm-check-updates": "^12.5.3",
+    "npm-check-updates": "^12.5.12",
     "readline-sync": "^1.4.10",
     "venom-bot": "^4.0.11"
   }

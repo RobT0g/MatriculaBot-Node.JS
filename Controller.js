@@ -7,14 +7,6 @@ import { db } from './IA/DataKeeper.js'
 const usersBank = new DataBase()
 const queue = new AutoQueue()
 
-/*
-create({
-    session: 'Bot-Matrícula', 
-    multidevice: false 
-}).then((client) => start(client)).catch((erro) => {
-    console.log(erro);
-});*/
-
 function start(client) {
     client.onMessage(async (message) => {
         let num = message.from
@@ -62,32 +54,31 @@ class Bot{
             message.channel.send('O bot já está online!')
             return
         }
-        if(!this.logged){
-            this.client = await create('Matricula-bot', (base64Qr, asciiQR, attempts, urlCode) => {
-                var matches = base64Qr.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/),
-                response = {};
-                if (matches.length !== 3) {
-                    return new Error('Invalid input string');
+        //this.client = await create({session: 'Matricula', multidevice: false})
+        
+        this.client = await create('Matricula-bot', (base64Qr, asciiQR, attempts, urlCode) => {
+            var matches = base64Qr.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/),
+            response = {};
+            if (matches.length !== 3) {
+                return new Error('Invalid input string');
+            }
+            response.type = matches[1];
+            response.data = new Buffer.from(matches[2], 'base64');
+            var imageBuffer = response;
+            fs.writeFile('out.png', imageBuffer['data'], 'binary', function (err) {
+                if (err != null) {
+                    console.log(err);
                 }
-                response.type = matches[1];
-                response.data = new Buffer.from(matches[2], 'base64');
-                var imageBuffer = response;
-                fs.writeFile('out.png', imageBuffer['data'], 'binary', function (err) {
-                    if (err != null) {
-                      console.log(err);
-                    }
-                });
-                message.channel.send({files: [{
-                    attachment: 'out.png',
-                    name: 'out.png',
-                    description: 'A description of the file'
-                  }]})
-            }, undefined, { logQR: false })
-            this.logged = true
-            this.running = true
-        } else {
-            await this.client.restartService()
-        }
+            });
+            message.channel.send({files: [{
+                attachment: 'out.png',
+                name: 'out.png',
+                description: 'A description of the file'
+                }]})
+        }, undefined, {multidevice: false, logQR: true})
+        this.logged = true
+        this.running = true
+        start(this.client)
         message.channel.send('Pronto! O bot está online!')
         this.alertAdm()
     }
@@ -101,7 +92,7 @@ class Bot{
         if(!this.logged){
             message.channel('O bot já está desativado!')
         }
-        await this.client.logout()
+        await this.client.close()
         message.channel.send('Pronto! Bot desativado!')
     }
 }
