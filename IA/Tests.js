@@ -6,8 +6,7 @@ import { StepStuff } from "./Msgs.js"
 
 async function test(){
     await db.load()
-    let m = new Message('Engenharia da computação')
-    let a = await tags.getTag('~curso~', m, '9')
+    let a = await fd.requests['~instmatseladd~']('11')
     console.log(a)
 }
 

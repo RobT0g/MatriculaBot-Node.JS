@@ -6,7 +6,6 @@ import { TextSender } from './TextSender.js'
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, 
     Intents.FLAGS.DIRECT_MESSAGES, Intents.FLAGS.DIRECT_MESSAGE_TYPING] });
 const num = '19'
-const token = "OTcyMTUxNjEwMTcwMDQ4NTYy.GpcBPE.yL7sQaBbbKiVVEW6MyhtGCjN4CdQyC0vWFZOiM"
 const usersBank = new DataBase()
 const queue = new AutoQueue()
 
@@ -49,4 +48,6 @@ client.on("messageCreate", async (message) => {
     }), num)
 });
 
-client.login(token)
+db.request(`select token from discord;`).then(data => {
+    client.login(data[0][0].token)
+})

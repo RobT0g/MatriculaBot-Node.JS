@@ -1,10 +1,10 @@
 import { bot } from './Controller.js'
 import { Client, Intents } from './Dependencies/Index.js'
+import { db } from './IA/DataKeeper.js'
 import { TextSender } from './Discord/TextSender.js'
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, 
     Intents.FLAGS.DIRECT_MESSAGES, Intents.FLAGS.DIRECT_MESSAGE_TYPING] });
-const token = "OTcyMTUxNjEwMTcwMDQ4NTYy.GpcBPE.yL7sQaBbbKiVVEW6MyhtGCjN4CdQyC0vWFZOiM"
 
 client.on('ready', () => {
     client.user.setActivity('Estou esperando instruções.')
@@ -28,5 +28,7 @@ client.on("messageCreate", async (message) => {
     }
 });
 
-client.login(token)
+db.request(`select token from discord;`).then(data => {
+    client.login(data[0][0].token)
+})
 
