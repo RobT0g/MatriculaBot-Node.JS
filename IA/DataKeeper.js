@@ -37,7 +37,7 @@ import { mysql } from '../Dependencies/Index.js'
         let info = (await conn.query(`select * from cursos;`))[0]
         info.forEach((v) => {
             this.cursos.push(v.abrev)
-            this.cursosName.push(v.nomecurso)
+            this.cursosName.push(v.cursonome)
         })
         for(let i in this.cursos){
             this.disciplinasId[this.cursos[i]] = (((await conn.query(`select id from disc_${this.cursos[i]} 

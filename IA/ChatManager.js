@@ -124,12 +124,15 @@ class TagAnalyzer{
                 }
             }),
             '~curso~'       : ((msg, num) => {
-                for(let i in db.cursos){
+                console.log(db.cursos)
+                console.log(db.cursosName)
+                for(let i in db.cursosName){
                     let words = [new Message(db.cursosName[i]).filterMsg.toLowerCase().split(' ').filter(j => !['de', 'do', 'da']
                         .includes(j)).reduce((acc, j) => {
                             acc += `&${j}`
                             return acc
                         }, '')]
+                    console.log(words)
                     if(words.some(j => this.keyword(msg, j)[0]))
                         return [true, i]
                 }
@@ -331,7 +334,7 @@ class TagAnalyzer{
                         if(discs[i])
                             acc += `(default, '${info.user.matricula}', '${i}'), `
                         return acc
-                    }, '').slice(0, -2)});`
+                    }, '').slice(0, -2)};`
                 }
                 await database.saveOnEffetivate(num, sql, {ids: [...fnums, ...ondb]})
             },
