@@ -154,7 +154,7 @@ class TagAnalyzer{
             'getactivemat'  : ((nums, num) => {
                 return new Promise(async (resolve, reject) => {
                     try{
-                        let user = await fd.getUser(num)
+                        let user = await db.getUser(num)
                         let [stat] = (await db.request(`select ativa from disc_${db.cursos[user.curso]} where id in ${nums.reduce((acc, i) => {
                             acc += `${i}, `
                             return acc
@@ -191,7 +191,7 @@ class TagAnalyzer{
                     return [false, '']
                 return new Promise(async (resolve, reject) => {
                     try{
-                        let user = await fd.getUser(num)
+                        let user = await db.getUser(num)
                         let discs = (await db.request(`select discId from user_${db.cursos[user.curso]} where matricula = '${user.matricula}';`))[0].map(i => i.discId)
                         if(nums.some(i => discs.includes(Number(i))))
                             resolve([true, nums])
@@ -220,7 +220,7 @@ class TagAnalyzer{
                 if(this.keyword(msg, 'retirar')[0])
                     return new Promise(async (resolve, reject) => {
                         try{
-                            let user = await fd.getUser(num)
+                            let user = await db.getUser(num)
                             let discs = (await db.request(`select discId from user_${db.cursos[user.curso]} where matricula = '${user.matricula}';`))[0]
                             if(discs.length > 0)
                                 resolve([true, ''])
@@ -258,7 +258,7 @@ class TagAnalyzer{
         //this.actionsReferences = {'goTo': /\d+/g}
         this.actions = {
             'prepareUser'   : async (man, obj, num) => {
-                let user = await fd.getUser(num)
+                let user = await db.getUser(num)
                 let sql = `insert into registro (matricula, numero, talkat) values ("${obj.tagInfo[1]}", "${num}", "${user.talkat}"); delete from inst_cadastro where numero = "${num}";`
                 if('matricula' in user)
                     sql = `update registro set matricula = "${obj.tagInfo[1]}" where numero = "${num}" and finished = "0";`
@@ -282,7 +282,7 @@ class TagAnalyzer{
                 await database.updateUser(num, prev)
             },
             'savedefdiscs'  : async (man, obj, num) => {
-                let {curso, turma, matricula} = await fd.getUser(num)
+                let {curso, turma, matricula} = await db.getUser(num)
                 let maxp = (await db.request(`select max(periodo) from disc_${db.cursos[curso]};`))[0][0]['max(periodo)']
                 let date = new Date()
                 let periodo = (date.getFullYear()-turma)*2 + ((date.getMonth() > 6)?2:1)
@@ -301,7 +301,7 @@ class TagAnalyzer{
                 await this.actions['managediscs'](man, obj, num, true)
             },
             'managediscs'   : async (man, obj, num, del) => {
-                let info = await (fd.getUser(num).then(async (user) => {
+                let info = await (db.getUser(num).then(async (user) => {
                     return {user, choices: (await db.request(`select discId from user_${db.cursos[user.curso]} where matricula
                         = '${user.matricula}';`))[0]}
                 }))
@@ -339,11 +339,11 @@ class TagAnalyzer{
                 await database.saveOnEffetivate(num, sql, {ids: [...fnums, ...ondb]})
             },
             'finalize'      : async (man, obj, num) => {
-                let user = await fd.getUser(num)
+                let user = await db.getUser(num)
                 await db.request(`update registro set finished = '1' where matricula = '${user.matricula}';`)
             },
             'unfinalize'      : async (man, obj, num) => {
-                let user = await fd.getUser(num)
+                let user = await db.getUser(num)
                 await db.request(`update registro set finished = '0' where matricula = '${user.matricula}';`)
             }
         }
