@@ -187,23 +187,68 @@ class FormatedData{
             },
             '~instmatseladd~'   : async (num) => {
                 let info = await this.requests.getsubjectsoneff(num)
+                console.log(info)
                 let user = await db.getUser(num)
                 let reqs = (await Promise.all(Object.keys(info.outuser).reduce((acc, i) => {
-                    acc.push(db.request(`select r.reqId, d.nome from req_${db.cursos[user.curso]} as r join disc_${db.cursos[user.curso]} as
-                        d on r.reqId = d.id where r.discId = '${i}';`))
+                    if(info.outuser[i].ativa === 1)
+                        acc.push(db.request(`select r.reqId, d.nome from req_${db.cursos[user.curso]} as r join disc_${db.cursos[user.curso]} as
+                            d on r.reqId = d.id where r.discId = '${i}';`))
+                    else
+                        acc.push([[]])
                     return acc
                 }, [])))
                 reqs = Object.keys(info.outuser).reduce((acc, i, k) => {
                     acc[i] = reqs[k][0]
                     return acc
                 }, {})
-                let txt = info.outuser.reduce((acc, i) => {
-                    acc += ``
+                let txt = ['', '', '', ''], inat = []
+                Object.keys(info.outuser).forEach((i, k) => {
+                    if(info.outuser[i].ativa === 1){
+                        if(txt[0] !== '')
+                            txt[0] += `\n----------------------------\n`
+                        txt[0] += `${i} - ${info.outuser[i].nome} (${info.outuser[i].carga} horas).`
+                        if(reqs[i].length === 0)
+                            txt[0] += ` Sem requisitos.`
+                        else{
+                            txt[0] += ` Requisitos:${reqs[i].reduce((acc, j) => {
+                                acc += `\n> ${j.reqId} - ${j.nome};`
+                                return acc
+                            }, '').slice(0, -1) + '.'}` 
+                        }
+                    } else {
+                        inat.push(i)
+                    }
                 })
+                if(info.inuser.length === 0 && inat.length === 0 && info.inval === 0){
+                    return txt[0]
+                }
+                let inu = Object.keys(info.inuser)
+                let plu = [inu.length > 1, inat.length > 1, info.inval.length > 1]
+                txt[1] += `Você também tinha selecionado essas outras que eu desconsiderei:`
+                if(inu.length > 0){
+                    txt[1] += `.//Essa${plu[0]?'s':''} disciplina${plu[0]?'s':''} de número ${inu.reduce((acc, i, k) => {
+                        acc += `${i}${k!==inu.length-2?', ':' e '}`
+                        return acc
+                    }, '').slice(0, -2)} já est${plu[0]?'ão':'á'} na sua lista.`
+                }
+                if(inat.length > 0 ){
+                    txt[2] += `Quanto à${plu[1]?'s':''} de número ${inat.reduce((acc, i, k) => {
+                        acc += `${i}${k!==inat.length-2?', ':' e '}`
+                        return acc
+                    }, '').slice(0, -2)} eu não pude colocar por que ela${plu[1]?'s':''} não est${plu[1]?'ão':'á'} disponível para este período.`
+                }
+                if(info.inval.length > 0){
+                    txt[3] += `Como o curso de ${db.cursosName[user.curso]} só tem ${db.amount[db.cursos[user.curso]]} matérias, essa${plu[2]?'s':''} de número ${info.inval.reduce((acc, i, k) => {
+                            acc += `${i}${k!==info.inval.length-2?', ':' e '}`
+                            return acc
+                        }, '').slice(0, -2)} nem existe${plu[2]?'m':''} na matriz curricular.`
+                }
+                return `${txt[0]}.//${txt[1]}.//${txt[2]}.//${txt[3]}`
             },
             '~instmatseldel~'   : async (num) => {
-                let discs = await this.requests.getsubjectsoneff(num)
-                console.log(discs)
+                let info = await this.requests.getsubjectsoneff(num)
+                let user = db.getUser(num)
+
             },
             'getsubjectsoneff'  : async (num) => {
                 let user = await db.getUser(num)
