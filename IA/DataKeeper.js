@@ -62,7 +62,7 @@ import { mysql } from '../Dependencies/Index.js'
 
     async getUser(num){
         if(!(num in this.users)){
-            let user = (await this.request(`select matricula, nome, email, curso, turma, cpf from registro where numero = ${num};`))[0][0]
+            let user = (await this.request(`select matricula, nome, email, curso, turma, cpf, talkat from registro where numero = ${num};`))[0][0]
             if(!user){
                 return null
             }

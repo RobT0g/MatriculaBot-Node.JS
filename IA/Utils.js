@@ -1,6 +1,6 @@
 import {chat} from './ChatFlow.js'
 import {ChatManager} from './ChatManager.js'
-import {fd, database} from './DataKeeper.js'
+import {db, database} from './DataKeeper.js'
 
 //--------TODO--------//
 /**
