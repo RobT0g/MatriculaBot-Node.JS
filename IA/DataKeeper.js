@@ -187,7 +187,6 @@ class FormatedData{
             },
             '~instmatseladd~'   : async (num) => {
                 let info = await this.requests.getsubjectsoneff(num)
-                console.log(info)
                 let user = await db.getUser(num)
                 let reqs = (await Promise.all(Object.keys(info.outuser).reduce((acc, i) => {
                     if(info.outuser[i].ativa === 1)
@@ -219,10 +218,10 @@ class FormatedData{
                         inat.push(i)
                     }
                 })
-                if(info.inuser.length === 0 && inat.length === 0 && info.inval === 0){
+                let inu = Object.keys(info.inuser)
+                if(inu.length === 0 && inat.length === 0 && info.inval === 0){
                     return txt[0]
                 }
-                let inu = Object.keys(info.inuser)
                 let plu = [inu.length > 1, inat.length > 1, info.inval.length > 1]
                 txt[1] += `Você também tinha selecionado essas outras que eu desconsiderei:`
                 if(inu.length > 0){
@@ -248,7 +247,23 @@ class FormatedData{
             '~instmatseldel~'   : async (num) => {
                 let info = await this.requests.getsubjectsoneff(num)
                 let user = db.getUser(num)
-
+                let txt = ['', '']
+                Object.keys(info.inuser).forEach((i, k) => {
+                    if(k !== 0)
+                        txt[0] += `\n`
+                    txt[0] += `> ${i} - ${info.inuser[i].nome} (${info.inuser[i].carga} horas);`
+                })
+                let out = Object.keys(info.outuser)
+                if(out.length + info.inval.length === 0){
+                    return txt[0]
+                }
+                out.push(...info.inval)
+                let plu = out.length > 1
+                txt[1] += `Aliás, você também tinha me pedido para retirar a${plu?'s':''} disciplina${plu?'s':''} de número ${out.reduce((acc, i, k) => {
+                    acc += `${i}${k!==out.length-2?', ':' e '}`
+                    return acc
+                }, '').slice(0, -2)}. Eu ignorei esse${plu?'s':''} número${plu?'s':''} porque ele${plu?'s':''} nem est${plu?'ão':'á'} na sua lista.`
+                return `${txt[0]}.//${txt[1]}`
             },
             'getsubjectsoneff'  : async (num) => {
                 let user = await db.getUser(num)

@@ -6,7 +6,7 @@ import { StepStuff } from "./Msgs.js"
 
 async function test(){
     await db.load()
-    let a = await fd.requests['~instmatseladd~']('19')
+    let a = await fd.requests['~instmatseldel~']('19')
     a.split('.//').forEach(i => {console.log(i)})
 }
 

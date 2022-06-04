@@ -212,7 +212,7 @@ messages.push(...[
 
 //Step 19
 {
-'txt':['Você selecionou essas matérias pra retirar: ~instmatseldel~', 'Basta me dizer "sim" ou "não" para confirmar as escolhas agora!'],
+'txt':['Você selecionou essas matérias pra retirar:', '~instmatseldel~', 'Basta me dizer "sim" ou "não" para confirmar as escolhas agora!'],
 'full': new StepStuff([['~sim~'], ['~voltar~']], [['effetivate'], ['cleareff']], []),
 'unf': new StepStuff([['~nao~']], [['17']], [['Ok. Pode reenviar os números das matérias que deseja retirar.']]),
 'def':['Basta me confirmar com um sim ou não.'],
