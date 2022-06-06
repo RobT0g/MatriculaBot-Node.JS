@@ -185,8 +185,8 @@ class FormatedData{
             '~numdepart~'       : async (num) => {
                 return (await db.request(`select text from messages where tag = '~numdepart~';`))[0][0].text
             },
-            '~instmatseladd~'   : async (num) => {
-                let info = await this.requests.getsubjectsoneff(num)
+            '~instmatseladd~'   : async (num, discs) => {
+                let info = await this.requests.getsubjectsoneff(num, discs)
                 let user = await db.getUser(num)
                 let reqs = (await Promise.all(Object.keys(info.outuser).reduce((acc, i) => {
                     if(info.outuser[i].ativa === 1)
@@ -200,16 +200,18 @@ class FormatedData{
                     acc[i] = reqs[k][0]
                     return acc
                 }, {})
-                let txt = ['', '', '', ''], inat = []
+                let ativas = 0
+                let txt = '', inat = []
                 Object.keys(info.outuser).forEach((i, k) => {
                     if(info.outuser[i].ativa === 1){
-                        if(txt[0] !== '')
-                            txt[0] += `\n----------------------------\n`
-                        txt[0] += `${i} - ${info.outuser[i].nome} (${info.outuser[i].carga} horas).`
+                        ativas++
+                        if(txt !== '')
+                            txt += `\n----------------------------\n`
+                        txt += `${i} - ${info.outuser[i].nome} (${info.outuser[i].carga} horas).`
                         if(reqs[i].length === 0)
-                            txt[0] += ` Sem requisitos.`
+                            txt += ` Sem requisitos.`
                         else{
-                            txt[0] += ` Requisitos:${reqs[i].reduce((acc, j) => {
+                            txt += ` Requisitos:${reqs[i].reduce((acc, j) => {
                                 acc += `\n> ${j.reqId} - ${j.nome};`
                                 return acc
                             }, '').slice(0, -1) + '.'}` 
@@ -219,33 +221,45 @@ class FormatedData{
                     }
                 })
                 let inu = Object.keys(info.inuser)
-                if(inu.length === 0 && inat.length === 0 && info.inval === 0){
+                console.log(inu, inat, info.inval)
+                if(inu.length === 0 && inat.length === 0 && info.inval.length === 0){
                     return txt[0]
                 }
                 let plu = [inu.length > 1, inat.length > 1, info.inval.length > 1]
-                txt[1] += `Você também tinha selecionado essas outras que eu desconsiderei:`
+                txt += `.//Além dessa${ativas > 1?'s':''}, você também havia escolhido ` + 
+                    `essa${plu[0]||plu[1]||plu[2]?'s':''} de número `
+                let extra = [null, null, null]
                 if(inu.length > 0){
-                    txt[1] += `.//Essa${plu[0]?'s':''} disciplina${plu[0]?'s':''} de número ${inu.reduce((acc, i, k) => {
+                    extra[0] = `${inu.reduce((acc, i, k) => {
                         acc += `${i}${k!==inu.length-2?', ':' e '}`
                         return acc
-                    }, '').slice(0, -2)} já est${plu[0]?'ão':'á'} na sua lista.`
+                    }, '').slice(0, -2)} que já est${plu[0]?'ão':'á'} na sua lista`
                 }
                 if(inat.length > 0 ){
-                    txt[2] += `Quanto à${plu[1]?'s':''} de número ${inat.reduce((acc, i, k) => {
+                    extra[1] = `${inat.reduce((acc, i, k) => {
                         acc += `${i}${k!==inat.length-2?', ':' e '}`
                         return acc
-                    }, '').slice(0, -2)} eu não pude colocar por que ela${plu[1]?'s':''} não est${plu[1]?'ão':'á'} disponível para este período.`
+                    }, '').slice(0, -2)} que não est${plu[1]?'ão':'á'} disponíve${plu[1]?'is':'l'} para este período`
                 }
                 if(info.inval.length > 0){
-                    txt[3] += `Como o curso de ${db.cursosName[user.curso]} só tem ${db.amount[db.cursos[user.curso]]} matérias, essa${plu[2]?'s':''} de número ${info.inval.reduce((acc, i, k) => {
+                    extra[2] = `${info.inval.reduce((acc, i, k) => {
                             acc += `${i}${k!==info.inval.length-2?', ':' e '}`
                             return acc
-                        }, '').slice(0, -2)} nem existe${plu[2]?'m':''} na matriz curricular.`
+                        }, '').slice(0, -2)} que nem existe${plu[2]?'m':''} na matriz curricular do curso de ${db.cursosName[user.curso]}`
                 }
-                return `${txt[0]}.//${txt[1]}.//${txt[2]}.//${txt[3]}`
+                let result = extra.reduce((acc, i) => {
+                    if(i) acc++
+                    return acc
+                }, 0)
+                console.log(extra, result)
+                if(result === 1)
+                    return `${txt}${extra[0]?extra[0]:(extra[1]?extra[1]:extra[2])}.`
+                if(result === 2)
+                    return txt + extra[0]?`${extra[0]} e ${extra[1]?extra[1]:extra[2]}.`:`${extra[1]} e ${extra[2]}.`
+                return `${txt}${extra[0]}, ${extra[1]} e ${extra[2]}.`
             },
-            '~instmatseldel~'   : async (num) => {
-                let info = await this.requests.getsubjectsoneff(num)
+            '~instmatseldel~'   : async (num, discs) => {
+                let info = await this.requests.getsubjectsoneff(num, discs)
                 let user = db.getUser(num)
                 let txt = ['', '']
                 Object.keys(info.inuser).forEach((i, k) => {
@@ -265,10 +279,11 @@ class FormatedData{
                 }, '').slice(0, -2)}. Eu ignorei esse${plu?'s':''} número${plu?'s':''} porque ele${plu?'s':''} nem est${plu?'ão':'á'} na sua lista.`
                 return `${txt[0]}.//${txt[1]}`
             },
-            'getsubjectsoneff'  : async (num) => {
+            'getsubjectsoneff'  : async (num, discs) => {
                 let user = await db.getUser(num)
-                let [[discs]] = await db.request(`select data from effetivate where numero = '${num}';`)
-                discs = JSON.parse(discs.data).ids.map(i => Number(i))
+                //A mudança tá aqui//
+                //let [[discs]] = await db.request(`select data from effetivate where numero = '${num}';`)
+                //discs = JSON.parse(discs.data).ids.map(i => Number(i))
                 let [[userdiscs], [valdiscs]] = await Promise.all([db.request(`select discId from user_${db.cursos[user.curso]} where 
                     matricula = '${user.matricula}';`), db.request(`select id, nome, carga, ativa from disc_${db.cursos[user.curso]} where id in 
                     (${discs.reduce((acc, i) => {
