@@ -13,13 +13,9 @@ async function test(...discs){
 
 (async () => {
     //7, 3, 4, 6
-    //await test(15)
-    //await test(15, 16, 20)
-    await test(15, 14)
-    await test(15, 14, 13)
-    await test(15, 7)
-    await test(15, 7, 3)
-    await test(15, 60)
-    await test(15, 61, 62)
-    await test(15, 16, 20, 14, 13, 12, 7, 3, 4, 60, 61, 62)
+    await test(7)
+    await test(7, 3)
+    await test(7, 10)
+    await test(7, 10, 11)
+    await test(7, 3, 10, 11, 12)
 })()

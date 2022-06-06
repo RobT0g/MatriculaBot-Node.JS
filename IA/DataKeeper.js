@@ -185,8 +185,8 @@ class FormatedData{
             '~numdepart~'       : async (num) => {
                 return (await db.request(`select text from messages where tag = '~numdepart~';`))[0][0].text
             },
-            '~instmatseladd~'   : async (num, discs) => {
-                let info = await this.requests.getsubjectsoneff(num, discs)
+            '~instmatseladd~'   : async (num) => {
+                let info = await this.requests.getsubjectsoneff(num)
                 let user = await db.getUser(num)
                 let reqs = (await Promise.all(Object.keys(info.outuser).reduce((acc, i) => {
                     if(info.outuser[i].ativa === 1)
@@ -258,9 +258,9 @@ class FormatedData{
                     return txt + extra[0]?`${extra[0]} e ${extra[1]?extra[1]:extra[2]}.`:`${extra[1]} e ${extra[2]}.`
                 return `${txt}${extra[0]}, ${extra[1]} e ${extra[2]}.`
             },
-            '~instmatseldel~'   : async (num, discs) => {
-                let info = await this.requests.getsubjectsoneff(num, discs)
-                let user = db.getUser(num)
+            '~instmatseldel~'   : async (num) => {
+                let info = await this.requests.getsubjectsoneff(num)
+                let user = await db.getUser(num)
                 let txt = ['', '']
                 Object.keys(info.inuser).forEach((i, k) => {
                     if(k !== 0)
@@ -279,11 +279,10 @@ class FormatedData{
                 }, '').slice(0, -2)}. Eu ignorei esse${plu?'s':''} número${plu?'s':''} porque ele${plu?'s':''} nem est${plu?'ão':'á'} na sua lista.`
                 return `${txt[0]}.//${txt[1]}`
             },
-            'getsubjectsoneff'  : async (num, discs) => {
+            'getsubjectsoneff'  : async (num) => {
                 let user = await db.getUser(num)
-                //A mudança tá aqui//
-                //let [[discs]] = await db.request(`select data from effetivate where numero = '${num}';`)
-                //discs = JSON.parse(discs.data).ids.map(i => Number(i))
+                let [[discs]] = await db.request(`select data from effetivate where numero = '${num}';`)
+                discs = JSON.parse(discs.data).ids.map(i => Number(i))
                 let [[userdiscs], [valdiscs]] = await Promise.all([db.request(`select discId from user_${db.cursos[user.curso]} where 
                     matricula = '${user.matricula}';`), db.request(`select id, nome, carga, ativa from disc_${db.cursos[user.curso]} where id in 
                     (${discs.reduce((acc, i) => {
