@@ -451,8 +451,8 @@ class DataBaseAccess{
         let query = sql.replaceAll(`'`, `"`)
         let prev = (await db.request(`select * from effetivate where numero = '${num}';`))[0]
         if(prev.length === 0)
-            return db.request(`insert into effetivate values ('${num}', '${query}', '${JSON.stringify(data)}');`)
-        return db.request(`update effetivate set query = '${query}', data = '${JSON.stringify(data)}' where numero = '${num}';`)
+            await db.request(`insert into effetivate values ('${num}', '${query}', '${JSON.stringify(data)}');`)
+        await db.request(`update effetivate set query = '${query}', data = '${JSON.stringify(data)}' where numero = '${num}';`)
     }
 
     async getEffetivate(num){

@@ -168,8 +168,11 @@ class TagAnalyzer{
                 if(!nums)
                     return [false, '']
                 return new Promise(async (resolve, reject) => {
-                    if((await this.tagfunc['getactivemat'](nums, num)))
-                        resolve([true, nums])
+                    if((await this.tagfunc['getactivemat'](nums, num))){
+                        let user = await db.getUser(num)
+                        let [userdiscs] = await db.request(`select discId from user_${db.cursos[user.curso]} where matricula = '${user.matricula}';`)
+                        resolve([userdiscs.some(i => !nums.includes(i)), nums])
+                    }
                     else
                         resolve([false, ''])
                 })
