@@ -171,7 +171,8 @@ class TagAnalyzer{
                     if((await this.tagfunc['getactivemat'](nums, num))){
                         let user = await db.getUser(num)
                         let [userdiscs] = await db.request(`select discId from user_${db.cursos[user.curso]} where matricula = '${user.matricula}';`)
-                        resolve([userdiscs.some(i => !nums.includes(i)), nums])
+                        userdiscs = userdiscs.map(i => i.discId)
+                        resolve([nums.some(i => !userdiscs.includes(Number(i))), nums])
                     }
                     else
                         resolve([false, ''])
@@ -489,7 +490,7 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
             opt = results.outcomes.indexOf(true)
             Object.keys(results).forEach((i) => { results[i] = results[i][opt] })
             results.opt = opt
-            return this.unfulfillStep(results)
+            return await this.unfulfillStep(results)
         }
         catch(err){
             console.log(err)
@@ -502,8 +503,8 @@ class ChatManager{  //Cada usuário contém uma instância do manager, para faci
 
     async fulfillStep(obj){         //Chamada quando um step é fulfill
         let st = this.step
-        if(obj.actions.length > 0)
-            await tags.handleAction(this, obj, this.num)
+        if(obj.actions.length > 0){
+            await tags.handleAction(this, obj, this.num)}
         await this.move.goNext(obj.opt)
         if(st.fulfill[obj.stepTags[0]].msg.length == 0)
             return await this.setDataOntoText(this.step.msgs)

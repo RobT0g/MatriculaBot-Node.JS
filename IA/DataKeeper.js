@@ -221,9 +221,8 @@ class FormatedData{
                     }
                 })
                 let inu = Object.keys(info.inuser)
-                console.log(inu, inat, info.inval)
                 if(inu.length === 0 && inat.length === 0 && info.inval.length === 0){
-                    return txt[0]
+                    return txt
                 }
                 let plu = [inu.length > 1, inat.length > 1, info.inval.length > 1]
                 txt += `.//Além dessa${ativas > 1?'s':''}, você também havia escolhido ` + 
@@ -251,7 +250,6 @@ class FormatedData{
                     if(i) acc++
                     return acc
                 }, 0)
-                console.log(extra, result)
                 if(result === 1)
                     return `${txt}${extra[0]?extra[0]:(extra[1]?extra[1]:extra[2])}.`
                 if(result === 2)
@@ -283,6 +281,7 @@ class FormatedData{
                 let user = await db.getUser(num)
                 let [[discs]] = await db.request(`select data from effetivate where numero = '${num}';`)
                 discs = JSON.parse(discs.data).ids.map(i => Number(i))
+                console.log(discs)
                 let [[userdiscs], [valdiscs]] = await Promise.all([db.request(`select discId from user_${db.cursos[user.curso]} where 
                     matricula = '${user.matricula}';`), db.request(`select id, nome, carga, ativa from disc_${db.cursos[user.curso]} where id in 
                     (${discs.reduce((acc, i) => {
