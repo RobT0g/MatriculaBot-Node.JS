@@ -126,7 +126,7 @@ dist
 .yarn/install-state.gz
 .pnp.*
 venom.sql.bak
-IA\~$$Conversação.~vsdx
-IA\~$$MainFlow.~vsdx
+~$$Conversação.~vsdx
+~$$MainFlow.~vsdx
 tokens
 ./out.png
