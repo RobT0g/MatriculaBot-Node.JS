@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Tempo de geração: 31-Maio-2022 às 16:45
+-- Tempo de geração: 14-Jun-2022 às 15:16
 -- Versão do servidor: 5.7.36
 -- versão do PHP: 7.4.26
 
@@ -49,6 +49,26 @@ INSERT INTO `cursos` (`id`, `abrev`, `cursonome`) VALUES
 (1, 'ec', 'Engenharia da Computação'),
 (2, 'fis', 'Física'),
 (3, 'tce', 'Construção de Edifícios');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `discord`
+--
+
+DROP TABLE IF EXISTS `discord`;
+CREATE TABLE IF NOT EXISTS `discord` (
+  `id` int(11) NOT NULL,
+  `token` varchar(80) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
+
+--
+-- Extraindo dados da tabela `discord`
+--
+
+INSERT INTO `discord` (`id`, `token`) VALUES
+(1, 'OTcyMTUxNjEwMTcwMDQ4NTYy.GMgtgs.pFJywb2mMMsP3H9GHcVsZOJ4PB6e0JJcWaiyt0');
 
 -- --------------------------------------------------------
 
@@ -159,7 +179,7 @@ INSERT INTO `disc_ec` (`id`, `nome`, `periodo`, `carga`, `ativa`, `parap`) VALUE
 (2, 'Metodologia de Pesquisa Científica', 1, 60, 1, 1),
 (3, 'Circuitos Lógicos I', 1, 60, 1, 1),
 (4, 'Cálculo Vetorial e Geometria Analítica', 1, 60, 1, 1),
-(5, 'Cálculo Diferencial e Integral I ', 1, 90, 1, 1),
+(5, 'Cálculo Diferencial e Intergral I', 1, 90, 1, 1),
 (6, 'Introdução a Programação', 1, 60, 1, 1),
 (7, 'Laboratório de Introdução a Programação', 1, 45, 1, 1),
 (8, 'Eletricidade e Circuitos para Computação I', 2, 60, 1, 3),
@@ -386,8 +406,7 @@ CREATE TABLE IF NOT EXISTS `effetivate` (
 --
 
 INSERT INTO `effetivate` (`numero`, `query`, `data`) VALUES
-('001', 'insert into user_adm values (default, \"001\", \"2\"));', '{\"ids\":[2,7,5]}'),
-('11', 'insert into user_ec values (default, \"69696969\", \"1\"), (default, \"69696969\", \"2\"));', '{\"ids\":[1,2,10]}');
+('011', 'insert into user_fis values ;', '{\"ids\":[22,23,24,90,91,92,7,3,4]}');
 
 -- --------------------------------------------------------
 
@@ -402,14 +421,15 @@ CREATE TABLE IF NOT EXISTS `inst_cadastro` (
   `talkat` int(10) UNSIGNED DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `numero` (`numero`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 --
 -- Extraindo dados da tabela `inst_cadastro`
 --
 
 INSERT INTO `inst_cadastro` (`id`, `numero`, `talkat`) VALUES
-(1, '559892437964@c.us', 1);
+(1, '559892437964@c.us', 2),
+(3, '559888976814@c.us', 0);
 
 -- --------------------------------------------------------
 
@@ -471,10 +491,15 @@ INSERT INTO `registro` (`matricula`, `numero`, `talkat`, `nome`, `email`, `curso
 ('008', '008', 13, 'Nome8', 'Nome8@gmail.com', 3, 2020, '00000000008', 1),
 ('009', '009', 13, 'Nome9', 'Nome9@gmail.com', 3, 2020, '00000000009', 0),
 ('010', '010', 13, 'Nome10', 'Nome10@gmail.com', 0, 2020, '00000000010', 1),
-('011', '011', 13, 'Nome11', 'Nome11@gmail.com', 2, 2020, '00000000011', 1),
+('011', '011', 16, 'Nome11', 'Nome11@gmail.com', 2, 2020, '00000000011', 0),
 ('012', '012', 13, 'Nome12', 'Nome12@gmail.com', 3, 2020, '00000000012', 1),
-('013', '013', 13, 'Nome13', 'Nome13@gmail.com', 1, 2020, '00000000013', 1),
-('20201E', '10', 21, 'R L', 'rl@hotmail.com', 3, 2020, '00112233445', 1);
+('013', '013', 18, 'Nome13', 'Nome13@gmail.com', 1, 2020, '00000000013', 0),
+('20201E', '10', 21, 'R L', 'rl@hotmail.com', 3, 2020, '00112233445', 1),
+('20209', '19', 15, 'Rob L', 'r@gmail.com', 1, 2019, '00000000001', 0),
+('2021ENG.SIN0006', '559881205960@c.us', 21, 'Hildelbrando Patryck Borges Lopes', 'patrycklopes762@gmail.com', 1, 2021, '00000000014', 1),
+('2022127460056', '559881786234@c.us', 21, 'Neemias Araujo Siqueira', 'neemiasnast@gmail.com', 0, 2020, '00000000015', 1),
+('2022129950042', '559870135803@c.us', 4, NULL, NULL, NULL, NULL, NULL, 0),
+('20221ENG.SIN0050', '559887027202@c.us', 21, 'Neemias Araújo Siqueira', 'neemiasnast@gmail.com', 1, 2022, '00000000016', 1);
 
 -- --------------------------------------------------------
 
@@ -853,7 +878,7 @@ CREATE TABLE IF NOT EXISTS `user_adm` (
   PRIMARY KEY (`id`),
   KEY `matricula` (`matricula`),
   KEY `discId` (`discId`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8;
 
 --
 -- Extraindo dados da tabela `user_adm`
@@ -872,7 +897,11 @@ INSERT INTO `user_adm` (`id`, `matricula`, `discId`) VALUES
 (12, '010', 5),
 (16, '001', 1),
 (17, '001', 7),
-(18, '001', 5);
+(18, '001', 5),
+(19, '2022127460056', 29),
+(20, '2022127460056', 30),
+(21, '2022127460056', 31),
+(25, '2022127460056', 35);
 
 -- --------------------------------------------------------
 
@@ -888,7 +917,7 @@ CREATE TABLE IF NOT EXISTS `user_ec` (
   PRIMARY KEY (`id`),
   KEY `matricula` (`matricula`),
   KEY `discId` (`discId`)
-) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=63 DEFAULT CHARSET=utf8;
 
 --
 -- Extraindo dados da tabela `user_ec`
@@ -919,7 +948,26 @@ INSERT INTO `user_ec` (`id`, `matricula`, `discId`) VALUES
 (36, '69696969', 34),
 (37, '69696969', 35),
 (38, '69696969', 36),
-(39, '69696969', 37);
+(39, '69696969', 37),
+(40, '2021ENG.SIN0006', 8),
+(41, '2021ENG.SIN0006', 17),
+(42, '2021ENG.SIN0006', 18),
+(43, '2021ENG.SIN0006', 19),
+(44, '2021ENG.SIN0006', 20),
+(45, '2021ENG.SIN0006', 21),
+(47, '2021ENG.SIN0006', 23),
+(48, '20221ENG.SIN0050', 1),
+(50, '20221ENG.SIN0050', 3),
+(51, '20221ENG.SIN0050', 4),
+(52, '20221ENG.SIN0050', 5),
+(53, '20221ENG.SIN0050', 6),
+(54, '20221ENG.SIN0050', 7),
+(56, '20209', 45),
+(58, '20209', 47),
+(59, '20209', 48),
+(60, '20209', 49),
+(61, '20209', 20),
+(62, '20209', 21);
 
 -- --------------------------------------------------------
 

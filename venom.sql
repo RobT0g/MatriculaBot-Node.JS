@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Tempo de geração: 31-Maio-2022 às 16:45
+-- Tempo de geração: 14-Jun-2022 às 15:17
 -- Versão do servidor: 5.7.36
 -- versão do PHP: 7.4.26
 
@@ -49,6 +49,26 @@ INSERT INTO `cursos` (`id`, `abrev`, `cursonome`) VALUES
 (1, 'ec', 'Engenharia da Computação'),
 (2, 'fis', 'Física'),
 (3, 'tce', 'Construção de Edifícios');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `discord`
+--
+
+DROP TABLE IF EXISTS `discord`;
+CREATE TABLE IF NOT EXISTS `discord` (
+  `id` int(11) NOT NULL,
+  `token` varchar(80) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
+
+--
+-- Extraindo dados da tabela `discord`
+--
+
+INSERT INTO `discord` (`id`, `token`) VALUES
+(1, 'OTcyMTUxNjEwMTcwMDQ4NTYy.GMgtgs.pFJywb2mMMsP3H9GHcVsZOJ4PB6e0JJcWaiyt0');
 
 -- --------------------------------------------------------
 
@@ -159,7 +179,7 @@ INSERT INTO `disc_ec` (`id`, `nome`, `periodo`, `carga`, `ativa`, `parap`) VALUE
 (2, 'Metodologia de Pesquisa Científica', 1, 60, 1, 1),
 (3, 'Circuitos Lógicos I', 1, 60, 1, 1),
 (4, 'Cálculo Vetorial e Geometria Analítica', 1, 60, 1, 1),
-(5, 'Cálculo Diferencial e Integral I ', 1, 90, 1, 1),
+(5, 'Cálculo Diferencial e Intergral I', 1, 90, 1, 1),
 (6, 'Introdução a Programação', 1, 60, 1, 1),
 (7, 'Laboratório de Introdução a Programação', 1, 45, 1, 1),
 (8, 'Eletricidade e Circuitos para Computação I', 2, 60, 1, 3),
@@ -394,7 +414,7 @@ CREATE TABLE IF NOT EXISTS `inst_cadastro` (
   `talkat` int(10) UNSIGNED DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `numero` (`numero`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -818,7 +838,7 @@ CREATE TABLE IF NOT EXISTS `user_adm` (
   PRIMARY KEY (`id`),
   KEY `matricula` (`matricula`),
   KEY `discId` (`discId`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -834,7 +854,7 @@ CREATE TABLE IF NOT EXISTS `user_ec` (
   PRIMARY KEY (`id`),
   KEY `matricula` (`matricula`),
   KEY `discId` (`discId`)
-) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=63 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
