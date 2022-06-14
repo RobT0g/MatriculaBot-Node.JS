@@ -68,19 +68,14 @@ messages.push(...[
 'unf': new StepStuff([['~matex~'], ['!num!']], [], [['Estanho, já tenho um registro com essa matrícula.', 'Talvez você digitou a' + 
     ' matrícula errada? Ou você já fez a rematrícula?', 'Se for o primeiro caso, é só enviar a matrícula correta, agora se você ainda não' + 
     ' fez a matrícula e isso tá aparecendo pra você, tente contatar alguém do departamento. Neste caso, basta me enviar "Contatar departamento".'], 
-    ['Por favor, me mande um código de matrícula válido.'], 
-    ['Esse código de matrícula já está registrado.', 'Você já fez seu registro?']]),
+    ['Por favor, me mande um código de matrícula válido.']]),
 'def':['Preciso que me mande sua matrícula.'],
 'to':[5]},
 
 {
 'txt':['Certo, então me informe seu CPF, por favor.'],
-'full': new StepStuff([['~CPF~']], [['prepareUser']], [[]]),
-'unf': new StepStuff([['~matex~'], ['!num!']], [], [['Estanho, já tenho um registro com essa matrícula.', 'Talvez você digitou a' + 
-    ' matrícula errada? Ou você já fez a rematrícula?', 'Se for o primeiro caso, é só enviar a matrícula correta, agora se você ainda não' + 
-    ' fez a matrícula e isso tá aparecendo pra você, tente contatar alguém do departamento. Neste caso, basta me enviar "Contatar departamento".'], 
-    ['Por favor, me mande um código de matrícula válido.'], 
-    ['Esse código de matrícula já está registrado.', 'Você já fez seu registro?']]),
+'full': new StepStuff([['~cpf~']], [['prepareUser']], [[]]),
+'unf': new StepStuff([['~invalcpf~']], [[]], [[]]),
 'def':['Preciso que me mande sua matrícula.'],
 'to':[6]},
 ])
