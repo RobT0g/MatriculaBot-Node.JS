@@ -5,12 +5,12 @@ import { Client, Intents } from '../Dependencies/Index.js'
 import { TextSender } from './TextSender.js'
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, 
     Intents.FLAGS.DIRECT_MESSAGES, Intents.FLAGS.DIRECT_MESSAGE_TYPING] });
-const num = '011'
+const num = '012'
 const usersBank = new DataBase()
 const queue = new AutoQueue()
 
 client.on('ready', ()=>{
-    client.user.setActivity('com a sua mãe.')
+    client.user.setActivity('Bot Rematrícula.')
     console.log('Foi')
 })
 
@@ -49,5 +49,6 @@ client.on("messageCreate", async (message) => {
 });
 
 db.request(`select token from discord;`).then(data => {
+    //console.log(data)
     client.login(data[0][0].token)
 })

@@ -61,21 +61,14 @@ import { mysql } from '../Dependencies/Index.js'
     }
 
     async getUser(num){
-        if(!(num in this.users)){
-            let user = (await this.request(`select matricula, nome, email, curso, turma, cpf, talkat from registro where numero = ${num};`))[0][0]
-            if(!user){
-                return null
-            }
-            this.users[num] = user
+        if(num in this.users)
+            return this.users[num]
+        let user = (await this.request(`select matricula, cpf, talkat, nome, email, curso, turma from registro where numero = ${num};`))[0][0]
+        if(!user){
+            return null
         }
-        return this.users[num]
-    }
-
-    async refreshUser(num){
-        user = (await this.request(`select matricula, nome, email, curso, turma, cpf from registro where numero = ${num};`))[0][0]
-        if(user){
-            this.users[num] = user
-        }
+        this.users[num] = user
+        return user
     }
 }
 
@@ -110,19 +103,6 @@ class FormatedData{
             },
             '~cpf~'             : async (num) => {
                 return this.requests.userData('cpf', num)
-            },
-            '~defdisc~'         : async (num) => {
-                let {curso, turma} = await db.getUser(num)
-                let maxp = (await db.request(`select max(periodo) from disc_${db.cursos[curso]};`))[0][0]['max(periodo)']
-                let date = new Date()
-                let periodo = (date.getFullYear()-turma)*2 + ((date.getMonth() > 6)?2:1)
-                if(periodo > maxp)
-                    periodo = maxp
-                let mats = await db.request(`select id, nome, carga from disc_${db.cursos[curso]} where parap = ${periodo};`)
-                return mats[0].reduce((acc, i) => {
-                    acc += `${i.id}. ${i.nome} (${i.carga} horas);\n`
-                    return acc
-                }, '').slice(0, -2) + '.'
             },
             '~recdisc~'         : async (num) => {
                 let info = await db.getUser(num)
@@ -258,7 +238,6 @@ class FormatedData{
             },
             '~instmatseldel~'   : async (num) => {
                 let info = await this.requests.getsubjectsoneff(num)
-                let user = await db.getUser(num)
                 let txt = ['', '']
                 Object.keys(info.inuser).forEach((i, k) => {
                     if(k !== 0)
@@ -283,7 +262,7 @@ class FormatedData{
                 discs = JSON.parse(discs.data).ids.map(i => Number(i))
                 console.log(discs)
                 let [[userdiscs], [valdiscs]] = await Promise.all([db.request(`select discId from user_${db.cursos[user.curso]} where 
-                    matricula = '${user.matricula}';`), db.request(`select id, nome, carga, ativa from disc_${db.cursos[user.curso]} where id in 
+                    numero = '${num}';`), db.request(`select id, nome, carga, ativa from disc_${db.cursos[user.curso]} where id in 
                     (${discs.reduce((acc, i) => {
                         acc += `'${i}', `
                         return acc
@@ -340,19 +319,12 @@ class FormatedData{
             },
             '~finalizar~'       : async (num) => {
                 let user = await db.getUser(num)
-                if((await db.request(`select * from user_${db.cursos[user.curso]} where matricula = '${user.matricula}';`))[0].length == 0){
+                if((await db.request(`select * from user_${db.cursos[user.curso]} where numero = '${num}';`))[0].length == 0){
                     return ''
                 }
                 return 'Como você já selecionou algumas matérias, você pode finalizar aqui se quiser. Basta me mandar um "finalizar".'
             },
         }
-    }
-
-    async getUser(num){
-        let user = (await db.request(`select * from registro where numero = '${num}';`))[0]
-        if(user.length > 0)
-            return user[0]
-        return (await db.request(`select * from inst_cadastro where numero = '${num}';`))[0][0]
     }
 
     async getTextInfo(tag, num){
@@ -362,35 +334,6 @@ class FormatedData{
             console.log('Erro ao retornar a informação.\n', err)
             return tag.slice(1, -1)
         }
-    }
-
-    async setTags(msg, obj){
-        let txt = msg.map((i) => i)
-        let tags = {}
-        for(let i in txt){
-            try{
-                let t = txt[i].match(/[~]\w+[~]/g)
-                for(let j in t){
-                    if(!(t[j] in tags))
-                        tags[t[j]] = await this.getTextInfo(t[j], obj)
-                    txt[i] = txt[i].replaceAll(t[j], tags[t[j]])
-                }    
-            } catch(err){}
-        }      
-        return txt
-    }
-
-    getSQL(tag, obj){
-        let query = this.sql[tag]
-        try{
-            let data = query.match(/[-]\w+[-]/g)
-            for(let i in data){
-                query = query.replaceAll(data[i], obj[data[i].slice(1, -1)])
-            }
-        } catch(err){
-            console.log('Erro no getSQL.\n', err)
-        }
-        return query
     }
 
     formateData(msg, data, tag){
@@ -422,7 +365,7 @@ class DataBaseAccess{
 
     addUser(num){
         try{
-            return db.request(`insert into inst_cadastro values (default, '${num}', '0');`)
+            return db.request(`insert into registro (numero, talkat) values ('${num}', '0');`)
         } catch(err){
             console.log(err)
         }
@@ -435,9 +378,7 @@ class DataBaseAccess{
         }, '').slice(0, -2)
         try{
             let user = await db.getUser(num)
-            let sql = `update registro set ${line} where matricula = "${user.matricula}";`
-            if(!('matricula' in user))
-                sql = `update inst_cadastro set ${line} where numero = "${num}";`
+            let sql = `update registro set ${line} where numero = "${num}";`
             if(eff)
                 return await this.saveOnEffetivate(num, sql, obj)
             await db.request(sql.replaceAll(`"`, `'`))
@@ -454,14 +395,9 @@ class DataBaseAccess{
         await db.request(`update effetivate set query = '${query}', data = '${JSON.stringify(data)}' where numero = '${num}';`)
     }
 
-    async getEffetivate(num){
-        return JSON.parse((await db.request(`select data from effetivate where numero = '${num}';`))[0][0].data)
-    }
-
     async effetivate(num){
         let sql = await db.request(`select query from effetivate where numero = '${num}';`)
         if(sql[0][0]){
-            await db.request(`delete from effetivate where numero = '${num}';`)
             sql = sql[0][0].query.split(';').slice(0, -1)
             let querys = []
             for(let i in sql)

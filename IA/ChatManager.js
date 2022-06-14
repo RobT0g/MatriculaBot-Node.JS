@@ -55,17 +55,17 @@ class TagAnalyzer{
                     let numb = msg.msgbody.match(/\d{11}|(\d{3}[.]\d{3}[.]\d{3}[-]\d{2})/g)
                     //^ Primeira tentativa: 11 números em sequencia ou no formato 123.456.789-10 ^//
                     if(numb)
-                        return [validate(numb), numb[0].replaceAll(/[.]|[-]/g, '')]
+                        return [true, numb[0].replaceAll(/[.]|[-]/g, '')]
                     numb = (msg.msgbody.match(/\d/g)).reduce((acc, i)=>{acc+=i;return acc},'') 
                     //^ segunda tentativa: pega todos os números independentemente e os junta ^//
-                    return [numb.length == 11 && validate(numb), numb]
+                    return [numb.length == 11, numb]
                 } catch(err){
                     console.log('Erro na tag ~cpf~.\n', err)
                     return [false, '']
                 }
             }),
             '~invalcpf~'    : ((msg, num) => {
-                if(msg.match(/\d+/g))
+                if(msg.msgbody.match(/\d+/g))
                     return [true, '']
                 return [false, '']
             }),
@@ -188,7 +188,7 @@ class TagAnalyzer{
                 return new Promise(async (resolve, reject) => {
                     if((await this.tagfunc['getactivemat'](nums, num))){
                         let user = await db.getUser(num)
-                        let [userdiscs] = await db.request(`select discId from user_${db.cursos[user.curso]} where matricula = '${user.matricula}';`)
+                        let [userdiscs] = await db.request(`select discId from user_${db.cursos[user.curso]} where numero = '${num}';`)
                         userdiscs = userdiscs.map(i => i.discId)
                         resolve([nums.some(i => !userdiscs.includes(Number(i))), nums])
                     }
@@ -214,7 +214,7 @@ class TagAnalyzer{
                 return new Promise(async (resolve, reject) => {
                     try{
                         let user = await db.getUser(num)
-                        let discs = (await db.request(`select discId from user_${db.cursos[user.curso]} where matricula = '${user.matricula}';`))[0].map(i => i.discId)
+                        let discs = (await db.request(`select discId from user_${db.cursos[user.curso]} where numero = '${num}';`))[0].map(i => i.discId)
                         if(nums.some(i => discs.includes(Number(i))))
                             resolve([true, nums])
                         resolve([false, ''])
@@ -243,7 +243,7 @@ class TagAnalyzer{
                     return new Promise(async (resolve, reject) => {
                         try{
                             let user = await db.getUser(num)
-                            let discs = (await db.request(`select discId from user_${db.cursos[user.curso]} where matricula = '${user.matricula}';`))[0]
+                            let discs = (await db.request(`select discId from user_${db.cursos[user.curso]} where numero = '${num}';`))[0]
                             if(discs.length > 0)
                                 resolve([true, ''])
                             resolve([false, ''])
@@ -361,12 +361,10 @@ class TagAnalyzer{
                 await database.saveOnEffetivate(num, sql, {ids: [...fnums, ...ondb]})
             },
             'finalize'      : async (man, obj, num) => {
-                let user = await db.getUser(num)
-                await db.request(`update registro set finished = '1' where matricula = '${user.matricula}';`)
+                await db.request(`update registro set finished = '1' where numero = '${num}';`)
             },
             'unfinalize'      : async (man, obj, num) => {
-                let user = await db.getUser(num)
-                await db.request(`update registro set finished = '0' where matricula = '${user.matricula}';`)
+                await db.request(`update registro set finished = '0' where numero = '${num}';`)
             }
         }
     }

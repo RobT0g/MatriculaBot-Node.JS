@@ -1,4 +1,4 @@
-import {textkeep, defaultans, defdef, messages, recorrent} from './Msgs.js'
+import {textkeep, defaultans, defdef, messages, recorrent} from './Messages.js'
 
 //--------TODO--------//
 /**

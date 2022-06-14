@@ -64,20 +64,44 @@ messages.push(...[
 
 {
 'txt':['Certo, então me informe seu código de matrícula, por favor.'],
-'full': new StepStuff([['~mat~']], [['prepareUser']], [[]]),
-'unf': new StepStuff([['~matex~'], ['!num!']], [], [['Estanho, já tenho um registro com essa matrícula.', 'Talvez você digitou a' + 
+'full': new StepStuff([['~mat~']], [['updateUser']], [[]]),
+'unf': new StepStuff([['~matex~'], ['!num!'], ['voltar']], [[], [], ['2']], [['Estanho, já tenho um registro com essa matrícula.', 'Talvez você digitou a' + 
     ' matrícula errada? Ou você já fez a rematrícula?', 'Se for o primeiro caso, é só enviar a matrícula correta, agora se você ainda não' + 
     ' fez a matrícula e isso tá aparecendo pra você, tente contatar alguém do departamento. Neste caso, basta me enviar "Contatar departamento".'], 
-    ['Por favor, me mande um código de matrícula válido.']]),
-'def':['Preciso que me mande sua matrícula.'],
+    ['Por favor, me mande um código de matrícula válido.'], ['Ok, então vou perguntar novamente. Você quer fazer sua rematrícula' + 
+    ' com seu código de matrícula ou com seu CPF?']]),
+'def':['Preciso que me mande sua matrícula.', 'Mas se você quiser voltar e escolher outra opção de rematrícula, basta me mandar voltar.'],
 'to':[5]},
 
 {
 'txt':['Certo, então me informe seu CPF, por favor.'],
-'full': new StepStuff([['~cpf~']], [['prepareUser']], [[]]),
-'unf': new StepStuff([['~invalcpf~']], [[]], [[]]),
-'def':['Preciso que me mande sua matrícula.'],
+'full': new StepStuff([['~cpf~']], [['updateUser']], [[]]),
+'unf': new StepStuff([['~invalcpf~'], ['voltar']], [[], ['2']], [['Este CPF não é válido... Poderia verificar e me mandar novamente?'], 
+    ['Ok, então vou perguntar novamente. Você quer fazer sua rematrícula' + 
+' com seu código de matrícula ou com seu CPF?']]),
+'def':['Preciso que me mande seu CPF.', 'Mas se você quiser voltar e escolher outra opção de rematrícula, basta me mandar voltar.'],
 'to':[6]},
+
+{
+'txt':['Sua matrícula é ~mat~. Você confirma?'],
+'full': new StepStuff([['~sim~']], [['effetivate']], []),
+'unf': new StepStuff([['~nao~']], [['3']], [['Ok, me envie o código de matrícula correto agora 🤨']]),
+'def':['Você só precisa me mandar um "sim" ou "não" para confirmar.'],
+'to':[7]},
+
+{
+'txt':['Seu CPF é ~cpf~. Você confirma?'],
+'full': new StepStuff([['~sim~']], [['effetivate']], []),
+'unf': new StepStuff([['~nao~']], [['4']], [['Ok, me envie o CPF correto agora 🤨']]),
+'def':['Você só precisa me mandar um "sim" ou "não" para confirmar.'],
+'to':[7]},
+
+{
+'txt':['Ok! Vamos só até aqui por enquanto.'],
+'full': new StepStuff([['~nop~']], [[]], []),
+'unf': new StepStuff([[]], [[]], [[]]),
+'def':['Refatorei só até aqui por enquanto.'],
+'to':[7]},
 ])
 
 const recorrent = {
