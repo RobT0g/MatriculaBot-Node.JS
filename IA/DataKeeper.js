@@ -32,7 +32,7 @@ import { mysql } from '../Dependencies/Index.js'
     async load() {
         if(this.loaded)
             return
-        this.cursos = [], this.cursosName = []
+        this.cursos = [null], this.cursosName = [null]
         this.disciplinasId = {}, this.amount = {}
         let conn = await this.connect()
         let info = (await conn.query(`select * from cursos;`))[0]
@@ -41,9 +41,11 @@ import { mysql } from '../Dependencies/Index.js'
             this.cursosName.push(v.cursonome)
         })
         for(let i in this.cursos){
-            this.disciplinasId[this.cursos[i]] = (((await conn.query(`select id from disc_${this.cursos[i]} 
-                group by periodo;`))[0]).map((j) => j.id))
-            this.amount[this.cursos[i]] = (await conn.query(`select max(id) from disc_${this.cursos[i]};`))[0][0]['max(id)']
+            if(i){
+                this.disciplinasId[this.cursos[i]] = (((await conn.query(`select id from disc_${this.cursos[i]} 
+                    group by periodo;`))[0]).map((j) => j.id))
+                this.amount[this.cursos[i]] = (await conn.query(`select max(id) from disc_${this.cursos[i]};`))[0][0]['max(id)']
+            }
         }
         this.loaded = true
     }

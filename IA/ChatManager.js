@@ -130,9 +130,8 @@ class TagAnalyzer{
                 }
             }),
             '~curso~'       : ((msg, num) => {
-                console.log(db.cursos)
-                console.log(db.cursosName)
                 for(let i in db.cursosName){
+                    if(!i) continue
                     let words = [new Message(db.cursosName[i]).filterMsg.toLowerCase().split(' ').filter(j => !['de', 'do', 'da']
                         .includes(j)).reduce((acc, j) => {
                             acc += `&${j}`
@@ -292,7 +291,7 @@ class TagAnalyzer{
                 await database.updateUser(num, prev)
             },
             'savedefdiscs'  : async (man, obj, num) => {
-                let {curso, turma, matricula} = await db.getUser(num)
+                let user = await db.getUser(num)
                 let maxp = (await db.request(`select max(periodo) from disc_${db.cursos[curso]};`))[0][0]['max(periodo)']
                 let date = new Date()
                 let periodo = (date.getFullYear()-turma)*2 + ((date.getMonth() > 6)?2:1)
@@ -300,7 +299,7 @@ class TagAnalyzer{
                     periodo = maxp
                 let mats = (await db.request(`select id from disc_${db.cursos[curso]} where parap = ${periodo};`))[0]
                 await db.request(`insert into user_${db.cursos[curso]} values ` + mats.reduce((acc, i) => {
-                    acc += `(default, '${matricula}', '${i.id}'), `
+                    acc += `(default, '${user.id}', '${i.id}'), `
                     return acc
                 }, '').slice(0, -2) + ';')
             },
