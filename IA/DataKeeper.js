@@ -70,6 +70,12 @@ import { mysql } from '../Dependencies/Index.js'
         this.users[num] = user
         return user
     }
+
+    async refreshUser(num){
+        let user = (await this.request(`select id, matricula, cpf, talkat, nome, email, curso, turma from registro where numero = ${num};`))[0][0]
+        if(user)
+            this.users[num] = user
+    }
 }
 
 const db = new DataBaseCon()
@@ -403,6 +409,10 @@ class DataBaseAccess{
             await Promise.all(querys)
             await Promise.all([db.request(`delete from effetivate where numero = '${num}';`), db.refreshUser(num)])
         }
+    } 
+    
+    async getEffetivate(num){
+        return JSON.parse((await db.request(`select data from effetivate where numero = '${num}';`))[0][0].data)
     }
 
     getRequest(tag, num){

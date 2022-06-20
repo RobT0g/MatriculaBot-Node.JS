@@ -75,9 +75,9 @@ messages.push(...[
 {
 'txt':['Certo, então me informe seu CPF, por favor.'],
 'full': new StepStuff([['~cpf~']], [['updateUser']], [[]]),
-'unf': new StepStuff([['~invalcpf~'], ['voltar']], [[], ['2']], [['Este CPF não é válido... Poderia verificar e me mandar novamente?'], 
-    ['Ok, então vou perguntar novamente. Você quer fazer sua rematrícula' + 
-' com seu código de matrícula ou com seu CPF?']]),
+'unf': new StepStuff([['~invalcpf~'], ['voltar']], [[], ['2']], [['Este CPF não é válido... Poderia verificar e me mandar novamente?' + 
+    ' Lembre-se de que O CPF deve conter exatamente 11 números.'], 
+    ['Ok, então vou perguntar novamente. Você quer fazer sua rematrícula com seu código de matrícula ou com seu CPF?']]),
 'def':['Preciso que me mande seu CPF.', 'Mas se você quiser voltar e escolher outra opção de rematrícula, basta me mandar voltar.'],
 'to':[6]},
 
@@ -106,7 +106,7 @@ messages.push(...[
 {
 'txt':['Seu nome completo é ~nome~. Você confirma?'],
 'full': new StepStuff([['~sim~']], [['effetivate']], []),
-'unf': new StepStuff([['~nao~']], [['4']], [['Ok, me envie o nome correto agora 🤨']]),
+'unf': new StepStuff([['~nao~']], [['7']], [['Ok, me envie o nome correto agora 🤨']]),
 'def':['Você só precisa me mandar um "sim" ou "não" para confirmar.'],
 'to':[9]},
 
@@ -120,7 +120,7 @@ messages.push(...[
 {
 'txt':['Seu email é ~email~. Você confirma?'],
 'full': new StepStuff([['~sim~']], [['effetivate']], []),
-'unf': new StepStuff([['~nao~']], [['6']], [['Ok, me envie o email correto agora 🤨']]),
+'unf': new StepStuff([['~nao~']], [['9']], [['Ok, me envie o email correto agora 🤨']]),
 'def':['Você só precisa me mandar um "sim" ou "não" para confirmar.'],
 'to':[11]},
 
@@ -142,7 +142,7 @@ messages.push(...[
 {
 'txt':['Então você é do curso ~curso~ da turma de ~turma~. Você confirma?'],
 'full': new StepStuff([['~sim~']], [['effetivate']], []),
-'unf': new StepStuff([['~nao~']], [['8']], [['Ok, vamos voltar atrás então. Qual é mesmo o seu curso?']]),
+'unf': new StepStuff([['~nao~']], [['11']], [['Ok, vamos voltar atrás então. Qual é mesmo o seu curso?']]),
 'def':['Você só precisa me mandar um "sim" ou "não" para confirmar.'],
 'to':[14]},
 

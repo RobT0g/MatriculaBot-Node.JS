@@ -36,29 +36,17 @@ class TagAnalyzer{
             '~1-wrd~'       : ((msg, num) => {
                 return [msg.wrds.length == 1, '']
             }),
-            'cpfvalidate'   :((data, valid) => {
-                return new Promise(async (resolve, reject) => {
-                    try{
-                        let a = await db.request(`select cpf from registro where matricula = '${data[1]}';`)
-                        if(valid && !a[0][0])
-                            resolve([true, data[1]])
-                        else if(!valid && a[0][0])
-                            resolve([true, a[0][0].matricula])
-                        resolve([false, ''])
-                    } catch(err){
-                        reject(err)
-                    }
-                })
-            }),
             '~cpf~'         : ((msg, num) => {
                 try{
+                    if(!msg.match(/\d/g))
+                        return [false, '']
                     let numb = msg.msgbody.match(/\d{11}|(\d{3}[.]\d{3}[.]\d{3}[-]\d{2})/g)
                     //^ Primeira tentativa: 11 números em sequencia ou no formato 123.456.789-10 ^//
                     if(numb)
                         return [true, numb[0].replaceAll(/[.]|[-]/g, '')]
-                    numb = (msg.msgbody.match(/\d/g)).reduce((acc, i)=>{acc+=i;return acc},'') 
+                    numb = (msg.msgbody.match(/\d/g)).reduce((acc, i)=>{acc+=i;return acc},'')
                     //^ segunda tentativa: pega todos os números independentemente e os junta ^//
-                    return [numb.length == 11, numb]
+                    return [numb.length === 11, numb]
                 } catch(err){
                     console.log('Erro na tag ~cpf~.\n', err)
                     return [false, '']

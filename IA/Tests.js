@@ -5,5 +5,5 @@ import { chat } from "./ChatFlow.js"
 import { StepStuff } from "./Msgs.js"
 import {validate} from '../Dependencies/Index.js'
 
-
-console.log('ansidng'.match(/\d+/g))
+let mes = new Message('O meu CPF é 61255627352')
+console.log('asv'.match(/\d/))
