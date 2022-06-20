@@ -63,7 +63,7 @@ import { mysql } from '../Dependencies/Index.js'
     async getUser(num){
         if(num in this.users)
             return this.users[num]
-        let user = (await this.request(`select matricula, cpf, talkat, nome, email, curso, turma from registro where numero = ${num};`))[0][0]
+        let user = (await this.request(`select id, matricula, cpf, talkat, nome, email, curso, turma from registro where numero = ${num};`))[0][0]
         if(!user){
             return null
         }
@@ -126,15 +126,14 @@ class FormatedData{
                 }, '').slice(0, -1) + '.'
             },
             '~userinfo~'        : async (num) => {
-                let data = (await db.request(`select * from registro where numero = '${num}' and finished = '0';;`))[0][0]
-                return `\n> Matricula: ${data.matricula};\n> Nome: ${data.nome};\n> Email: ${data.email};\n` + 
-                    `> Curso: ${db.cursosName[data.curso]}, da turma de ${data.turma};\n` + 
-                    `> CPF: ${data.cpf}.`
+                let user = await db.getUser(num)
+                return `\n> ${(user.matricula)?('Matricula: ' + user.matricula):('CPF: ') + user.cpf};\n> Nome: ${data.nome};` + 
+                `\n> Email: ${data.email};\n> Curso: ${db.cursosName[data.curso]}, da turma de ${data.turma}.`
             },
             'getdiscs'          : async (num) => {
                 let info = await db.getUser(num)
                 return (await db.request(`select u.discId, d.nome, d.carga from user_${db.cursos[info.curso]} as u 
-                    join disc_${db.cursos[info.curso]} as d on u.discId = d.id where u.matricula = '${info.matricula}' order by u.discId;`))[0]
+                    join disc_${db.cursos[info.curso]} as d on u.discId = d.id where u.userId = '${info.id}' order by u.discId;`))[0]
             },
             '~discesc~'         : async (num) => { 
                 let data = await this.requests['getdiscs'](num)
@@ -260,9 +259,8 @@ class FormatedData{
                 let user = await db.getUser(num)
                 let [[discs]] = await db.request(`select data from effetivate where numero = '${num}';`)
                 discs = JSON.parse(discs.data).ids.map(i => Number(i))
-                console.log(discs)
                 let [[userdiscs], [valdiscs]] = await Promise.all([db.request(`select discId from user_${db.cursos[user.curso]} where 
-                    numero = '${num}';`), db.request(`select id, nome, carga, ativa from disc_${db.cursos[user.curso]} where id in 
+                    userId = '${user.id}';`), db.request(`select id, nome, carga, ativa from disc_${db.cursos[user.curso]} where id in 
                     (${discs.reduce((acc, i) => {
                         acc += `'${i}', `
                         return acc
@@ -365,7 +363,7 @@ class DataBaseAccess{
 
     addUser(num){
         try{
-            return db.request(`insert into registro (numero, talkat) values ('${num}', '0');`)
+            return db.request(`insert into registro (id, numero, talkat) values (default, '${num}', '0');`)
         } catch(err){
             console.log(err)
         }
