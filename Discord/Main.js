@@ -5,7 +5,7 @@ import { Client, Intents } from '../Dependencies/Index.js'
 import { TextSender } from './TextSender.js'
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, 
     Intents.FLAGS.DIRECT_MESSAGES, Intents.FLAGS.DIRECT_MESSAGE_TYPING] });
-const num = '012'
+const num = '015'
 const usersBank = new DataBase()
 const queue = new AutoQueue()
 

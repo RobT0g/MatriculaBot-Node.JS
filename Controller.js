@@ -53,9 +53,7 @@ class Bot{
         if(this.logged && this.runing){
             message.channel.send('O bot já está online!')
             return
-        }
-        //this.client = await create({session: 'Matricula', multidevice: false})
-        
+        }        
         this.client = await create('Matricula-bot', (base64Qr, asciiQR, attempts, urlCode) => {
             var matches = base64Qr.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/),
             response = {};

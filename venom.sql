@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Tempo de geração: 14-Jun-2022 às 15:17
+-- Tempo de geração: 20-Jun-2022 às 21:17
 -- Versão do servidor: 5.7.36
 -- versão do PHP: 7.4.26
 
@@ -21,8 +21,6 @@ SET time_zone = "+00:00";
 --
 -- Banco de dados: `venom`
 --
-CREATE DATABASE IF NOT EXISTS `venom` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-USE `venom`;
 
 -- --------------------------------------------------------
 
@@ -38,17 +36,17 @@ CREATE TABLE IF NOT EXISTS `cursos` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `abrev` (`abrev`),
   UNIQUE KEY `nome` (`cursonome`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 --
 -- Extraindo dados da tabela `cursos`
 --
 
 INSERT INTO `cursos` (`id`, `abrev`, `cursonome`) VALUES
-(0, 'adm', 'Administração'),
 (1, 'ec', 'Engenharia da Computação'),
 (2, 'fis', 'Física'),
-(3, 'tce', 'Construção de Edifícios');
+(3, 'tce', 'Construção de Edifícios'),
+(4, 'adm', 'Administração');
 
 -- --------------------------------------------------------
 
@@ -63,6 +61,7 @@ CREATE TABLE IF NOT EXISTS `discord` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
 
+-- --------------------------------------------------------
 
 --
 -- Estrutura da tabela `disc_adm`
@@ -396,21 +395,6 @@ CREATE TABLE IF NOT EXISTS `effetivate` (
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `inst_cadastro`
---
-
-DROP TABLE IF EXISTS `inst_cadastro`;
-CREATE TABLE IF NOT EXISTS `inst_cadastro` (
-  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `numero` varchar(25) DEFAULT NULL,
-  `talkat` int(10) UNSIGNED DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `numero` (`numero`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
 -- Estrutura da tabela `messages`
 --
 
@@ -439,17 +423,16 @@ INSERT INTO `messages` (`id`, `tag`, `text`) VALUES
 
 DROP TABLE IF EXISTS `registro`;
 CREATE TABLE IF NOT EXISTS `registro` (
-  `matricula` varchar(20) NOT NULL,
   `numero` varchar(25) NOT NULL,
   `talkat` int(10) UNSIGNED NOT NULL,
+  `matricula` varchar(20) DEFAULT NULL,
+  `cpf` char(11) DEFAULT NULL,
   `nome` varchar(75) DEFAULT NULL,
   `email` varchar(75) DEFAULT NULL,
   `curso` tinyint(1) UNSIGNED DEFAULT NULL,
   `turma` year(4) DEFAULT NULL,
-  `cpf` char(11) DEFAULT NULL,
   `finished` tinyint(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`matricula`),
-  UNIQUE KEY `matricula` (`matricula`),
+  PRIMARY KEY (`numero`),
   KEY `curso` (`curso`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -825,12 +808,12 @@ INSERT INTO `req_tce` (`id`, `discId`, `reqId`) VALUES
 DROP TABLE IF EXISTS `user_adm`;
 CREATE TABLE IF NOT EXISTS `user_adm` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `matricula` varchar(20) DEFAULT NULL,
+  `numero` varchar(25) DEFAULT NULL,
   `discId` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `matricula` (`matricula`),
-  KEY `discId` (`discId`)
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8;
+  KEY `discId` (`discId`),
+  KEY `numero` (`numero`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -841,12 +824,12 @@ CREATE TABLE IF NOT EXISTS `user_adm` (
 DROP TABLE IF EXISTS `user_ec`;
 CREATE TABLE IF NOT EXISTS `user_ec` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `matricula` varchar(20) DEFAULT NULL,
+  `numero` varchar(25) DEFAULT NULL,
   `discId` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `matricula` (`matricula`),
-  KEY `discId` (`discId`)
-) ENGINE=InnoDB AUTO_INCREMENT=63 DEFAULT CHARSET=utf8;
+  KEY `discId` (`discId`),
+  KEY `numero` (`numero`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -857,12 +840,12 @@ CREATE TABLE IF NOT EXISTS `user_ec` (
 DROP TABLE IF EXISTS `user_fis`;
 CREATE TABLE IF NOT EXISTS `user_fis` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `matricula` varchar(20) DEFAULT NULL,
+  `numero` varchar(25) DEFAULT NULL,
   `discId` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `matricula` (`matricula`),
-  KEY `discId` (`discId`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
+  KEY `discId` (`discId`),
+  KEY `numero` (`numero`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -873,12 +856,12 @@ CREATE TABLE IF NOT EXISTS `user_fis` (
 DROP TABLE IF EXISTS `user_tce`;
 CREATE TABLE IF NOT EXISTS `user_tce` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `matricula` varchar(20) DEFAULT NULL,
+  `numero` varchar(25) DEFAULT NULL,
   `discId` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `matricula` (`matricula`),
-  KEY `discId` (`discId`)
-) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8;
+  KEY `discId` (`discId`),
+  KEY `numero` (`numero`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Restrições para despejos de tabelas
@@ -894,8 +877,29 @@ ALTER TABLE `registro`
 -- Limitadores para a tabela `user_adm`
 --
 ALTER TABLE `user_adm`
-  ADD CONSTRAINT `user_adm_ibfk_1` FOREIGN KEY (`matricula`) REFERENCES `registro` (`matricula`),
-  ADD CONSTRAINT `user_adm_ibfk_2` FOREIGN KEY (`discId`) REFERENCES `disc_adm` (`id`);
+  ADD CONSTRAINT `user_adm_ibfk_1` FOREIGN KEY (`discId`) REFERENCES `disc_adm` (`id`),
+  ADD CONSTRAINT `user_adm_ibfk_2` FOREIGN KEY (`numero`) REFERENCES `registro` (`numero`);
+
+--
+-- Limitadores para a tabela `user_ec`
+--
+ALTER TABLE `user_ec`
+  ADD CONSTRAINT `user_ec_ibfk_1` FOREIGN KEY (`discId`) REFERENCES `disc_ec` (`id`),
+  ADD CONSTRAINT `user_ec_ibfk_2` FOREIGN KEY (`numero`) REFERENCES `registro` (`numero`);
+
+--
+-- Limitadores para a tabela `user_fis`
+--
+ALTER TABLE `user_fis`
+  ADD CONSTRAINT `user_fis_ibfk_1` FOREIGN KEY (`discId`) REFERENCES `disc_fis` (`id`),
+  ADD CONSTRAINT `user_fis_ibfk_2` FOREIGN KEY (`numero`) REFERENCES `registro` (`numero`);
+
+--
+-- Limitadores para a tabela `user_tce`
+--
+ALTER TABLE `user_tce`
+  ADD CONSTRAINT `user_tce_ibfk_1` FOREIGN KEY (`discId`) REFERENCES `disc_tce` (`id`),
+  ADD CONSTRAINT `user_tce_ibfk_2` FOREIGN KEY (`numero`) REFERENCES `registro` (`numero`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
