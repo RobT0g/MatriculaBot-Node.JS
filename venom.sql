@@ -61,13 +61,6 @@ CREATE TABLE IF NOT EXISTS `discord` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
 
---
--- Extraindo dados da tabela `discord`
---
-
-INSERT INTO `discord` (`id`, `token`) VALUES
-(1, 'OTcyMTUxNjEwMTcwMDQ4NTYy.GaLOfk.bUd1_2CJDV5tZRxsp84STu4V9qbtuANHcXOR0A');
-
 -- --------------------------------------------------------
 
 --
