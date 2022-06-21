@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Tempo de geração: 20-Jun-2022 às 21:17
+-- Tempo de geração: 21-Jun-2022 às 18:19
 -- Versão do servidor: 5.7.36
 -- versão do PHP: 7.4.26
 
@@ -36,17 +36,17 @@ CREATE TABLE IF NOT EXISTS `cursos` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `abrev` (`abrev`),
   UNIQUE KEY `nome` (`cursonome`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 
 --
 -- Extraindo dados da tabela `cursos`
 --
 
 INSERT INTO `cursos` (`id`, `abrev`, `cursonome`) VALUES
-(1, 'ec', 'Engenharia da Computação'),
-(2, 'fis', 'Física'),
-(3, 'tce', 'Construção de Edifícios'),
-(4, 'adm', 'Administração');
+(1, 'adm', 'Administração'),
+(2, 'ec', 'Engenharia da Computação'),
+(3, 'fis', 'Física'),
+(4, 'tce', 'Construção de Edifícios');
 
 -- --------------------------------------------------------
 
@@ -60,6 +60,13 @@ CREATE TABLE IF NOT EXISTS `discord` (
   `token` varchar(80) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
+
+--
+-- Extraindo dados da tabela `discord`
+--
+
+INSERT INTO `discord` (`id`, `token`) VALUES
+(1, 'OTcyMTUxNjEwMTcwMDQ4NTYy.GaLOfk.bUd1_2CJDV5tZRxsp84STu4V9qbtuANHcXOR0A');
 
 -- --------------------------------------------------------
 
@@ -435,7 +442,14 @@ CREATE TABLE IF NOT EXISTS `registro` (
   `finished` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `curso` (`curso`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+
+--
+-- Extraindo dados da tabela `registro`
+--
+
+INSERT INTO `registro` (`id`, `numero`, `talkat`, `matricula`, `cpf`, `nome`, `email`, `curso`, `turma`, `finished`) VALUES
+(1, '015', 11, NULL, '00000000001', 'Rob La', 'robsonluan273@hotmail.com', NULL, NULL, 0);
 
 -- --------------------------------------------------------
 
