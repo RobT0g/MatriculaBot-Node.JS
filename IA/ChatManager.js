@@ -38,7 +38,7 @@ class TagAnalyzer{
             }),
             '~cpf~'         : ((msg, num) => {
                 try{
-                    if(!msg.match(/\d/g))
+                    if(!msg.msgbody.match(/\d/g))
                         return [false, '']
                     let numb = msg.msgbody.match(/\d{11}|(\d{3}[.]\d{3}[.]\d{3}[-]\d{2})/g)
                     //^ Primeira tentativa: 11 números em sequencia ou no formato 123.456.789-10 ^//
@@ -131,13 +131,11 @@ class TagAnalyzer{
             }),
             '~curso~'       : ((msg, num) => {
                 for(let i in db.cursosName){
-                    if(!i) continue
                     let words = [new Message(db.cursosName[i]).filterMsg.toLowerCase().split(' ').filter(j => !['de', 'do', 'da']
                         .includes(j)).reduce((acc, j) => {
                             acc += `&${j}`
                             return acc
                         }, '')]
-                    console.log(words)
                     if(words.some(j => this.keyword(msg, j)[0]))
                         return [true, i]
                 }
@@ -175,7 +173,7 @@ class TagAnalyzer{
                 return new Promise(async (resolve, reject) => {
                     if((await this.tagfunc['getactivemat'](nums, num))){
                         let user = await db.getUser(num)
-                        let [userdiscs] = await db.request(`select discId from user_${db.cursos[user.curso]} where numero = '${num}';`)
+                        let [userdiscs] = await db.request(`select discId from user_${db.cursos[user.curso]} where userId = '${user.id}';`)
                         userdiscs = userdiscs.map(i => i.discId)
                         resolve([nums.some(i => !userdiscs.includes(Number(i))), nums])
                     }
@@ -201,7 +199,7 @@ class TagAnalyzer{
                 return new Promise(async (resolve, reject) => {
                     try{
                         let user = await db.getUser(num)
-                        let discs = (await db.request(`select discId from user_${db.cursos[user.curso]} where numero = '${num}';`))[0].map(i => i.discId)
+                        let discs = (await db.request(`select discId from user_${db.cursos[user.curso]} where userId = '${user.id}';`))[0].map(i => i.discId)
                         if(nums.some(i => discs.includes(Number(i))))
                             resolve([true, nums])
                         resolve([false, ''])
@@ -230,7 +228,7 @@ class TagAnalyzer{
                     return new Promise(async (resolve, reject) => {
                         try{
                             let user = await db.getUser(num)
-                            let discs = (await db.request(`select discId from user_${db.cursos[user.curso]} where numero = '${num}';`))[0]
+                            let discs = (await db.request(`select discId from user_${db.cursos[user.curso]} where userId = '${user.id}';`))[0]
                             if(discs.length > 0)
                                 resolve([true, ''])
                             resolve([false, ''])
@@ -292,13 +290,13 @@ class TagAnalyzer{
             },
             'savedefdiscs'  : async (man, obj, num) => {
                 let user = await db.getUser(num)
-                let maxp = (await db.request(`select max(periodo) from disc_${db.cursos[curso]};`))[0][0]['max(periodo)']
+                let maxp = (await db.request(`select max(periodo) from disc_${db.cursos[user.curso]};`))[0][0]['max(periodo)']
                 let date = new Date()
-                let periodo = (date.getFullYear()-turma)*2 + ((date.getMonth() > 6)?2:1)
+                let periodo = (date.getFullYear()-user.turma)*2 + ((date.getMonth() > 6)?2:1)
                 if(periodo > maxp)
                     periodo = maxp
-                let mats = (await db.request(`select id from disc_${db.cursos[curso]} where parap = ${periodo};`))[0]
-                await db.request(`insert into user_${db.cursos[curso]} values ` + mats.reduce((acc, i) => {
+                let mats = (await db.request(`select id from disc_${db.cursos[user.curso]} where parap = ${periodo};`))[0]
+                await db.request(`insert into user_${db.cursos[user.curso]} values ` + mats.reduce((acc, i) => {
                     acc += `(default, '${user.id}', '${i.id}'), `
                     return acc
                 }, '').slice(0, -2) + ';')
@@ -311,8 +309,8 @@ class TagAnalyzer{
             },
             'managediscs'   : async (man, obj, num, del) => {
                 let info = await (db.getUser(num).then(async (user) => {
-                    return {user, choices: (await db.request(`select discId from user_${db.cursos[user.curso]} where matricula
-                        = '${user.matricula}';`))[0]}
+                    return {user, choices: (await db.request(`select discId from user_${db.cursos[user.curso]} where userId
+                        = '${user.id}';`))[0]}
                 }))
                 let fnums = obj.tagInfo[1].map(i => Number(i))
                 let ondb = info.choices.reduce((acc, i) => {
@@ -327,7 +325,7 @@ class TagAnalyzer{
                     sql = `delete from user_${db.cursos[info.user.curso]} where discId in (${ondb.reduce((acc, i) => {
                         acc += `'${i}', `
                         return acc
-                    }, '').slice(0, -2)}) and matricula = '${info.user.matricula}'; `
+                    }, '').slice(0, -2)}) and userId = '${info.user.id}'; `
                 }else {
                     let discs = (await db.request(`select id, ativa from disc_${db.cursos[info.user.curso]} where id in (${fnums.reduce((acc, i) => {
                         acc += `'${i}', `
@@ -341,7 +339,7 @@ class TagAnalyzer{
                         if(!i in discs)
                             return acc
                         if(discs[i])
-                            acc += `(default, '${info.user.matricula}', '${i}'), `
+                            acc += `(default, '${info.user.id}', '${i}'), `
                         return acc
                     }, '').slice(0, -2)};`
                 }

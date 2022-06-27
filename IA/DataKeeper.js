@@ -32,20 +32,18 @@ import { mysql } from '../Dependencies/Index.js'
     async load() {
         if(this.loaded)
             return
-        this.cursos = [null], this.cursosName = [null]
+        this.cursos = {}, this.cursosName = {}
         this.disciplinasId = {}, this.amount = {}
         let conn = await this.connect()
         let info = (await conn.query(`select * from cursos;`))[0]
         info.forEach((v) => {
-            this.cursos.push(v.abrev)
-            this.cursosName.push(v.cursonome)
+            this.cursos[v.id] = v.abrev
+            this.cursosName[v.id] = v.cursonome
         })
         for(let i in this.cursos){
-            if(i){
-                this.disciplinasId[this.cursos[i]] = (((await conn.query(`select id from disc_${this.cursos[i]} 
-                    group by periodo;`))[0]).map((j) => j.id))
-                this.amount[this.cursos[i]] = (await conn.query(`select max(id) from disc_${this.cursos[i]};`))[0][0]['max(id)']
-            }
+            this.disciplinasId[this.cursos[i]] = (((await conn.query(`select id from disc_${this.cursos[i]} 
+                group by periodo;`))[0]).map((j) => j.id))
+            this.amount[this.cursos[i]] = (await conn.query(`select max(id) from disc_${this.cursos[i]};`))[0][0]['max(id)']
         }
         this.loaded = true
     }
@@ -174,6 +172,7 @@ class FormatedData{
             },
             '~instmatseladd~'   : async (num) => {
                 let info = await this.requests.getsubjectsoneff(num)
+                console.log(info)
                 let user = await db.getUser(num)
                 let reqs = (await Promise.all(Object.keys(info.outuser).reduce((acc, i) => {
                     if(info.outuser[i].ativa === 1)
@@ -240,7 +239,7 @@ class FormatedData{
                 if(result === 1)
                     return `${txt}${extra[0]?extra[0]:(extra[1]?extra[1]:extra[2])}.`
                 if(result === 2)
-                    return txt + extra[0]?`${extra[0]} e ${extra[1]?extra[1]:extra[2]}.`:`${extra[1]} e ${extra[2]}.`
+                    return `${txt}`+(extra[0]?`${extra[0]} e ${extra[1]?extra[1]:extra[2]}.`:`${extra[1]} e ${extra[2]}.`)
                 return `${txt}${extra[0]}, ${extra[1]} e ${extra[2]}.`
             },
             '~instmatseldel~'   : async (num) => {
@@ -325,7 +324,7 @@ class FormatedData{
             },
             '~finalizar~'       : async (num) => {
                 let user = await db.getUser(num)
-                if((await db.request(`select * from user_${db.cursos[user.curso]} where numero = '${num}';`))[0].length == 0){
+                if((await db.request(`select * from user_${db.cursos[user.curso]} where userId = '${user.id}';`))[0].length == 0){
                     return ''
                 }
                 return 'Como você já selecionou algumas matérias, você pode finalizar aqui se quiser. Basta me mandar um "finalizar".'
