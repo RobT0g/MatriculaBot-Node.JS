@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Tempo de geração: 14-Jun-2022 às 15:16
+-- Tempo de geração: 28-Jun-2022 às 02:02
 -- Versão do servidor: 5.7.36
 -- versão do PHP: 7.4.26
 
@@ -21,8 +21,6 @@ SET time_zone = "+00:00";
 --
 -- Banco de dados: `venom`
 --
-CREATE DATABASE IF NOT EXISTS `venom` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-USE `venom`;
 
 -- --------------------------------------------------------
 
@@ -38,17 +36,17 @@ CREATE TABLE IF NOT EXISTS `cursos` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `abrev` (`abrev`),
   UNIQUE KEY `nome` (`cursonome`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 --
 -- Extraindo dados da tabela `cursos`
 --
 
 INSERT INTO `cursos` (`id`, `abrev`, `cursonome`) VALUES
-(0, 'adm', 'Administração'),
-(1, 'ec', 'Engenharia da Computação'),
-(2, 'fis', 'Física'),
-(3, 'tce', 'Construção de Edifícios');
+(1, 'adm', 'Administração'),
+(2, 'ec', 'Engenharia da Computação'),
+(3, 'fis', 'Física'),
+(4, 'tce', 'Construção de Edifícios');
 
 -- --------------------------------------------------------
 
@@ -62,6 +60,8 @@ CREATE TABLE IF NOT EXISTS `discord` (
   `token` varchar(80) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
 
 --
 -- Estrutura da tabela `disc_adm`
@@ -397,30 +397,7 @@ CREATE TABLE IF NOT EXISTS `effetivate` (
 --
 
 INSERT INTO `effetivate` (`numero`, `query`, `data`) VALUES
-('011', 'insert into user_fis values ;', '{\"ids\":[22,23,24,90,91,92,7,3,4]}');
-
--- --------------------------------------------------------
-
---
--- Estrutura da tabela `inst_cadastro`
---
-
-DROP TABLE IF EXISTS `inst_cadastro`;
-CREATE TABLE IF NOT EXISTS `inst_cadastro` (
-  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `numero` varchar(25) DEFAULT NULL,
-  `talkat` int(10) UNSIGNED DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `numero` (`numero`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
-
---
--- Extraindo dados da tabela `inst_cadastro`
---
-
-INSERT INTO `inst_cadastro` (`id`, `numero`, `talkat`) VALUES
-(1, '559892437964@c.us', 2),
-(3, '559888976814@c.us', 0);
+('016', 'insert into user_fis values (default, \"2\", \"18\"), (default, \"2\", \"16\");', '{\"ids\":[10,11,18,16,90,92]}');
 
 -- --------------------------------------------------------
 
@@ -453,44 +430,27 @@ INSERT INTO `messages` (`id`, `tag`, `text`) VALUES
 
 DROP TABLE IF EXISTS `registro`;
 CREATE TABLE IF NOT EXISTS `registro` (
-  `matricula` varchar(20) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `numero` varchar(25) NOT NULL,
   `talkat` int(10) UNSIGNED NOT NULL,
+  `matricula` varchar(20) DEFAULT NULL,
+  `cpf` char(11) DEFAULT NULL,
   `nome` varchar(75) DEFAULT NULL,
   `email` varchar(75) DEFAULT NULL,
   `curso` tinyint(1) UNSIGNED DEFAULT NULL,
   `turma` year(4) DEFAULT NULL,
-  `cpf` char(11) DEFAULT NULL,
   `finished` tinyint(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`matricula`),
-  UNIQUE KEY `matricula` (`matricula`),
+  PRIMARY KEY (`id`),
   KEY `curso` (`curso`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 --
 -- Extraindo dados da tabela `registro`
 --
 
-INSERT INTO `registro` (`matricula`, `numero`, `talkat`, `nome`, `email`, `curso`, `turma`, `cpf`, `finished`) VALUES
-('001', '001', 13, 'Nome1', 'Nome1@gmail.com', 0, 2020, '00000000001', 0),
-('002', '002', 13, 'Nome2', 'Nome2@gmail.com', 0, 2020, '00000000002', 1),
-('003', '003', 13, 'Nome3', 'Nome3@gmail.com', 1, 2020, '00000000003', 0),
-('004', '004', 13, 'Nome4', 'Nome4@gmail.com', 1, 2020, '00000000004', 0),
-('005', '005', 13, 'Nome5', 'Nome5@gmail.com', 2, 2020, '00000000005', 1),
-('006', '006', 13, 'Nome6', 'Nome6@gmail.com', 2, 2020, '00000000006', 1),
-('007', '007', 13, 'Nome7', 'Nome7@gmail.com', 1, 2020, '00000000007', 1),
-('008', '008', 13, 'Nome8', 'Nome8@gmail.com', 3, 2020, '00000000008', 1),
-('009', '009', 13, 'Nome9', 'Nome9@gmail.com', 3, 2020, '00000000009', 0),
-('010', '010', 13, 'Nome10', 'Nome10@gmail.com', 0, 2020, '00000000010', 1),
-('011', '011', 16, 'Nome11', 'Nome11@gmail.com', 2, 2020, '00000000011', 0),
-('012', '012', 13, 'Nome12', 'Nome12@gmail.com', 3, 2020, '00000000012', 1),
-('013', '013', 18, 'Nome13', 'Nome13@gmail.com', 1, 2020, '00000000013', 0),
-('20201E', '10', 21, 'R L', 'rl@hotmail.com', 3, 2020, '00112233445', 1),
-('20209', '19', 15, 'Rob L', 'r@gmail.com', 1, 2019, '00000000001', 0),
-('2021ENG.SIN0006', '559881205960@c.us', 21, 'Hildelbrando Patryck Borges Lopes', 'patrycklopes762@gmail.com', 1, 2021, '00000000014', 1),
-('2022127460056', '559881786234@c.us', 21, 'Neemias Araujo Siqueira', 'neemiasnast@gmail.com', 0, 2020, '00000000015', 1),
-('2022129950042', '559870135803@c.us', 4, NULL, NULL, NULL, NULL, NULL, 0),
-('20221ENG.SIN0050', '559887027202@c.us', 21, 'Neemias Araújo Siqueira', 'neemiasnast@gmail.com', 1, 2022, '00000000016', 1);
+INSERT INTO `registro` (`id`, `numero`, `talkat`, `matricula`, `cpf`, `nome`, `email`, `curso`, `turma`, `finished`) VALUES
+(1, '015', 11, NULL, '00000000001', 'Rob La', 'robsonluan273@hotmail.com', NULL, NULL, 0),
+(2, '016', 17, NULL, '00000000001', 'Rob Luan', 'rob@hotmail.com', 3, 2022, 0);
 
 -- --------------------------------------------------------
 
@@ -864,35 +824,12 @@ INSERT INTO `req_tce` (`id`, `discId`, `reqId`) VALUES
 DROP TABLE IF EXISTS `user_adm`;
 CREATE TABLE IF NOT EXISTS `user_adm` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `matricula` varchar(20) DEFAULT NULL,
+  `userId` int(11) NOT NULL,
   `discId` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `matricula` (`matricula`),
-  KEY `discId` (`discId`)
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8;
-
---
--- Extraindo dados da tabela `user_adm`
---
-
-INSERT INTO `user_adm` (`id`, `matricula`, `discId`) VALUES
-(2, '001', 3),
-(3, '001', 4),
-(5, '002', 7),
-(6, '002', 3),
-(7, '002', 4),
-(8, '002', 6),
-(9, '010', 2),
-(10, '010', 1),
-(11, '010', 4),
-(12, '010', 5),
-(16, '001', 1),
-(17, '001', 7),
-(18, '001', 5),
-(19, '2022127460056', 29),
-(20, '2022127460056', 30),
-(21, '2022127460056', 31),
-(25, '2022127460056', 35);
+  KEY `discId` (`discId`),
+  KEY `userId` (`userId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -903,62 +840,12 @@ INSERT INTO `user_adm` (`id`, `matricula`, `discId`) VALUES
 DROP TABLE IF EXISTS `user_ec`;
 CREATE TABLE IF NOT EXISTS `user_ec` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `matricula` varchar(20) DEFAULT NULL,
+  `userId` int(11) NOT NULL,
   `discId` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `matricula` (`matricula`),
-  KEY `discId` (`discId`)
-) ENGINE=InnoDB AUTO_INCREMENT=63 DEFAULT CHARSET=utf8;
-
---
--- Extraindo dados da tabela `user_ec`
---
-
-INSERT INTO `user_ec` (`id`, `matricula`, `discId`) VALUES
-(15, '20201ENG', 9),
-(16, '20201ENG', 10),
-(17, '003', 2),
-(18, '003', 3),
-(19, '003', 4),
-(20, '003', 5),
-(21, '004', 7),
-(22, '004', 3),
-(23, '004', 4),
-(24, '004', 6),
-(25, '007', 7),
-(26, '007', 3),
-(27, '007', 4),
-(28, '007', 6),
-(29, '013', 2),
-(30, '013', 1),
-(31, '013', 4),
-(32, '013', 5),
-(33, '69696969', 31),
-(34, '69696969', 32),
-(35, '69696969', 33),
-(36, '69696969', 34),
-(37, '69696969', 35),
-(38, '69696969', 36),
-(39, '69696969', 37),
-(40, '2021ENG.SIN0006', 8),
-(41, '2021ENG.SIN0006', 17),
-(42, '2021ENG.SIN0006', 18),
-(43, '2021ENG.SIN0006', 19),
-(44, '2021ENG.SIN0006', 20),
-(45, '2021ENG.SIN0006', 21),
-(47, '2021ENG.SIN0006', 23),
-(48, '20221ENG.SIN0050', 1),
-(50, '20221ENG.SIN0050', 3),
-(51, '20221ENG.SIN0050', 4),
-(52, '20221ENG.SIN0050', 5),
-(53, '20221ENG.SIN0050', 6),
-(54, '20221ENG.SIN0050', 7),
-(56, '20209', 45),
-(58, '20209', 47),
-(59, '20209', 48),
-(60, '20209', 49),
-(61, '20209', 20),
-(62, '20209', 21);
+  KEY `discId` (`discId`),
+  KEY `userId` (`userId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -969,30 +856,25 @@ INSERT INTO `user_ec` (`id`, `matricula`, `discId`) VALUES
 DROP TABLE IF EXISTS `user_fis`;
 CREATE TABLE IF NOT EXISTS `user_fis` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `matricula` varchar(20) DEFAULT NULL,
+  `userId` int(11) NOT NULL,
   `discId` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `matricula` (`matricula`),
-  KEY `discId` (`discId`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
+  KEY `discId` (`discId`),
+  KEY `userId` (`userId`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 
 --
 -- Extraindo dados da tabela `user_fis`
 --
 
-INSERT INTO `user_fis` (`id`, `matricula`, `discId`) VALUES
-(1, '005', 2),
-(2, '005', 3),
-(3, '005', 4),
-(4, '005', 5),
-(5, '006', 7),
-(6, '006', 3),
-(7, '006', 4),
-(8, '006', 6),
-(9, '011', 7),
-(10, '011', 3),
-(11, '011', 4),
-(12, '011', 6);
+INSERT INTO `user_fis` (`id`, `userId`, `discId`) VALUES
+(1, 2, 1),
+(2, 2, 2),
+(3, 2, 3),
+(4, 2, 4),
+(5, 2, 5),
+(6, 2, 6),
+(7, 2, 7);
 
 -- --------------------------------------------------------
 
@@ -1003,39 +885,12 @@ INSERT INTO `user_fis` (`id`, `matricula`, `discId`) VALUES
 DROP TABLE IF EXISTS `user_tce`;
 CREATE TABLE IF NOT EXISTS `user_tce` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `matricula` varchar(20) DEFAULT NULL,
+  `userId` int(11) NOT NULL,
   `discId` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `matricula` (`matricula`),
-  KEY `discId` (`discId`)
-) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8;
-
---
--- Extraindo dados da tabela `user_tce`
---
-
-INSERT INTO `user_tce` (`id`, `matricula`, `discId`) VALUES
-(1, '008', 2),
-(2, '008', 3),
-(3, '008', 4),
-(4, '008', 5),
-(5, '009', 7),
-(6, '009', 3),
-(7, '009', 4),
-(8, '009', 6),
-(9, '012', 7),
-(10, '012', 3),
-(11, '012', 4),
-(12, '012', 6),
-(13, '20201E', 29),
-(17, '20201E', 33),
-(18, '20201E', 34),
-(20, '20201E', 16),
-(21, '20201E', 3),
-(22, '20201E', 17),
-(25, '20201E', 90),
-(26, '20201E', 91),
-(27, '20201E', 4);
+  KEY `discId` (`discId`),
+  KEY `userId` (`userId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Restrições para despejos de tabelas
@@ -1051,8 +906,29 @@ ALTER TABLE `registro`
 -- Limitadores para a tabela `user_adm`
 --
 ALTER TABLE `user_adm`
-  ADD CONSTRAINT `user_adm_ibfk_1` FOREIGN KEY (`matricula`) REFERENCES `registro` (`matricula`),
-  ADD CONSTRAINT `user_adm_ibfk_2` FOREIGN KEY (`discId`) REFERENCES `disc_adm` (`id`);
+  ADD CONSTRAINT `user_adm_ibfk_1` FOREIGN KEY (`discId`) REFERENCES `disc_adm` (`id`),
+  ADD CONSTRAINT `user_adm_ibfk_2` FOREIGN KEY (`userId`) REFERENCES `registro` (`id`);
+
+--
+-- Limitadores para a tabela `user_ec`
+--
+ALTER TABLE `user_ec`
+  ADD CONSTRAINT `user_ec_ibfk_1` FOREIGN KEY (`discId`) REFERENCES `disc_ec` (`id`),
+  ADD CONSTRAINT `user_ec_ibfk_2` FOREIGN KEY (`userId`) REFERENCES `registro` (`id`);
+
+--
+-- Limitadores para a tabela `user_fis`
+--
+ALTER TABLE `user_fis`
+  ADD CONSTRAINT `user_fis_ibfk_1` FOREIGN KEY (`discId`) REFERENCES `disc_fis` (`id`),
+  ADD CONSTRAINT `user_fis_ibfk_2` FOREIGN KEY (`userId`) REFERENCES `registro` (`id`);
+
+--
+-- Limitadores para a tabela `user_tce`
+--
+ALTER TABLE `user_tce`
+  ADD CONSTRAINT `user_tce_ibfk_1` FOREIGN KEY (`discId`) REFERENCES `disc_tce` (`id`),
+  ADD CONSTRAINT `user_tce_ibfk_2` FOREIGN KEY (`userId`) REFERENCES `registro` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
