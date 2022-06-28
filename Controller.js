@@ -88,7 +88,7 @@ class Bot{
 
     async finish(message){
         if(!this.logged){
-            message.channel('O bot já está desativado!')
+            message.channel.send('O bot já está desativado!')
         }
         await this.client.close()
         message.channel.send('Pronto! Bot desativado!')
