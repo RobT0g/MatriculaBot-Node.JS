@@ -61,14 +61,18 @@ import { mysql } from '../Dependencies/Index.js'
     }
 
     async getUser(num){
-        if(num in this.users)
-            return this.users[num]
-        let user = (await this.request(`select id, matricula, cpf, talkat, nome, email, curso, turma from registro where numero = ${num};`))[0][0]
-        if(!user){
+        try{
+            if(num in this.users)
+                return this.users[num]
+            let user = (await this.request(`select id, matricula, cpf, talkat, nome, email, curso, turma from registro where numero = ${num};`))[0][0]
+            if(!user){
+                return null
+            }
+            this.users[num] = user
+            return user
+        } catch(err){
             return null
         }
-        this.users[num] = user
-        return user
     }
 
     async refreshUser(num){
