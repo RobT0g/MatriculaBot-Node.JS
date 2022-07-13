@@ -43,15 +43,38 @@ class TagAnalyzer{
                     let numb = msg.msgbody.match(/\d{11}|(\d{3}[.]\d{3}[.]\d{3}[-]\d{2})/g)
                     //^ Primeira tentativa: 11 números em sequencia ou no formato 123.456.789-10 ^//
                     if(numb)
-                        return [true, numb[0].replaceAll(/[.]|[-]/g, '')]
+                        return [this.tagfunc['validarCPF'](numb), numb[0].replaceAll(/[.]|[-]/g, '')]
                     numb = (msg.msgbody.match(/\d/g)).reduce((acc, i)=>{acc+=i;return acc},'')
                     //^ segunda tentativa: pega todos os números independentemente e os junta ^//
-                    return [numb.length === 11, numb]
+                    return [numb === 11 && this.tagfunc['validarCPF'](numb), numb]
                 } catch(err){
                     console.log('Erro na tag ~cpf~.\n', err)
                     return [false, '']
                 }
             }),
+            'validarCPF': (cpf) => {
+                try{
+                    cpf = cpf.match(/\d+/g).reduce((acc, i) => {
+                        acc += i
+                        return acc
+                    }, '')
+                    if(cpf === null)
+                        return false
+                    let v = [0, 0]
+                    for(let j in cpf){
+                        if(j > 9)
+                            break
+                        if(j < 9)
+                            v[0] += Number(cpf[j])*(10-j)
+                        v[1] += Number(cpf[j])*(11-j)
+                    }
+                    v = [11-v[0]%11, 11-v[1]%11]
+                    return ((v[0]<10?v[0]:0) === Number(cpf[9])) && ((v[1]<10?v[1]:0) === Number(cpf[10]))
+                } catch(err){
+                    console.log(err)
+                    return false
+                }
+            },
             '~invalcpf~'    : ((msg, num) => {
                 if(msg.msgbody.match(/\d+/g))
                     return [true, '']
