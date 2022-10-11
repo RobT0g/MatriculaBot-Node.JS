@@ -48,10 +48,8 @@ class Bot{
         this.logged = false
     }
 
-    async activate(message){
-        await message.channel.send('Ok! Vou ativar o bot!')
+    async activate(){
         if(this.logged && this.runing){
-            message.channel.send('O bot já está online!')
             return
         }        
         this.client = await create('Matricula-bot', (base64Qr, asciiQR, attempts, urlCode) => {
@@ -68,16 +66,11 @@ class Bot{
                     console.log(err);
                 }
             });
-            message.channel.send({files: [{
-                attachment: 'out.png',
-                name: 'out.png',
-                description: 'A description of the file'
-                }]})
+            console.log(asciiQR)
         }, undefined, {multidevice: false, logQR: true})
         this.logged = true
         this.running = true
         start(this.client)
-        message.channel.send('Pronto! O bot está online!')
         this.alertAdm()
     }
 
@@ -86,12 +79,10 @@ class Bot{
             TextSender.delivText(['Estou Online!'], '559892437964@c.us', this.client)
     }
 
-    async finish(message){
-        if(!this.logged){
-            message.channel.send('O bot já está desativado!')
+    async finish(){
+        if(this.logged){
+            await this.client.close()
         }
-        await this.client.close()
-        message.channel.send('Pronto! Bot desativado!')
     }
 }
 
