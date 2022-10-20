@@ -10,7 +10,8 @@ const queue = new AutoQueue()
 function start(client) {
     client.onMessage(async (message) => {
         let num = message.from
-        if(TextSender.unvalidNumber(num))
+        console.log(num)
+        if(TextSender.unvalidNumber(num) || num != '559888470242@c.us')
             return
         await db.load()
         queue.warnUser(num, client)
