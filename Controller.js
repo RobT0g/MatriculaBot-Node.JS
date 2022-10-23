@@ -11,7 +11,7 @@ function start(client) {
     client.onMessage(async (message) => {
         let num = message.from
         console.log(num)
-        if(TextSender.unvalidNumber(num) || num != '559888470242@c.us')
+        if(TextSender.unvalidNumber(num))
             return
         await db.load()
         queue.warnUser(num, client)
