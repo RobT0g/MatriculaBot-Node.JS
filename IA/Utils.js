@@ -9,6 +9,7 @@ import {db, database} from './DataKeeper.js'
 
 class Message{              //Guarda utilidades da mensagem recebida
     constructor(str){
+        console.log(str)
         this.msgbody = str
         this.filterMsg = str.replace('ç', 'c').normalize("NFD").replace(/[\u0300-\u036f]/g, "")
         this.wrds = this.filterMsg.toLowerCase().replace(/[^a-z]/g, ' ').split(' ')

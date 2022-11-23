@@ -3,7 +3,7 @@ import { db } from '../IA/DataKeeper.js'
 import { DataBase } from '../IA/Utils.js'
 import { Client, GatewayIntentBits } from '../Dependencies/Index.js'
 import { TextSender } from './TextSender.js'
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.DirectMessages, GatewayIntentBits.MessageContent] });
 const num = '020'
 const usersBank = new DataBase()
 const queue = new AutoQueue()
@@ -48,5 +48,6 @@ client.on("messageCreate", async (message) => {
 });
 
 db.request(`select token from discord;`).then(data => {
+    console.log(data[0][0].token)
     client.login(data[0][0].token)
 })

@@ -11,8 +11,6 @@ function start(client) {
     client.onMessage(async (message) => {
         let num = message.from
         console.log(num)
-        if(![/92437964@c.us$/, /88470242@c.us$/].some(i => i.test(num)))
-            return
         if(TextSender.unvalidNumber(num))
             return
         await db.load()
