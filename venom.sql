@@ -61,6 +61,7 @@ CREATE TABLE IF NOT EXISTS `discord` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
 
+
 -- --------------------------------------------------------
 
 --
