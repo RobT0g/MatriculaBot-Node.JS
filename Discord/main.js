@@ -39,6 +39,10 @@ client.on("messageCreate", async (message) => {
                 return
             }
             await TextSender.delivText((await usersBank.newMessage(message.content, num)), message)
+            //APAGA SE DER ERRO
+            if(Number(usersBank.users[num].chat.talkat) == 14)
+               num = `{Number(num)+1}`
+            //ATÉ AQUI
             resolve(false)
         } catch(err){
             console.log(err)
